@@ -53,7 +53,9 @@ npm run dev
 npm run test:e2e
 ```
 
-### Biên dịch ra tệp cài đặt Android (`.apk`)
+### Biên dịch hoặc Tải trực tiếp tệp cài đặt Android (`.apk`)
+- **Tệp `.apk` biên dịch sẵn (`v1.0.0`, `5,2 MB`):** [`releases/dot-quy-115-v1.0.apk`](./releases/dot-quy-115-v1.0.apk)
+- **Tự biên dịch lại từ mã nguồn:**
 ```bash
 npm run apk:debug
 # File xuất ra tại: android/app/build/outputs/apk/debug/app-debug.apk
