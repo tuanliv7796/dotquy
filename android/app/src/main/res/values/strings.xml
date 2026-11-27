@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Đột Quỵ 115</string>
+    <string name="app_full_name">Cẩm Nang Đột Quỵ — Sơ cứu &amp; Phòng bệnh</string>
+    <string name="title_activity_main">Đột Quỵ 115</string>
+    <string name="package_name">vn.dotquy115.app</string>
+    <string name="custom_url_scheme">dotquy115</string>
+
+    <!-- Quick Settings Tile -->
+    <string name="qs_tile_label">Sơ cứu 115</string>
+
+    <!-- App Shortcuts -->
+    <string name="shortcut_call115_short">Gọi 115 ngay</string>
+    <string name="shortcut_call115_long">Mở bàn phím gọi cấp cứu 115</string>
+    <string name="shortcut_socuu_short">Sơ cứu 0 giây</string>
+    <string name="shortcut_socuu_long">Mở hướng dẫn sơ cứu đột quỵ từng bước</string>
+    <string name="shortcut_kiemtra_short">Kiểm tra 60 giây</string>
+    <string name="shortcut_kiemtra_long">Kiểm tra nhanh dấu hiệu BE-FAST an toàn</string>
+
+    <!-- Home Screen Widgets -->
+    <string name="widget_2x2_desc">Nút khẩn cấp 1 chạm mở ngay Sơ Cứu Đột Quỵ 0 Giây (hoạt động ngoại tuyến).</string>
+    <string name="widget_4x2_desc">Thanh công cụ khẩn cấp 4 nút: Sơ cứu 0s, Gọi 115, Thẻ trình Bác sĩ, và Kiểm tra 60s.</string>
+</resources>

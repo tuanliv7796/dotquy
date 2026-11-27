@@ -1,0 +1,435 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { renderIcon } from '../../components/icons/Icons';
+---
+
+<BaseLayout
+  title="Thẻ Y Tế Gia Đình, Trợ năng & Đồng bộ Cập nhật OTA"
+  currentNav="profile"
+>
+  <div class="container profile-stack">
+    <header class="card">
+      <span class="badge badge-red">Lưu Offline mã hóa an toàn trên thiết bị</span>
+      <h1 style="margin-top:0.4rem;">Hồ sơ Thẻ Y Tế Gia Đình & Cài đặt Ứng dụng</h1>
+      <p style="color:var(--ink-secondary);">
+        Chuẩn bị sẵn thông tin <strong>Cân nặng ước tính</strong> (để bác sĩ tính liều thuốc tiêu sợi huyết mg/kg) và <strong>Thuốc chống đông đang dùng</strong> cho ông bà, cha mẹ ngay từ lúc khỏe mạnh.
+      </p>
+    </header>
+
+    <!-- 1. FAMILY MEDICAL ID EDITOR -->
+    <section class="card" aria-labelledby="medid-heading">
+      <div class="section-head-row">
+        <h2 id="medid-heading">1. Thẻ Y Tế Khẩn Cấp (Chọn thành viên để xem hoặc cập nhật)</h2>
+        <button type="button" id="btn-add-member" class="btn btn-outline">+ Thêm thành viên mới</button>
+      </div>
+
+      <div id="member-tabs-row" class="chips-row"></div>
+
+      <form id="med-profile-form" class="med-form-grid">
+        <label>
+          <span>Tên gọi ngắn (hiện trên nút chọn nhanh):</span>
+          <input type="text" id="prof-label" class="form-field" required placeholder="Ví dụ: Bố, Mẹ, Ông nội..." />
+        </label>
+
+        <label>
+          <span>Họ và tên đầy đủ:</span>
+          <input type="text" id="prof-fullname" class="form-field" placeholder="Ví dụ: Nguyễn Văn An" />
+        </label>
+
+        <label>
+          <span>Năm sinh:</span>
+          <input type="number" id="prof-birthyear" class="form-field" min="1910" max="2026" placeholder="1958" />
+        </label>
+
+        <label>
+          <span>Cân nặng ước tính (kg — RẤT QUAN TRỌNG tính liều thuốc):</span>
+          <input type="number" id="prof-weight" class="form-field" min="10" max="200" placeholder="62" />
+        </label>
+
+        <label class="span-2 highlight-warn-label">
+          <span>Thuốc chống đông / Kháng tiểu cầu đang uống (Ghi rõ tên & giờ uống hằng ngày):</span>
+          <input
+            type="text"
+            id="prof-anticoag"
+            class="form-field warn-border-field"
+            placeholder="Ví dụ: Rivaroxaban 20mg (8h sáng) hoặc Warfarin 5mg / Aspirin 81mg..."
+          />
+        </label>
+
+        <label class="span-2">
+          <span>Các bệnh nền quan trọng:</span>
+          <input type="text" id="prof-conditions" class="form-field" placeholder="Ví dụ: Tăng huyết áp, Rung nhĩ, Đái tháo đường týp 2..." />
+        </label>
+
+        <label>
+          <span>Các thuốc khác đang dùng:</span>
+          <input type="text" id="prof-othermeds" class="form-field" placeholder="Ví dụ: Amlodipine 5mg, Metformin..." />
+        </label>
+
+        <label>
+          <span>Tiền sử dị ứng thuốc:</span>
+          <input type="text" id="prof-allergies" class="form-field" placeholder="Ví dụ: Không / Dị ứng Penicillin" />
+        </label>
+
+        <label class="span-2">
+          <span>Số điện thoại người thân liên hệ khẩn cấp:</span>
+          <input type="tel" id="prof-contact" class="form-field" placeholder="Ví dụ: Con gái Hoa — 0912.xxx.xxx" />
+        </label>
+
+        <div class="span-2" style="display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+          <button type="submit" class="btn btn-primary">
+            <Fragment set:html={renderIcon('shieldCheck', 20)} />
+            <span>Lưu Thẻ Y Tế trên máy này</span>
+          </button>
+          <a href="/so-cuu/#doctor-handoff-section" class="btn btn-outline">Xem thử trên Thẻ Bàn Giao 115 →</a>
+          <span id="prof-save-status" class="save-msg"></span>
+        </div>
+      </form>
+    </section>
+
+    <!-- 2. SENIOR ACCESSIBILITY SETTINGS -->
+    <section class="card" aria-labelledby="access-heading">
+      <h2 id="access-heading">2. Cài đặt Cỡ chữ & Giao diện Trợ năng Đa thế hệ</h2>
+      <div class="settings-stack">
+        <div class="setting-row">
+          <div>
+            <strong>Cỡ chữ hiển thị</strong>
+            <p class="setting-desc">Mặc định 18px rõ nét; tự động tương thích cả khi phóng chữ hệ thống Android 200%.</p>
+          </div>
+          <div class="chips-row" role="group" aria-label="Chọn cỡ chữ">
+            <button type="button" class="chip" data-set-scale="1">Thường (18px)</button>
+            <button type="button" class="chip" data-set-scale="lg">Lớn (21px)</button>
+            <button type="button" class="chip" data-set-scale="xl">Rất lớn (24px)</button>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div>
+            <strong>Chế độ màu sắc & Chống chói mắt</strong>
+            <p class="setting-desc">Chế độ "Ấm dịu" giảm chói thủy tinh thể; "Rõ nét AAA" tối ưu khi đọc ngoài trời nắng.</p>
+          </div>
+          <div class="chips-row" role="group" aria-label="Chọn chế độ hiển thị">
+            <button type="button" class="chip" data-set-theme="warm">Ấm dịu</button>
+            <button type="button" class="chip" data-set-theme="contrast">Rõ nét AAA</button>
+            <button type="button" class="chip" data-set-theme="dark">Ban đêm</button>
+            <button type="button" class="chip" data-set-theme="system">Theo máy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. WEBSITE-SYNCED OTA UPDATE & OFFLINE FALLBACK CONTROL -->
+    <section class="card" aria-labelledby="ota-heading">
+      <div class="badge badge-teal">Đồng bộ Nội dung & Bố cục theo Website · Dự phòng Offline tự động</div>
+      <h2 id="ota-heading" style="margin-top:0.4rem;">3. Trạng thái Phiên bản & Cập nhật từ Máy chủ Website (OTA)</h2>
+      <p style="color:var(--ink-secondary); font-size:var(--fs-sm);">
+        Trên bản cài đặt Android (<code>.apk</code>), ứng dụng tự động tải ngầm nội dung & bố cục mới từ Website của bạn và kiểm tra chữ ký <code>SHA-256</code>. Khi <strong>không có mạng</strong>, ứng dụng luôn hiển thị tức thì phiên bản đã cài đặt / cập nhật thành công gần nhất!
+      </p>
+
+      <div class="ota-status-box">
+        <div>
+          <span class="ho-label">PHIÊN BẢN HIỆN TẠI ĐANG CHẠY:</span>
+          <strong id="ota-version-label" style="display:block; font-size:var(--fs-md);">Đang kiểm tra...</strong>
+        </div>
+
+        <label style="display:grid; gap:0.35rem; font-weight:700; font-size:var(--fs-sm);">
+          <span>Địa chỉ tên miền Website nguồn cập nhật OTA (Tùy chọn cấu hình máy chủ riêng):</span>
+          <input
+            type="url"
+            id="ota-domain-input"
+            class="form-field"
+            placeholder="Ví dụ: https://ten-mien-cua-ban.vn"
+          />
+        </label>
+
+        <div style="display:flex; flex-wrap:wrap; gap:0.65rem;">
+          <button type="button" id="btn-check-ota-now" class="btn btn-primary">
+            <Fragment set:html={renderIcon('refresh', 20)} />
+            <span>Lưu tên miền & Kiểm tra cập nhật ngay</span>
+          </button>
+          <button type="button" id="btn-apply-ota-now" class="btn btn-warn hidden">
+            Áp dụng bản mới vừa tải
+          </button>
+        </div>
+        <p id="ota-check-feedback" class="save-msg"></p>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .profile-stack {
+    display: grid;
+    gap: 1.35rem;
+    max-width: 980px;
+  }
+  .section-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+  .chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+  .med-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    margin-top: 1rem;
+  }
+  @media (min-width: 760px) {
+    .med-form-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .span-2 {
+      grid-column: 1 / -1;
+    }
+  }
+  .med-form-grid label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+  .form-field {
+    min-height: 52px;
+    padding: 0.55rem 0.9rem;
+    border-radius: var(--r-sm);
+    border: 1.5px solid var(--border-strong);
+    background: var(--bg-card);
+    width: 100%;
+    font-weight: 600;
+  }
+  .warn-border-field {
+    border: 2px solid var(--warn);
+    background: var(--warn-soft);
+  }
+  .highlight-warn-label span {
+    color: var(--warn-ink);
+  }
+  .save-msg {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--primary-ink);
+    margin: 0;
+  }
+  [data-theme="dark"] .save-msg { color: var(--primary); }
+  .settings-stack {
+    display: grid;
+    gap: 1rem;
+    margin-top: 0.85rem;
+  }
+  .setting-row {
+    padding: 1rem;
+    border-radius: var(--r-md);
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-soft);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+  }
+  .setting-desc {
+    margin: 0.2rem 0 0;
+    font-size: var(--fs-xs);
+    color: var(--ink-secondary);
+  }
+  .ota-status-box {
+    margin-top: 0.9rem;
+    padding: 1rem 1.15rem;
+    border-radius: var(--r-md);
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-soft);
+    display: grid;
+    gap: 0.85rem;
+  }
+</style>
+
+<script>
+  import { loadVault, saveVault, makeUuid, type FamilyProfile } from '../../lib/history-store';
+  import {
+    readCurrentOtaInfo,
+    resolveConfiguredManifestUrl,
+    manualCheckOtaUpdate,
+  } from '../../lib/ota-client';
+  import { DotQuyNative } from '../../lib/native-bridge';
+
+  let selectedProfileId = '';
+
+  async function initProfileEditor() {
+    const { vault } = await loadVault();
+    if (vault.profiles.length === 0) {
+      vault.profiles.push({
+        id: 'bo',
+        label: 'Bố',
+        fullName: '',
+        birthYear: '1958',
+        weightKg: '62',
+        anticoagulants: '',
+        otherMeds: '',
+        conditions: '',
+        allergies: 'Không',
+        emergencyContact: '',
+      });
+    }
+    if (!selectedProfileId) {
+      selectedProfileId = vault.profiles[0].id;
+    }
+
+    const tabsRow = document.getElementById('member-tabs-row');
+    const populateFields = (prof: FamilyProfile) => {
+      (document.getElementById('prof-label') as HTMLInputElement).value = prof.label || '';
+      (document.getElementById('prof-fullname') as HTMLInputElement).value = prof.fullName || '';
+      (document.getElementById('prof-birthyear') as HTMLInputElement).value = prof.birthYear || '';
+      (document.getElementById('prof-weight') as HTMLInputElement).value = prof.weightKg || '';
+      (document.getElementById('prof-anticoag') as HTMLInputElement).value = prof.anticoagulants || '';
+      (document.getElementById('prof-conditions') as HTMLInputElement).value = prof.conditions || '';
+      (document.getElementById('prof-othermeds') as HTMLInputElement).value = prof.otherMeds || '';
+      (document.getElementById('prof-allergies') as HTMLInputElement).value = prof.allergies || '';
+      (document.getElementById('prof-contact') as HTMLInputElement).value = prof.emergencyContact || '';
+    };
+
+    if (tabsRow) {
+      tabsRow.innerHTML = vault.profiles
+        .map(
+          (p) =>
+            `<button type="button" class="chip ${
+              p.id === selectedProfileId ? 'active' : ''
+            }" data-prof-tab="${p.id}">${p.label}</button>`
+        )
+        .join('');
+
+      tabsRow.querySelectorAll('[data-prof-tab]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          selectedProfileId = (btn as HTMLElement).dataset.profTab || '';
+          initProfileEditor();
+        });
+      });
+    }
+
+    const active = vault.profiles.find((p) => p.id === selectedProfileId) || vault.profiles[0];
+    populateFields(active);
+  }
+
+  document.getElementById('btn-add-member')?.addEventListener('click', async () => {
+    const { vault } = await loadVault();
+    const newId = makeUuid();
+    vault.profiles.push({
+      id: newId,
+      label: `Thành viên ${vault.profiles.length + 1}`,
+      fullName: '',
+      birthYear: '',
+      weightKg: '',
+      anticoagulants: '',
+      otherMeds: '',
+      conditions: '',
+      allergies: 'Không',
+      emergencyContact: '',
+    });
+    await saveVault(vault);
+    selectedProfileId = newId;
+    initProfileEditor();
+  });
+
+  document.getElementById('med-profile-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const { vault } = await loadVault();
+    const target = vault.profiles.find((p) => p.id === selectedProfileId);
+    if (!target) return;
+    target.label = (document.getElementById('prof-label') as HTMLInputElement).value.trim() || 'Thành viên';
+    target.fullName = (document.getElementById('prof-fullname') as HTMLInputElement).value.trim();
+    target.birthYear = (document.getElementById('prof-birthyear') as HTMLInputElement).value.trim();
+    target.weightKg = (document.getElementById('prof-weight') as HTMLInputElement).value.trim();
+    target.anticoagulants = (document.getElementById('prof-anticoag') as HTMLInputElement).value.trim();
+    target.conditions = (document.getElementById('prof-conditions') as HTMLInputElement).value.trim();
+    target.otherMeds = (document.getElementById('prof-othermeds') as HTMLInputElement).value.trim();
+    target.allergies = (document.getElementById('prof-allergies') as HTMLInputElement).value.trim();
+    target.emergencyContact = (document.getElementById('prof-contact') as HTMLInputElement).value.trim();
+
+    const ok = await saveVault(vault);
+    const status = document.getElementById('prof-save-status');
+    if (status) {
+      status.textContent = ok
+        ? `Đã lưu an toàn Thẻ Y Tế của "${target.label}"!`
+        : 'Chưa ghi được vào bộ nhớ cố định (vẫn giữ tạm trong phiên này).';
+    }
+    initProfileEditor();
+  });
+
+  // Sync Scale & Theme buttons
+  function syncPrefButtons() {
+    const sc = document.documentElement.getAttribute('data-scale') || '1';
+    const th = document.documentElement.getAttribute('data-theme') || 'warm';
+    document.querySelectorAll('[data-set-scale]').forEach((b) => {
+      b.classList.toggle('active', (b as HTMLElement).dataset.setScale === sc);
+    });
+    document.querySelectorAll('[data-set-theme]').forEach((b) => {
+      b.classList.toggle('active', (b as HTMLElement).dataset.setTheme === th);
+    });
+  }
+  document.querySelectorAll('[data-set-scale]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const val = (b as HTMLElement).dataset.setScale || '1';
+      document.documentElement.setAttribute('data-scale', val);
+      try { localStorage.setItem('dotquy115_scale', val); } catch {}
+      syncPrefButtons();
+    });
+  });
+  document.querySelectorAll('[data-set-theme]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const val = (b as HTMLElement).dataset.setTheme || 'warm';
+      document.documentElement.setAttribute('data-theme', val);
+      try { localStorage.setItem('dotquy115_theme', val); } catch {}
+      syncPrefButtons();
+    });
+  });
+  window.addEventListener('dotquy:prefs-changed', syncPrefButtons);
+  syncPrefButtons();
+
+  // OTA Status & Manual Update Check
+  async function loadOtaPanel() {
+    const info = await readCurrentOtaInfo();
+    const verEl = document.getElementById('ota-version-label');
+    const domInput = document.getElementById('ota-domain-input') as HTMLInputElement | null;
+    if (verEl) {
+      const srcMap: Record<string, string> = {
+        web: 'Trực tiếp từ Website máy chủ (Luôn mới nhất)',
+        apk_seed: 'Bản gốc đóng gói sẵn trong file .apk (Sẵn sàng Offline 100%)',
+        ota_snapshot: 'Bản cập nhật OTA mới nhất lưu trong bộ nhớ máy (Sẵn sàng Offline 100%)',
+      };
+      verEl.textContent = `${info.currentVersion} — ${srcMap[info.source] || info.source}`;
+    }
+    if (domInput) {
+      const configured = resolveConfiguredManifestUrl();
+      if (configured) {
+        domInput.value = configured.replace(/\/ota\/manifest\.json$/, '');
+      }
+    }
+  }
+
+  document.getElementById('btn-check-ota-now')?.addEventListener('click', async () => {
+    const domInput = document.getElementById('ota-domain-input') as HTMLInputElement | null;
+    const fb = document.getElementById('ota-check-feedback');
+    const btnApply = document.getElementById('btn-apply-ota-now');
+    if (fb) fb.textContent = 'Đang kết nối kiểm tra gói cập nhật OTA...';
+    const res = await manualCheckOtaUpdate(domInput?.value || '');
+    if (fb) fb.textContent = res.message;
+    if (res.hasUpdate) {
+      btnApply?.classList.remove('hidden');
+    }
+    loadOtaPanel();
+  });
+
+  document.getElementById('btn-apply-ota-now')?.addEventListener('click', () => {
+    DotQuyNative.applyPendingUpdate().catch(() => window.location.reload());
+  });
+
+  initProfileEditor();
+  loadOtaPanel();
+</script>

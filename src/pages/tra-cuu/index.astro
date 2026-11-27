@@ -1,0 +1,138 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SearchBox from '../../components/SearchBox.astro';
+
+const entries = (await getCollection('articles')).sort((a, b) => a.data.order - b.data.order);
+
+const categories = [
+  { key: 'all', label: `Tất cả chuyên đề (${entries.length})` },
+  { key: 'so-cuu-sai-lam', label: 'Sơ cứu & Chống sai lầm' },
+  { key: 'nhan-biet-cua-so', label: 'Nhận diện sớm & Cửa sổ 24h' },
+  { key: 'phong-ngua-tam-soat', label: 'Phòng ngừa & Tầm soát' },
+  { key: 'phuc-hoi-ca-benh', label: 'Phục hồi & Ca bệnh thực tế' },
+];
+---
+
+<BaseLayout
+  title="Cẩm nang Tri thức Y khoa 3 Lớp & Kiểm chứng Mẹo dân gian"
+  currentNav="library"
+>
+  <div class="container lib-stack">
+    <header class="card">
+      <span class="badge badge-teal">Thiết kế Đọc 3 Lớp · Hoạt động 100% Offline</span>
+      <h1 style="margin-top:0.4rem;">Cẩm nang Tri thức Đột quỵ Thực chứng</h1>
+      <p style="color:var(--ink-secondary);">
+        Mỗi chuyên đề đều chia làm <strong>3 lớp rõ ràng</strong>: <em>Lớp 1 (Tóm tắt 15 giây cho người vội/mắt mỏi)</em> → <em>Lớp 2 (Việc cần làm & Điều cấm)</em> → <em>Lớp 3 (Cơ chế & Thử nghiệm lâm sàng RCT mở rộng)</em>.
+      </p>
+      <SearchBox inputId="library-search-input" />
+    </header>
+
+    <div class="cat-filter-row" role="group" aria-label="Lọc theo nhóm chủ đề">
+      {categories.map((cat, idx) => (
+        <button
+          type="button"
+          class={`chip ${idx === 0 ? 'active' : ''}`}
+          data-cat-filter={cat.key}
+        >
+          {cat.label}
+        </button>
+      ))}
+    </div>
+
+    <div class="articles-grid" id="articles-grid">
+      {entries.map((entry) => {
+        const slug = entry.id.replace(/\.md$/, '');
+        const badgeCls =
+          entry.data.actionLevel === 'emergency'
+            ? 'badge-red'
+            : entry.data.actionLevel === 'urgent_today'
+            ? 'badge-warn'
+            : 'badge-teal';
+        return (
+          <a
+            href={`/tra-cuu/${slug}/`}
+            class="card article-card"
+            data-article-cat={entry.data.category}
+          >
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:0.5rem;">
+              <span class={`badge ${badgeCls}`}>{entry.data.categoryLabel}</span>
+              <span class="article-num tabular">#{entry.data.order}</span>
+            </div>
+            <h2>{entry.data.title}</h2>
+            <p>{entry.data.tldr15s[0]}</p>
+            <span class="read-more-link">Đọc tóm tắt 15 giây & hướng dẫn →</span>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .lib-stack {
+    display: grid;
+    gap: 1.35rem;
+  }
+  .cat-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+  .articles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 780px) {
+    .articles-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .article-card {
+    text-decoration: none;
+    color: var(--ink-primary) !important;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .article-card:hover {
+    border-color: var(--primary);
+  }
+  .article-card h2 {
+    font-size: var(--fs-lg);
+    margin: 0;
+  }
+  .article-card p {
+    color: var(--ink-secondary);
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+  .article-num {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+  .read-more-link {
+    margin-top: auto;
+    padding-top: 0.45rem;
+    font-weight: 800;
+    color: var(--primary);
+    font-size: var(--fs-sm);
+  }
+</style>
+
+<script>
+  document.querySelectorAll('[data-cat-filter]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const cat = (btn as HTMLElement).dataset.catFilter || 'all';
+      document.querySelectorAll('[data-cat-filter]').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.querySelectorAll('[data-article-cat]').forEach((card) => {
+        const c = (card as HTMLElement).dataset.articleCat;
+        (card as HTMLElement).classList.toggle('hidden', cat !== 'all' && c !== cat);
+      });
+    });
+  });
+</script>

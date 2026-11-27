@@ -1,0 +1,605 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBox from '../components/SearchBox.astro';
+import { renderIcon } from '../components/icons/Icons';
+import { HOME_SIGN_CARDS } from '../data/triage-tests';
+
+const befastCards = HOME_SIGN_CARDS.filter((c) => c.group === 'befast');
+const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
+---
+
+<BaseLayout
+  title="Cẩm Nang Đột Quỵ — Sơ cứu & Phòng bệnh (Đột Quỵ 115)"
+  currentNav="home"
+>
+  <div class="container home-stack">
+    <!-- HERO: Red Emergency Card ALWAYS prioritized above history (Rule H6) + 4-Layer Search -->
+    <section class="hero-split" aria-label="Cấp cứu nhanh và tra cứu thông minh">
+      <div class="card-sos hero-sos-panel">
+        <div class="sos-eyebrow">
+          <Fragment set:html={renderIcon('bolt', 20)} />
+          <span>KHẨN CẤP · MỖI PHÚT MẤT 1,9 TRIỆU TẾ BÀO THẦN KINH</span>
+        </div>
+        <h2>Có người đang nghi bị Đột quỵ / Tai biến?</h2>
+        <p class="sos-lead">
+          Kể cả khi triệu chứng nhẹ, không đau hay <strong>vừa tự hết sau vài phút (TIA)</strong> — hãy gọi 115 ngay và làm theo hướng dẫn sơ cứu từng bước có <strong>giọng đọc tiếng Việt</strong>.
+        </p>
+        <div class="sos-cta-group">
+          <a href="tel:115" class="btn btn-white-red sos-main-btn" data-call-115="true">
+            <Fragment set:html={renderIcon('phone', 24)} />
+            <span>Gọi 115 ngay</span>
+          </a>
+          <a href="/so-cuu/" class="btn sos-secondary-btn">
+            <Fragment set:html={renderIcon('aid', 22)} />
+            <span>Sơ cứu 0 giây (Có loa đọc)</span>
+          </a>
+        </div>
+        <p class="sos-foot">
+          Nhớ ghi lại <strong>giờ bình thường cuối cùng (LKW)</strong> — bác sĩ cấp cứu cần thông tin này đầu tiên.
+        </p>
+      </div>
+
+      <div class="card hero-search-panel">
+        <div class="badge badge-teal" style="justify-self: start;">
+          <Fragment set:html={renderIcon('shieldCheck', 16)} />
+          <span>Chuẩn Bộ Y tế QĐ 3312/QĐ-BYT & AHA/ASA 2026 · Sẵn sàng Offline</span>
+        </div>
+        <h1>Nhận biết sớm. Sơ cứu đúng. Giữ trọn Giờ Vàng.</h1>
+        <p class="hero-sub">
+          Tra cứu tức thì bằng ngôn ngữ đời thường (có dấu hoặc không dấu) hoặc làm bài kiểm tra an toàn trong 60 giây:
+        </p>
+        <SearchBox inputId="home-search-input" />
+      </div>
+    </section>
+
+    <!-- DYNAMIC FOLLOW-UP & RECENT CHECK HISTORY CARD (Rules H1, H2, H3, H6 — Hidden when empty) -->
+    <section id="home-history-zone" class="hidden" aria-label="Nhắc việc khẩn và lần kiểm tra gần nhất">
+      <div id="home-pending-banner" class="hidden"></div>
+      <div id="home-last-record-card" class="card hidden"></div>
+    </section>
+
+    <!-- 3 INTENT DOORS -->
+    <section aria-labelledby="heading-doors">
+      <h2 id="heading-doors" class="section-heading">Bạn đang cần hỗ trợ việc gì ngay lúc này?</h2>
+      <div class="doors-grid">
+        <a href="/kiem-tra/#tab-acute" class="card door-card door-red">
+          <span class="badge badge-red">60 giây · Có cắt mạch khẩn</span>
+          <h3>1. Kiểm tra dấu hiệu đang xảy ra</h3>
+          <p>6 bước thực hành an toàn (BE-FAST + 5 Dấu hiệu Đỏ), có đếm 10 giây giơ tay và câu đọc mẫu.</p>
+          <span class="door-go">Bắt đầu kiểm tra ngay →</span>
+        </a>
+
+        <a href="/kiem-tra/#tab-tia" class="card door-card door-warn">
+          <span class="badge badge-warn">1 phút · Cảnh báo sớm TIA</span>
+          <h3>2. Dấu hiệu vừa xuất hiện rồi tự hết?</h3>
+          <p>Méo miệng, tê yếu tay, mờ 1 mắt vài phút rồi tự khỏi — đánh giá nguy cơ cao nhất trong 48 giờ đầu.</p>
+          <span class="door-go">Kiểm tra cơn thoáng qua →</span>
+        </a>
+
+        <a href="/kiem-tra/#tab-risk" class="card door-card door-teal">
+          <span class="badge badge-teal">3 phút · Khi đang khỏe mạnh</span>
+          <h3>3. Tầm soát "Nguy cơ của tôi"</h3>
+          <p>Phân tầng nguy cơ nền 4 mức, mô phỏng thay đổi lối sống và xem xét nghiệm nên làm / không lạm dụng.</p>
+          <span class="door-go">Đánh giá nguy cơ nền →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- INTERACTIVE BE-FAST + 5 RED FLAGS OUTSIDE BE-FAST -->
+    <section aria-labelledby="heading-befast" class="card">
+      <div class="section-head-row">
+        <div>
+          <h2 id="heading-befast">Nhận diện tức thì: 6 chữ B.E.F.A.S.T & 5 Dấu hiệu Đỏ kín đáo</h2>
+          <p class="muted-sub">
+            Chạm vào từng ô bên dưới để xem cách kiểm tra an toàn. Lưu ý: thang FAST thông thường bỏ sót ~40% đột quỵ tuần hoàn sau!
+          </p>
+        </div>
+        <a href="/kiem-tra/" class="btn btn-primary">Mở Bài Test Thực Hành</a>
+      </div>
+
+      <div class="befast-grid">
+        {befastCards.map((item) => (
+          <button
+            type="button"
+            class={`sign-tile ${item.shortCode === 'T' ? 'is-time' : ''}`}
+            data-sign-id={item.id}
+            aria-expanded="false"
+          >
+            <span class="sign-letter">{item.shortCode}</span>
+            <strong class="sign-title">{item.name}</strong>
+            <span class="sign-desc">{item.summary}</span>
+          </button>
+        ))}
+      </div>
+
+      <h3 class="sub-eyebrow">5 Dấu hiệu Đỏ ngoài BE-FAST cực dễ bị chẩn đoán nhầm tại nhà:</h3>
+      <div class="redflags-grid">
+        {redFlagCards.map((item) => (
+          <button
+            type="button"
+            class="sign-tile is-redflag"
+            data-sign-id={item.id}
+            aria-expanded="false"
+          >
+            <span class="badge badge-red">{item.shortCode}</span>
+            <strong class="sign-title">{item.name}</strong>
+            <span class="sign-desc">{item.summary}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Expandable Sign Detail Drawer -->
+      <div id="sign-detail-drawer" class="sign-drawer hidden" role="region" aria-live="polite">
+        <div class="sign-drawer-content">
+          <strong id="drawer-sign-title" class="drawer-title"></strong>
+          <p id="drawer-sign-body" class="drawer-body"></p>
+        </div>
+        <div class="sign-drawer-actions">
+          <a href="/so-cuu/" class="btn btn-emergency">Có dấu hiệu này → Sơ cứu ngay</a>
+          <button type="button" id="btn-close-drawer" class="btn btn-outline">Đóng</button>
+        </div>
+      </div>
+
+      <script type="application/json" id="sign-cards-json" set:html={JSON.stringify(HOME_SIGN_CARDS)}></script>
+    </section>
+
+    <!-- ANTI-MYTH CONTRAST SECTION & HOSPITAL FINDER -->
+    <section aria-labelledby="heading-myths">
+      <div class="section-head-row">
+        <h2 id="heading-myths">3 Sai lầm dân gian cướp mất Giờ Vàng nhiều nhất tại Việt Nam</h2>
+        <a href="/tra-cuu/" class="btn btn-outline">Xem đủ 24 chuyên đề kiểm chứng →</a>
+      </div>
+
+      <div class="doors-grid">
+        <a href="/tra-cuu/02-cam-thuoc-ha-huyet-ap-va-aspirin/" class="card myth-card">
+          <div class="myth-wrong">
+            <Fragment set:html={renderIcon('ban', 22)} />
+            <span>Tự ngậm thuốc hạ huyết áp hoặc uống Aspirin tại nhà</span>
+          </div>
+          <div class="myth-right">
+            <Fragment set:html={renderIcon('shieldCheck', 22)} />
+            <span>Hạ áp trước chụp CT làm nặng nhồi máu não (INTERACT4); Aspirin làm vỡ mạch chảy máu ồ ạt. Chỉ gọi 115!</span>
+          </div>
+        </a>
+
+        <a href="/tra-cuu/03-su-that-chich-mau-ngon-tay-xoa-co/" class="card myth-card">
+          <div class="myth-wrong">
+            <Fragment set:html={renderIcon('ban', 22)} />
+            <span>Chích máu 10 đầu ngón tay, cạo gió, xoa bóp cổ</span>
+          </div>
+          <div class="myth-right">
+            <Fragment set:html={renderIcon('shieldCheck', 22)} />
+            <span>Không thông được mạch não; đau đớn làm vọt huyết áp và xoa cổ có thể làm bắn cục tắc lên não.</span>
+          </div>
+        </a>
+
+        <a href="/tra-cuu/04-kiem-chung-an-cung-nguu-hoang-hoan/" class="card myth-card">
+          <div class="myth-wrong">
+            <Fragment set:html={renderIcon('ban', 22)} />
+            <span>Cạy miệng đút An Cung Ngưu Hoàng Hoàn / nước gừng</span>
+          </div>
+          <div class="myth-right">
+            <Fragment set:html={renderIcon('shieldCheck', 22)} />
+            <span>ANGONG TRIAL âm tính; người đột quỵ liệt nuốt rất dễ sặc thẳng vào phổi gây tử vong.</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- STROKE UNIT DIRECTORY BANNER -->
+    <section class="card hospital-cta-card" aria-label="Tra cứu bệnh viện đột quỵ">
+      <div>
+        <span class="badge badge-teal">Tra cứu Offline 3 miền</span>
+        <h2>Danh bạ các Bệnh viện & Đơn vị Đột quỵ gần nhất</h2>
+        <p class="muted-sub">
+          Biết trước bệnh viện nào quanh nhà ông bà có chụp CT sọ não, tiêm Tiêu sợi huyết (IVT) và Lấy huyết khối cơ học 24/7 (EVT).
+        </p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:0.65rem;">
+        <a href="/benh-vien/" class="btn btn-primary">
+          <Fragment set:html={renderIcon('hospital', 20)} />
+          <span>Mở Danh bạ Bệnh viện</span>
+        </a>
+        <a href="/ho-so/" class="btn btn-outline">
+          <Fragment set:html={renderIcon('userCard', 20)} />
+          <span>Điền sẵn Thẻ Y Tế Gia Đình</span>
+        </a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .home-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+  .hero-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    align-items: stretch;
+  }
+  @media (min-width: 940px) {
+    .hero-split {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+  }
+  .hero-sos-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .sos-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--golden);
+  }
+  .sos-lead {
+    color: rgba(255, 255, 255, 0.96);
+    font-size: var(--fs-base);
+  }
+  .sos-cta-group {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: auto;
+  }
+  .sos-main-btn {
+    min-height: 68px;
+    font-size: var(--fs-lg);
+  }
+  .sos-secondary-btn {
+    min-height: 58px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    color: #FFFFFF !important;
+  }
+  .sos-foot {
+    font-size: var(--fs-xs);
+    color: rgba(255, 255, 255, 0.92);
+    margin: 0.2rem 0 0;
+  }
+  .hero-search-panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    gap: 0.75rem;
+  }
+  .hero-sub {
+    color: var(--ink-secondary);
+    margin-bottom: 0.25rem;
+  }
+  .section-heading {
+    margin-bottom: 0.9rem;
+  }
+  .section-head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .muted-sub {
+    color: var(--ink-secondary);
+    margin: 0;
+  }
+  .doors-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+  @media (min-width: 820px) {
+    .doors-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .door-card {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    color: var(--ink-primary) !important;
+    border-top-width: 5px;
+  }
+  .door-red { border-top-color: var(--emergency); }
+  .door-warn { border-top-color: var(--warn); }
+  .door-teal { border-top-color: var(--primary); }
+  .door-card p {
+    color: var(--ink-secondary);
+    font-size: var(--fs-sm);
+  }
+  .door-go {
+    margin-top: auto;
+    padding-top: 0.35rem;
+    font-weight: 800;
+    color: var(--primary-ink);
+  }
+  [data-theme="dark"] .door-go,
+  [data-theme="system"] .door-go {
+    color: var(--primary);
+  }
+
+  .befast-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+  @media (min-width: 680px) {
+    .befast-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .befast-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+
+  .sub-eyebrow {
+    font-size: var(--fs-base);
+    color: var(--emergency-ink);
+    margin: 1.25rem 0 0.75rem;
+  }
+
+  .redflags-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 680px) {
+    .redflags-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1060px) {
+    .redflags-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+
+  .sign-tile {
+    min-height: 112px;
+    padding: 0.9rem;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--border-soft);
+    background: var(--bg-subtle);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  .sign-tile:hover,
+  .sign-tile[aria-expanded="true"] {
+    border-color: var(--primary);
+    background: var(--bg-card);
+  }
+  .sign-tile.is-time,
+  .sign-tile.is-redflag {
+    border-color: var(--emergency-border);
+  }
+  .sign-letter {
+    font-size: var(--fs-xl);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--primary);
+  }
+  .sign-tile.is-time .sign-letter {
+    color: var(--emergency-ink);
+  }
+  .sign-title {
+    font-size: var(--fs-base);
+    color: var(--ink-primary);
+  }
+  .sign-desc {
+    font-size: var(--fs-xs);
+    color: var(--ink-secondary);
+    line-height: 1.4;
+  }
+  .sign-drawer {
+    margin-top: 1rem;
+    padding: 1.1rem;
+    border-radius: var(--r-md);
+    border: 2px solid var(--primary);
+    background: var(--bg-page);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .sign-drawer-content {
+    flex: 1;
+    min-width: 240px;
+  }
+  .drawer-title {
+    display: block;
+    font-size: var(--fs-md);
+    margin-bottom: 0.3rem;
+  }
+  .drawer-body {
+    margin: 0;
+    color: var(--ink-secondary);
+  }
+  .sign-drawer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .myth-card {
+    padding: 0;
+    overflow: hidden;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .myth-wrong {
+    padding: 0.95rem 1.1rem;
+    background: var(--emergency-soft);
+    color: var(--emergency-ink);
+    font-weight: 800;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+  .myth-right {
+    padding: 0.95rem 1.1rem;
+    color: var(--ink-primary);
+    font-size: var(--fs-sm);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    flex: 1;
+  }
+  .hospital-cta-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+</style>
+
+<script>
+  import {
+    loadVault,
+    logRecordAction,
+    isRecordStale,
+    formatClockVi,
+    formatRelativeVi,
+    type TestRecord,
+  } from '../lib/history-store';
+  import { triggerCall115 } from '../lib/native-bridge';
+
+  // 1. Sign detail drawer controller
+  const rawCards = document.getElementById('sign-cards-json')?.textContent || '[]';
+  const signCards: any[] = JSON.parse(rawCards);
+  const drawer = document.getElementById('sign-detail-drawer');
+  const dTitle = document.getElementById('drawer-sign-title');
+  const dBody = document.getElementById('drawer-sign-body');
+  const btnCloseDrawer = document.getElementById('btn-close-drawer');
+
+  document.querySelectorAll('[data-sign-id]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = (btn as HTMLElement).dataset.signId;
+      const found = signCards.find((c) => c.id === id);
+      if (!found || !drawer || !dTitle || !dBody) return;
+      document.querySelectorAll('[data-sign-id]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+      btn.setAttribute('aria-expanded', 'true');
+      dTitle.textContent = `${found.shortCode} — ${found.name}`;
+      dBody.textContent = found.detail;
+      drawer.classList.remove('hidden');
+    });
+  });
+
+  btnCloseDrawer?.addEventListener('click', () => {
+    drawer?.classList.add('hidden');
+    document.querySelectorAll('[data-sign-id]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  });
+
+  // 2. Render Recent History Card & Unresolved Urgent Follow-Up Banner (Rules H1, H2, H3, H6)
+  async function renderHomeHistory() {
+    const zone = document.getElementById('home-history-zone');
+    const pendingEl = document.getElementById('home-pending-banner');
+    const lastCard = document.getElementById('home-last-record-card');
+    if (!zone || !pendingEl || !lastCard) return;
+
+    const { vault } = await loadVault();
+    const validRecords = vault.records.filter((r) => r.outcome !== 'abandoned');
+    if (validRecords.length === 0) {
+      zone.classList.add('hidden');
+      return;
+    }
+
+    zone.classList.remove('hidden');
+    const now = Date.now();
+
+    // Check unresolved positive (<24h) or TIA (<48h)
+    const pendingRec = validRecords.find((r) => {
+      const ageHrs = (now - new Date(r.finishedAt).getTime()) / 3600000;
+      const resolved = r.actions.some(
+        (a) => a.type === 'marked_called_115' || a.type === 'marked_hospital_visited'
+      );
+      if (resolved) return false;
+      if ((r.outcome === 'emergency' || r.outcome === 'uncertain') && ageHrs <= 24) return true;
+      if (r.outcome === 'tia_warning' && ageHrs <= 48) return true;
+      return false;
+    });
+
+    if (pendingRec) {
+      const isTia = pendingRec.outcome === 'tia_warning';
+      pendingEl.className = 'care-card ' + (isTia ? 'level-urgent' : 'level-emergency');
+      pendingEl.innerHTML = `
+        <div class="care-card-header">
+          <span>${isTia ? 'Cảnh báo TIA chưa xác nhận đi khám' : 'Cảnh báo dấu hiệu cấp chưa xác nhận gọi 115'}</span>
+        </div>
+        <div class="care-card-body" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+          <p style="margin:0;">
+            Lúc <strong>${formatClockVi(pendingRec.finishedAt)}</strong> (${pendingRec.personLabel || 'Người kiểm tra'}): ghi nhận <strong>${
+              isTia ? 'dấu hiệu xuất hiện rồi tự hết (nghi TIA)' : pendingRec.positiveSigns.join(', ') || 'dấu hiệu nghi ngờ'
+            }</strong>. ${isTia ? 'Cần đưa tới Khoa Cấp cứu Đơn vị Đột quỵ ngay!' : 'Đã gọi cấp cứu 115 chưa?'}
+          </p>
+          <div style="display:flex; flex-wrap:wrap; gap:0.55rem;">
+            <a href="tel:115" data-pending-call="${pendingRec.id}" class="btn btn-emergency">Gọi 115 ngay</a>
+            <button type="button" data-pending-ack="${pendingRec.id}" class="btn btn-outline">Đã vào viện / Đã đi khám</button>
+          </div>
+        </div>
+      `;
+      pendingEl.classList.remove('hidden');
+    } else {
+      pendingEl.classList.add('hidden');
+    }
+
+    // Last record summary card — Rule H1 (always show timestamp + stale notice >2h) & Rule H2 (NO green / NO "Bình thường")
+    const latest: TestRecord = validRecords[0];
+    const stale = isRecordStale(latest.finishedAt, 2);
+    const outcomeText =
+      latest.outcome === 'emergency' || latest.outcome === 'uncertain'
+        ? `Có dấu hiệu nghi ngờ (${latest.positiveSigns.join(', ') || 'cần gọi 115'})`
+        : latest.outcome === 'tia_warning'
+        ? 'Có dấu hiệu vừa tự hết (Cảnh báo sớm TIA — cần cấp cứu ngay)'
+        : latest.outcome.startsWith('risk_')
+        ? `Đánh giá nguy cơ nền: ${latest.riskLevelLabel || 'Đã lưu'}`
+        : 'Chưa thấy dấu hiệu thường gặp tại thời điểm kiểm tra (Không loại trừ đột quỵ)';
+
+    lastCard.innerHTML = `
+      <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.85rem;">
+        <div style="display:grid; gap:0.25rem;">
+          <span class="badge ${
+            latest.outcome === 'emergency' || latest.outcome === 'uncertain'
+              ? 'badge-red'
+              : latest.outcome === 'tia_warning'
+              ? 'badge-warn'
+              : 'badge-teal'
+          }" style="justify-self:start;">
+            LẦN KIỂM TRA GẦN NHẤT · ${latest.personLabel || 'Chưa chọn tên'}
+          </span>
+          <strong style="font-size:var(--fs-base);">
+            Lúc ${formatClockVi(latest.finishedAt)} (${formatRelativeVi(latest.finishedAt)}): ${outcomeText}
+          </strong>
+          ${
+            stale
+              ? `<span style="color:var(--warn-ink); font-weight:700; font-size:var(--fs-sm);">Kết quả đã hơn 2 giờ trước — tình trạng có thể đã thay đổi. Hãy kiểm tra lại ngay nếu còn lo lắng.</span>`
+              : ''
+          }
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
+          <a href="/kiem-tra/" class="btn btn-primary">Kiểm tra lại ngay</a>
+          <a href="/kiem-tra/#tab-history" class="btn btn-outline">Lịch sử (${validRecords.length})</a>
+        </div>
+      </div>
+    `;
+    lastCard.classList.remove('hidden');
+
+    pendingEl.querySelector('[data-pending-call]')?.addEventListener('click', async (e) => {
+      e.preventDefault();
+      await logRecordAction(pendingRec!.id, 'tapped_call_115');
+      triggerCall115();
+    });
+    pendingEl.querySelector('[data-pending-ack]')?.addEventListener('click', async () => {
+      await logRecordAction(pendingRec!.id, 'marked_hospital_visited');
+      renderHomeHistory();
+    });
+  }
+
+  renderHomeHistory();
+</script>

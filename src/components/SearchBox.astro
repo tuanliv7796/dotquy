@@ -1,0 +1,273 @@
+---
+import { getCollection } from 'astro:content';
+import { renderIcon } from './icons/Icons';
+
+interface Props {
+  inputId?: string;
+  placeholder?: string;
+  initialQuery?: string;
+}
+
+const {
+  inputId = 'medical-search-input',
+  placeholder = 'Gõ có dấu hoặc không dấu: đớ lưỡi, trúng gió, hạ huyết áp, chích máu, an cung, tắm đêm...',
+  initialQuery = '',
+} = Astro.props;
+
+const entries = await getCollection('articles');
+const corpus = entries
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((entry) => ({
+    slug: entry.id.replace(/\.md$/, ''),
+    title: entry.data.title,
+    category: entry.data.category,
+    categoryLabel: entry.data.categoryLabel,
+    actionLevel: entry.data.actionLevel,
+    keywords: entry.data.keywords,
+    tldr15s: entry.data.tldr15s,
+  }));
+
+const quickChips = [
+  { label: 'trúng gió', q: 'trúng gió' },
+  { label: 'đớ lưỡi', q: 'đớ lưỡi' },
+  { label: 'hạ huyết áp', q: 'hạ huyết áp' },
+  { label: 'chích máu ngón tay', q: 'chích máu ngón tay' },
+  { label: 'an cung', q: 'an cung' },
+  { label: 'rối loạn tiền đình', q: 'rối loạn tiền đình' },
+  { label: 'tắm đêm', q: 'tắm đêm' },
+];
+---
+
+<div class="search-widget" data-search-widget>
+  <label for={inputId} class="sr-only">Tìm kiếm triệu chứng, cách sơ cứu hoặc kiểm chứng mẹo dân gian</label>
+  <div class="search-bar-box">
+    <span class="search-lead-ic">
+      <Fragment set:html={renderIcon('search', 22)} />
+    </span>
+    <input
+      id={inputId}
+      type="search"
+      class="search-field"
+      value={initialQuery}
+      placeholder={placeholder}
+      autocomplete="off"
+      data-search-input
+    />
+    <button
+      type="button"
+      class="search-mic-btn"
+      data-search-voice
+      aria-label="Tìm kiếm bằng giọng nói tiếng Việt"
+    >
+      <Fragment set:html={renderIcon('mic', 20)} />
+    </button>
+  </div>
+
+  <div class="search-chips-row" aria-label="Từ khóa tra cứu nhanh">
+    <span class="chips-caption">Chạm tra cứu ngay:</span>
+    {quickChips.map((chip) => (
+      <button type="button" class="chip" data-search-chip={chip.q}>
+        {chip.label}
+      </button>
+    ))}
+  </div>
+
+  <!-- Live In-Place Search Output (Never hijacks or hides the search input!) -->
+  <div class="search-live-panel" data-search-output aria-live="polite"></div>
+
+  <script type="application/json" data-search-corpus set:html={JSON.stringify(corpus)}></script>
+</div>
+
+<style>
+  .search-widget {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.8rem;
+  }
+  .search-bar-box {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: var(--r-lg);
+    padding: 0.35rem 0.45rem 0.35rem 0.95rem;
+    min-height: 60px;
+  }
+  .search-bar-box:focus-within {
+    box-shadow: 0 0 0 4px var(--primary-soft);
+  }
+  .search-lead-ic {
+    color: var(--primary);
+    display: grid;
+    place-items: center;
+  }
+  .search-field {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    border: none;
+    background: transparent;
+    font-size: var(--fs-base);
+    font-weight: 600;
+    color: var(--ink-primary);
+    outline: none;
+  }
+  .search-mic-btn {
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--border-soft);
+    background: var(--primary-soft);
+    color: var(--primary-ink);
+    display: grid;
+    place-items: center;
+  }
+  .search-chips-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .chips-caption {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--ink-muted);
+  }
+  .search-live-panel {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .search-live-panel:empty {
+    display: none;
+  }
+</style>
+
+<script>
+  import { runMedicalSafetySearch, type SearchableArticle } from '../lib/search-engine';
+  import { triggerCall115 } from '../lib/native-bridge';
+
+  function escapeHtml(str: string): string {
+    return str.replace(/[&<>"']/g, (ch) =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch] || ch)
+    );
+  }
+
+  document.querySelectorAll('[data-search-widget]').forEach((widget) => {
+    const input = widget.querySelector('[data-search-input]') as HTMLInputElement | null;
+    const output = widget.querySelector('[data-search-output]') as HTMLElement | null;
+    const voiceBtn = widget.querySelector('[data-search-voice]') as HTMLButtonElement | null;
+    const corpusEl = widget.querySelector('[data-search-corpus]');
+    if (!input || !output || !corpusEl) return;
+
+    let corpus: SearchableArticle[] = [];
+    try {
+      corpus = JSON.parse(corpusEl.textContent || '[]');
+    } catch {
+      corpus = [];
+    }
+
+    const renderQuery = (raw: string) => {
+      if (!raw.trim()) {
+        output.innerHTML = '';
+        return;
+      }
+      const res = runMedicalSafetySearch(raw, corpus, 7);
+      let html = '';
+
+      if (res.understoodSynonyms.length > 0) {
+        html += `<div class="syn-bar" style="display:flex; flex-wrap:wrap; gap:0.45rem; align-items:center; font-size:var(--fs-xs);">
+          <strong style="color:var(--ink-muted);">Đã hiểu từ dân gian:</strong>
+          ${res.understoodSynonyms
+            .map((s) => `<span class="badge badge-gold">${escapeHtml(s)}</span>`)
+            .join('')}
+        </div>`;
+      }
+
+      // Render Layer 1 Safety Interceptor Red Cards at position #0!
+      for (const b of res.banners) {
+        html += `
+          <div class="safety-search-alert" data-safety-banner="${b.kind}" style="background:var(--emergency-soft); border:2.5px solid var(--emergency); border-radius:var(--r-lg); padding:1rem 1.15rem; display:grid; gap:0.65rem;">
+            <strong style="color:var(--emergency-ink); font-size:var(--fs-md); line-height:1.3;">${escapeHtml(b.title)}</strong>
+            <p style="margin:0; color:var(--ink-primary); font-size:var(--fs-sm);">${escapeHtml(b.message)}</p>
+            <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
+              <a href="tel:115" data-search-call115="true" class="btn btn-emergency" style="padding:0.55rem 1rem;">Gọi 115 ngay</a>
+              <a href="${b.primaryCtaHref}" class="btn btn-outline" style="padding:0.55rem 1rem;">${escapeHtml(b.primaryCtaLabel)}</a>
+              ${
+                b.secondaryArticleSlug
+                  ? `<a href="/tra-cuu/${b.secondaryArticleSlug}/" class="btn btn-outline" style="padding:0.55rem 1rem;">${escapeHtml(b.secondaryArticleLabel || 'Đọc chi tiết')}</a>`
+                  : ''
+              }
+            </div>
+          </div>
+        `;
+      }
+
+      if (res.results.length > 0) {
+        html += `<div style="display:grid; gap:0.55rem;">
+          ${res.results
+            .map(
+              (item) => `
+            <a href="/tra-cuu/${item.slug}/" class="card" style="padding:0.9rem 1.1rem; text-decoration:none; display:grid; gap:0.25rem; min-height:60px;">
+              <span class="badge ${item.actionLevel === 'emergency' ? 'badge-red' : item.actionLevel === 'urgent_today' ? 'badge-warn' : 'badge-teal'}" style="justify-self:start;">
+                ${escapeHtml(item.categoryLabel)}
+              </span>
+              <strong style="color:var(--ink-primary); font-size:var(--fs-base);">${escapeHtml(item.title)}</strong>
+              <span style="color:var(--ink-secondary); font-size:var(--fs-sm);">${escapeHtml(item.tldr15s[0] || '')}</span>
+            </a>
+          `
+            )
+            .join('')}
+        </div>`;
+      } else if (res.banners.length === 0) {
+        html += `<div class="card" style="padding:1rem;">
+          <p style="margin:0; color:var(--ink-secondary);">Chưa tìm thấy bài khớp chính xác với "${escapeHtml(raw)}". Nếu có bất kỳ dấu hiệu thần kinh lạ khởi phát đột ngột, hãy bấm <strong>Gọi 115</strong> hoặc mở <a href="/so-cuu/" style="display:inline-flex; align-items:center; min-height:48px; padding-inline:0.4rem;">Sơ cứu 0 giây</a>.</p>
+        </div>`;
+      }
+
+      output.innerHTML = html;
+    };
+
+    input.addEventListener('input', () => renderQuery(input.value));
+
+    widget.querySelectorAll('[data-search-chip]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const q = (chip as HTMLElement).dataset.searchChip || '';
+        input.value = q;
+        renderQuery(q);
+      });
+    });
+
+    output.addEventListener('click', (e) => {
+      const callEl = (e.target as HTMLElement | null)?.closest('[data-search-call115]');
+      if (callEl) {
+        e.preventDefault();
+        triggerCall115();
+      }
+    });
+
+    voiceBtn?.addEventListener('click', () => {
+      const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SR) {
+        output.innerHTML = `<div class="card" style="padding:0.9rem;"><p style="margin:0;">Trình duyệt này chưa hỗ trợ nhận diện giọng nói trực tiếp. Bạn hãy chạm chọn một trong các nút từ khóa bên trên hoặc gõ không dấu.</p></div>`;
+        return;
+      }
+      const rec = new SR();
+      rec.lang = 'vi-VN';
+      rec.interimResults = false;
+      voiceBtn.setAttribute('aria-busy', 'true');
+      rec.onresult = (ev: any) => {
+        const transcript = ev.results?.[0]?.[0]?.transcript || '';
+        input.value = transcript;
+        renderQuery(transcript);
+      };
+      rec.onend = () => voiceBtn.removeAttribute('aria-busy');
+      rec.onerror = () => voiceBtn.removeAttribute('aria-busy');
+      rec.start();
+    });
+
+    if (input.value.trim()) {
+      renderQuery(input.value);
+    }
+  });
+</script>

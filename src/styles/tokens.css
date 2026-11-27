@@ -1,0 +1,297 @@
+/* ==========================================================================
+   DESIGN TOKENS v3.0 — CẨM NANG ĐỘT QUỴ (ĐỘT QUỴ 115)
+   100% Offline Be Vietnam Pro • WCAG 2.2 AA+/AAA Verified • Senior-Safe
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/be-vietnam-pro-vietnamese-400-normal.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/be-vietnam-pro-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('/fonts/be-vietnam-pro-vietnamese-600-normal.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('/fonts/be-vietnam-pro-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('/fonts/be-vietnam-pro-vietnamese-700-normal.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 700;
+  src: url('/fonts/be-vietnam-pro-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url('/fonts/be-vietnam-pro-vietnamese-800-normal.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 800;
+  src: url('/fonts/be-vietnam-pro-latin-800-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Strict Typography Scale — Floor guaranteed >= 14px at all times */
+  --fs-xs: max(14px, 0.8rem);
+  --fs-sm: max(15.5px, 0.889rem);
+  --fs-base: 1rem;            /* 18px at default scale */
+  --fs-md: 1.111rem;          /* 20px */
+  --fs-lg: 1.25rem;           /* 22.5px */
+  --fs-xl: 1.556rem;          /* 28px */
+  --fs-2xl: clamp(1.75rem, 3.6vw, 2.35rem);
+  --fs-sos: clamp(1.65rem, 4vw, 2.15rem);
+
+  /* Radii & Spacing */
+  --r-sm: 12px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 28px;
+  --r-pill: 999px;
+
+  /* Default Warm Alabaster Palette (Reduces cataract glare for seniors) */
+  --bg-page: #FAF9F6;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F1F5F4;
+  --bg-elevated: #FFFFFF;
+  --border-soft: #CBD5E1;
+  --border-strong: #64748B;
+
+  --ink-primary: #0F172A;     /* 16.9:1 AAA */
+  --ink-secondary: #334155;   /* 9.8:1 AAA */
+  --ink-muted: #475569;       /* 7.1:1 AAA */
+
+  /* Primary Healing Teal — 7.58:1 AAA with white */
+  --primary: #115E59;
+  --primary-hover: #0F4C48;
+  --on-primary: #FFFFFF;
+  --primary-soft: #E6F4F1;
+  --primary-ink: #0F4C48;     /* 8.9:1 AAA on primary-soft */
+
+  /* Emergency Crimson — Strictly reserved for 115 & Harm Blockers */
+  --emergency: #B91C1C;       /* 6.47:1 with white */
+  --emergency-hover: #991B1B;
+  --on-emergency: #FFFFFF;
+  --emergency-soft: #FEF2F2;
+  --emergency-border: #DC2626;
+  --emergency-ink: #991B1B;   /* 7.6:1 AAA on emergency-soft */
+
+  /* Golden Hour Time Tokens — 9.5:1 AAA */
+  --golden: #F0B323;
+  --on-golden: #1A1200;
+  --golden-soft: #FEF7E0;
+  --golden-ink: #714B00;      /* 6.8:1 on golden-soft */
+  --late-window: #991B1B;
+  --very-late-window: #5C1010;
+
+  /* TIA Urgent Warning & Anticoagulant Highlight */
+  --warn: #B45309;            /* 5.02:1 with white */
+  --on-warn: #FFFFFF;
+  --warn-soft: #FFFBEB;
+  --warn-border: #D97706;
+  --warn-ink: #92400E;        /* 6.8:1 on warn-soft */
+
+  /* Safe Action ("Việc cần làm ngay" ONLY — NEVER for negative test verdicts) */
+  --do-safe: #15803D;         /* 5.02:1 with white */
+  --on-do: #FFFFFF;
+  --do-soft: #F0FDF4;
+  --do-border: #16A34A;
+  --do-ink: #14532D;          /* 8.6:1 AAA on do-soft */
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 10px 26px -6px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+/* System Dark Preference (when data-theme="system") */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="system"] {
+    --bg-page: #0C141A;
+    --bg-card: #132029;
+    --bg-subtle: #1B2C38;
+    --bg-elevated: #182834;
+    --border-soft: #2B4050;
+    --border-strong: #64748B;
+
+    --ink-primary: #F1F5F9;
+    --ink-secondary: #CBD5E1;
+    --ink-muted: #94A3B8;
+
+    --primary: #2DD4BF;
+    --primary-hover: #5EEAD4;
+    --on-primary: #042F2E;
+    --primary-soft: #113433;
+    --primary-ink: #5EEAD4;
+
+    --emergency: #DC2626;
+    --emergency-hover: #B91C1C;
+    --on-emergency: #FFFFFF;
+    --emergency-soft: #2A1215;
+    --emergency-border: #EF4444;
+    --emergency-ink: #FCA5A5;
+
+    --golden: #F5C451;
+    --on-golden: #1A1200;
+    --golden-soft: #2B230F;
+    --golden-ink: #FDE68A;
+
+    --warn: #F59E0B;
+    --on-warn: #1A1200;
+    --warn-soft: #2C1F0B;
+    --warn-border: #F59E0B;
+    --warn-ink: #FCD34D;
+
+    --do-safe: #4ADE80;
+    --on-do: #052E16;
+    --do-soft: #0F291A;
+    --do-border: #22C55E;
+    --do-ink: #86EFAC;
+
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 14px 32px rgba(0, 0, 0, 0.45);
+    color-scheme: dark;
+  }
+}
+
+/* Explicit Night Theme */
+:root[data-theme="dark"] {
+  --bg-page: #0C141A;
+  --bg-card: #132029;
+  --bg-subtle: #1B2C38;
+  --bg-elevated: #182834;
+  --border-soft: #2B4050;
+  --border-strong: #64748B;
+
+  --ink-primary: #F1F5F9;
+  --ink-secondary: #CBD5E1;
+  --ink-muted: #94A3B8;
+
+  --primary: #2DD4BF;
+  --primary-hover: #5EEAD4;
+  --on-primary: #042F2E;
+  --primary-soft: #113433;
+  --primary-ink: #5EEAD4;
+
+  --emergency: #DC2626;
+  --emergency-hover: #B91C1C;
+  --on-emergency: #FFFFFF;
+  --emergency-soft: #2A1215;
+  --emergency-border: #EF4444;
+  --emergency-ink: #FCA5A5;
+
+  --golden: #F5C451;
+  --on-golden: #1A1200;
+  --golden-soft: #2B230F;
+  --golden-ink: #FDE68A;
+
+  --warn: #F59E0B;
+  --on-warn: #1A1200;
+  --warn-soft: #2C1F0B;
+  --warn-border: #F59E0B;
+  --warn-ink: #FCD34D;
+
+  --do-safe: #4ADE80;
+  --on-do: #052E16;
+  --do-soft: #0F291A;
+  --do-border: #22C55E;
+  --do-ink: #86EFAC;
+
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 14px 32px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* Explicit High-Contrast AAA Mode (Outdoor Glare / Cataracts / Low Vision) */
+:root[data-theme="contrast"] {
+  --bg-page: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F1F5F9;
+  --bg-elevated: #FFFFFF;
+  --border-soft: #000000;
+  --border-strong: #000000;
+
+  --ink-primary: #000000;     /* 21:1 */
+  --ink-secondary: #0F172A;   /* 17.8:1 */
+  --ink-muted: #1E293B;       /* 13.5:1 */
+
+  --primary: #064E3B;         /* 9.6:1 AAA */
+  --primary-hover: #022C22;
+  --on-primary: #FFFFFF;
+  --primary-soft: #ECFDF5;
+  --primary-ink: #022C22;
+
+  --emergency: #991B1B;       /* 8.3:1 AAA */
+  --emergency-hover: #7F1D1D;
+  --on-emergency: #FFFFFF;
+  --emergency-soft: #FFFFFF;
+  --emergency-border: #991B1B;
+  --emergency-ink: #7F1D1D;
+
+  --warn: #92400E;            /* 7.0:1 AAA */
+  --on-warn: #FFFFFF;
+  --warn-soft: #FFFFFF;
+  --warn-border: #92400E;
+  --warn-ink: #78350F;
+
+  --do-safe: #14532D;         /* 9.1:1 AAA */
+  --on-do: #FFFFFF;
+  --do-soft: #FFFFFF;
+  --do-border: #14532D;
+  --do-ink: #052E16;
+
+  --shadow-sm: none;
+  --shadow-md: none;
+}
+
+/* 3 Live Font Scale Levels (Respects OS 200% Font Scaling via %) */
+html {
+  font-size: 112.5%; /* 18px default */
+}
+html[data-scale="lg"] {
+  font-size: 131.25%; /* 21px */
+}
+html[data-scale="xl"] {
+  font-size: 150%; /* 24px */
+}

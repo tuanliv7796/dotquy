@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_115"
+        android:shortcutId="call_115_now"
+        android:shortcutLongLabel="@string/shortcut_call115_long"
+        android:shortcutShortLabel="@string/shortcut_call115_short">
+        <intent
+            android:action="android.intent.action.DIAL"
+            android:data="tel:115" />
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_115"
+        android:shortcutId="emergency_so_cuu"
+        android:shortcutLongLabel="@string/shortcut_socuu_long"
+        android:shortcutShortLabel="@string/shortcut_socuu_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="dotquy115://so-cuu/"
+            android:targetClass="vn.dotquy115.app.MainActivity"
+            android:targetPackage="vn.dotquy115.app" />
+    </shortcut>
+
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_stat_115"
+        android:shortcutId="quick_check_60s"
+        android:shortcutLongLabel="@string/shortcut_kiemtra_long"
+        android:shortcutShortLabel="@string/shortcut_kiemtra_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="dotquy115://kiem-tra/"
+            android:targetClass="vn.dotquy115.app.MainActivity"
+            android:targetPackage="vn.dotquy115.app" />
+    </shortcut>
+</shortcuts>

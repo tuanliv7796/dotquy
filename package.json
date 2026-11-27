@@ -1,0 +1,30 @@
+{
+  "name": "cam-nang-dot-quy-115",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Cẩm Nang Đột Quỵ — Sơ cứu & Phòng bệnh (Website chuẩn SEO + Ứng dụng Android Đột Quỵ 115 hỗ trợ Offline-First & OTA Sync)",
+  "scripts": {
+    "dev": "astro dev",
+    "build:astro": "astro build",
+    "build:ota": "node scripts/pack-ota-bundle.mjs",
+    "build": "npm run build:astro && npm run build:ota",
+    "preview": "astro preview --port 4321",
+    "cap:sync": "npx cap sync android",
+    "apk:debug": "npm run build && npx cap sync android && ./android/gradlew -p android assembleDebug",
+    "apk:release": "npm run build && npx cap sync android && ./android/gradlew -p android assembleRelease",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.6.11",
+    "@capacitor/core": "^7.6.11",
+    "astro": "^5.18.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.6.11",
+    "@fontsource/be-vietnam-pro": "^5.3.0",
+    "@playwright/test": "^1.52.0",
+    "jszip": "^3.10.1",
+    "typescript": "^5.8.2"
+  }
+}

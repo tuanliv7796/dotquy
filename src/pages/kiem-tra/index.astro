@@ -1,0 +1,1285 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { renderIcon } from '../../components/icons/Icons';
+import {
+  ACUTE_CHECK_STEPS,
+  MODIFIABLE_RISK_FACTORS,
+  TARGETED_SCREENING_PROFILES,
+} from '../../data/triage-tests';
+---
+
+<BaseLayout
+  title="Kiểm tra nhanh Đột quỵ, Cơn thoáng qua TIA & Nguy cơ nền"
+  currentNav="test"
+>
+  <div class="container test-hub-stack">
+    <header class="hub-header">
+      <h1>Trung tâm Kiểm tra An toàn Đa trục</h1>
+      <p class="hub-sub">
+        Tách bạch rõ ràng giữa <strong>Kiểm tra triệu chứng cấp đang diễn ra</strong>, <strong>Tầm soát cơn thoáng qua vừa tự hết (TIA)</strong> và <strong>Đánh giá nguy cơ phòng ngừa dài hạn</strong>.
+      </p>
+
+      <div class="hub-tabs" role="tablist" aria-label="Chọn bài kiểm tra">
+        <button type="button" role="tab" id="tabbtn-acute" class="chip active" data-hub-tab="acute" aria-selected="true">
+          1. Kiểm tra dấu hiệu ngay (60s)
+        </button>
+        <button type="button" role="tab" id="tabbtn-tia" class="chip" data-hub-tab="tia" aria-selected="false">
+          2. Dấu hiệu vừa tự hết? (TIA)
+        </button>
+        <button type="button" role="tab" id="tabbtn-risk" class="chip" data-hub-tab="risk" aria-selected="false">
+          3. Nguy cơ của tôi (3 phút)
+        </button>
+        <button type="button" role="tab" id="tabbtn-history" class="chip" data-hub-tab="history" aria-selected="false">
+          Lịch sử kiểm tra
+        </button>
+      </div>
+    </header>
+
+    <!-- ======================================================================
+         PANEL 1: ACUTE STROKE CHECK (6 SAFE STEPS + TRUE 0s SHORT-CIRCUIT)
+         ====================================================================== -->
+    <section id="panel-acute" role="tabpanel" aria-labelledby="tabbtn-acute" class="tab-panel">
+      <!-- Hyperacute Bypass Banner -->
+      <div class="care-card level-emergency" style="margin-top:0;">
+        <div class="care-card-header">
+          <Fragment set:html={renderIcon('phone', 20)} />
+          <span>Không cần làm bài kiểm tra — GỌI 115 NGAY LẬP TỨC nếu:</span>
+        </div>
+        <div class="care-card-body" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+          <p style="margin:0;">
+            Người bệnh đang <strong>bất tỉnh, khó thở / thở ngáp cá, lên cơn co giật, nôn vọt lơ mơ</strong> hoặc <strong>đau đầu dữ dội như sét đánh</strong>!
+          </p>
+          <a href="/so-cuu/" class="btn btn-emergency">Vào thẳng Sơ cứu & Gọi 115</a>
+        </div>
+      </div>
+
+      <!-- Active Question Card (Visible while answering Steps 1..6) -->
+      <div id="acute-question-card" class="card question-card">
+        <div class="q-top-bar">
+          <span id="acute-step-indicator" class="badge badge-teal">Bước 1 / 6</span>
+          <div class="q-progress-dots" id="acute-progress-dots" aria-hidden="true">
+            {ACUTE_CHECK_STEPS.map((st, idx) => (
+              <span class={`q-dot ${idx === 0 ? 'current' : ''}`} data-dot-idx={idx}>{st.code}</span>
+            ))}
+          </div>
+          <button type="button" id="btn-acute-speak" class="icon-action-btn" aria-label="Nghe đọc câu hỏi này">
+            <Fragment set:html={renderIcon('speaker', 20)} />
+            <span>Đọc câu hỏi</span>
+          </button>
+        </div>
+
+        <h2 id="acute-q-title" class="q-title"></h2>
+
+        <div class="q-how-box">
+          <strong class="q-how-label">CÁCH KIỂM TRA AN TOÀN TẠI CHỖ:</strong>
+          <p id="acute-q-how" style="margin:0;"></p>
+
+          <!-- Speech Sentence Helper (Shown on Step 3) -->
+          <div id="acute-speech-box" class="q-tool-box hidden">
+            <span class="q-tool-caption">Câu chuẩn tiếng Việt để người bệnh đọc to:</span>
+            <blockquote id="acute-speech-text" class="speech-quote"></blockquote>
+          </div>
+
+          <!-- 10-Second Arm Drift Countdown Helper (Shown on Step 2) -->
+          <div id="acute-timer-box" class="q-tool-box hidden">
+            <div>
+              <span class="q-tool-caption">Đồng hồ đếm 10 giây giơ thẳng hai tay:</span>
+              <strong id="acute-timer-display" class="timer-readout tabular">10.0 giây</strong>
+            </div>
+            <button type="button" id="btn-start-10s" class="btn btn-primary">
+              <Fragment set:html={renderIcon('clock', 20)} />
+              <span>Bấm đếm 10 giây</span>
+            </button>
+          </div>
+        </div>
+
+        <p id="acute-q-prompt" class="q-prompt"></p>
+
+        <!-- 3 Answer Buttons (>=72px, Neutral Icons — NEVER ✓ or ✕!) -->
+        <div class="answer-grid">
+          <button type="button" class="ans-btn ans-yes" data-acute-ans="yes">
+            <Fragment set:html={renderIcon('alert', 24)} />
+            <span>Có dấu hiệu</span>
+          </button>
+
+          <button type="button" class="ans-btn ans-no" data-acute-ans="no">
+            <Fragment set:html={renderIcon('circleHollow', 24)} />
+            <span>Chưa thấy</span>
+          </button>
+
+          <button type="button" class="ans-btn ans-unsure" data-acute-ans="unsure">
+            <Fragment set:html={renderIcon('question', 22)} />
+            <span>Không chắc (Xử trí an toàn như Có dấu hiệu)</span>
+          </button>
+        </div>
+
+        <div class="q-footer-nav">
+          <button type="button" id="btn-acute-prev" class="btn btn-outline" disabled>
+            ← Câu trước
+          </button>
+          <button type="button" id="btn-acute-restart-inline" class="btn btn-outline">
+            Làm lại từ Bước 1
+          </button>
+        </div>
+      </div>
+
+      <!-- Result Panel — STRICTLY HIDDEN UNTIL ANSWERED (Fixes G1!) -->
+      <div id="acute-result-panel" class="hidden" aria-live="polite">
+        <!-- Slot for 48h TIA Resolved Alert (Rule H3 — Always pinned ABOVE neutral verdict!) -->
+        <div id="acute-tia-48h-alert" class="hidden"></div>
+
+        <!-- Dynamic Verdict Card (Emergency Red OR Neutral Gray — NEVER Green / NEVER "Bình thường") -->
+        <div id="acute-verdict-card" class="card"></div>
+
+        <!-- Explicit 1-Tap Person Attribution Bar (Rule H9 — Prevents Family Cross-Contamination) -->
+        <div class="card person-assign-card" style="margin-top:1rem;">
+          <strong>Lưu kết quả này vào hồ sơ của ai? (Giúp đối chiếu diễn biến 48h & Thẻ bác sĩ):</strong>
+          <div id="acute-person-chips" class="chips-wrap" style="margin-top:0.55rem;"></div>
+          <p id="acute-save-status" class="save-note"></p>
+        </div>
+
+        <!-- Candidate LKW Suggestion from Prior Negative Check (Rule H5 — Only on Positive after prior Negative) -->
+        <div id="acute-candidate-lkw-box" class="card hidden" style="margin-top:1rem; border-color:var(--golden);"></div>
+      </div>
+
+      <script type="application/json" id="acute-steps-json" set:html={JSON.stringify(ACUTE_CHECK_STEPS)}></script>
+    </section>
+
+    <!-- ======================================================================
+         PANEL 2: RESOLVED SYMPTOMS / TIA CHECK (<48 HOURS)
+         ====================================================================== -->
+    <section id="panel-tia" role="tabpanel" aria-labelledby="tabbtn-tia" class="tab-panel hidden">
+      <div class="card">
+        <span class="badge badge-warn">1 phút · Cảnh báo sớm Cơn thiếu máu não thoáng qua (TIA)</span>
+        <h2 style="margin-top:0.45rem;">Trong 48 giờ qua, có dấu hiệu nào xuất hiện đột ngột rồi TỰ HẾT không?</h2>
+        <p style="color:var(--ink-secondary);">
+          Ví dụ: đột nhiên méo miệng, tê yếu một tay/chân, nói đớ líu lưỡi, mờ tối sầm 1 mắt như rèm kéo hoặc chóng mặt dữ dội kéo dài 2–15 phút rồi tự hồi phục như chưa từng có chuyện gì.
+        </p>
+
+        <div class="answer-grid two-col" style="margin-block:1rem;">
+          <button type="button" class="ans-btn ans-yes" data-tia-choice="yes">
+            <Fragment set:html={renderIcon('alert', 24)} />
+            <span>Có xuất hiện, rồi đã tự hết</span>
+          </button>
+          <button type="button" class="ans-btn ans-no" data-tia-choice="no">
+            <Fragment set:html={renderIcon('circleHollow', 24)} />
+            <span>Không có triệu chứng nào như vậy</span>
+          </button>
+        </div>
+
+        <!-- TIA Positive Urgent Alert + Optional 4-Question Log for Doctor -->
+        <div id="tia-positive-box" class="hidden" aria-live="polite">
+          <div class="care-card level-emergency">
+            <div class="care-card-header">
+              <Fragment set:html={renderIcon('alert', 22)} />
+              <span>CẤP CỨU KHẨN NGAY LẬP TỨC — ĐỪNG CHỜ CHIỀU TỐI HAY NGÀY MAI!</span>
+            </div>
+            <div class="care-card-body">
+              <p>
+                Dấu hiệu tự hết chính là <strong>Cơn thiếu máu não thoáng qua (TIA)</strong> — cục máu đông vừa bít mạch não rồi tạm trôi đi. Nguy cơ tái tắc gây đột quỵ liệt vĩnh viễn dồn cực mạnh vào <strong>vài giờ đến 48 giờ đầu</strong>!
+              </p>
+              <div class="do-dont-split">
+                <div class="guard-do">
+                  <div class="guard-do-title">VIỆC CẦN LÀM NGAY</div>
+                  <ul class="guard-list">
+                    <li>Đưa thẳng tới <strong>Khoa Cấp cứu bệnh viện có Đơn vị Đột quỵ</strong> ngay lập tức (Gọi 115 hoặc đi ô tô cấp cứu ngay).</li>
+                    <li>Nếu triệu chứng tái phát lại dù chỉ thoáng nhẹ: gọi 115 ngay!</li>
+                  </ul>
+                </div>
+                <div class="guard-dont">
+                  <div class="guard-dont-title">TUYỆT ĐỐI CẤM</div>
+                  <ul class="guard-list">
+                    <li><strong>CẤM để người bệnh tự lái xe</strong> máy hay ô tô đi khám.</li>
+                    <li><strong>CẤM tự mua Aspirin hay An Cung uống</strong> trước khi chụp CT/MRI.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div style="display:flex; flex-wrap:wrap; gap:0.65rem; margin-top:0.85rem;">
+                <a href="tel:115" class="btn btn-emergency" data-call-115="true">Gọi 115 ngay</a>
+                <a href="/benh-vien/" class="btn btn-primary">Xem Đơn vị Đột quỵ gần nhất</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="background:var(--bg-subtle); margin-top:1rem;">
+            <h3>Ghi nhanh chi tiết cơn thoáng qua cho bác sĩ (Tùy chọn, không chặn cuộc gọi):</h3>
+            <div class="tia-form-grid">
+              <label>
+                <span>Triệu chứng lúc bị (ví dụ: tê tay phải, mờ mắt trái):</span>
+                <input type="text" id="tia-signs-input" class="text-input" placeholder="Ghi ngắn gọn dấu hiệu vừa tự hết..." />
+              </label>
+              <label>
+                <span>Kéo dài khoảng bao lâu?</span>
+                <select id="tia-duration-select" class="text-input">
+                  <option value="lt5m">Dưới 5 phút</option>
+                  <option value="5_15m" selected>5 – 15 phút</option>
+                  <option value="15_60m">15 – 60 phút</option>
+                  <option value="gt60m">Hơn 1 giờ</option>
+                  <option value="unknown">Không nhớ rõ</option>
+                </select>
+              </label>
+              <label>
+                <span>Bên nào của cơ thể?</span>
+                <select id="tia-side-select" class="text-input">
+                  <option value="unknown">Chưa rõ / Cả hai</option>
+                  <option value="left">Bên trái</option>
+                  <option value="right">Bên phải</option>
+                </select>
+              </label>
+            </div>
+            <button type="button" id="btn-save-tia-log" class="btn btn-primary" style="margin-top:0.85rem;">
+              Lưu vào Thẻ Bàn Giao Bác Sĩ
+            </button>
+            <p id="tia-save-msg" class="save-note"></p>
+          </div>
+        </div>
+
+        <div id="tia-negative-box" class="card hidden" style="background:var(--bg-subtle);">
+          <strong>Chưa ghi nhận cơn thoáng qua trong 48 giờ qua.</strong>
+          <p style="margin:0.35rem 0 0.75rem; color:var(--ink-secondary);">
+            Nếu hiện tại đang có bất kỳ dấu hiệu lạ nào mới xảy ra, hãy chuyển sang bài <strong>Kiểm tra dấu hiệu ngay</strong>; nếu đang hoàn toàn khỏe mạnh, bạn có thể đánh giá <strong>Nguy cơ của tôi</strong> để chủ động phòng bệnh.
+          </p>
+          <button type="button" class="btn btn-primary" data-jump-tab="risk">Mở bài "Nguy cơ của tôi" →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         PANEL 3: BASELINE STROKE RISK & TARGETED SCREENING (WHEN ASYMPTOMATIC)
+         ====================================================================== -->
+    <section id="panel-risk" role="tabpanel" aria-labelledby="tabbtn-risk" class="tab-panel hidden">
+      <div class="risk-layout">
+        <div class="card">
+          <span class="badge badge-teal">Dành cho người đang khỏe mạnh không có triệu chứng cấp</span>
+          <h2 style="margin-top:0.4rem;">Đánh giá Yếu tố Nguy cơ Mạch máu Não</h2>
+          <p style="color:var(--ink-secondary); font-size:var(--fs-sm);">
+            Đánh dấu các yếu tố hiện có ở bạn hoặc người thân. Sau đó thử tắt/bật để xem mức nguy cơ giảm xuống như thế nào khi thay đổi lối sống & điều trị đúng!
+          </p>
+
+          <div class="age-row">
+            <label for="risk-age-select"><strong>Nhóm tuổi hiện tại:</strong></label>
+            <select id="risk-age-select" class="text-input" style="max-width:260px;">
+              <option value="0">Dưới 45 tuổi</option>
+              <option value="2">45 – 59 tuổi</option>
+              <option value="4" selected>60 – 74 tuổi</option>
+              <option value="6">Từ 75 tuổi trở lên</option>
+            </select>
+          </div>
+
+          <div class="risk-factors-list" id="risk-factors-list">
+            {MODIFIABLE_RISK_FACTORS.map((rf) => (
+              <button
+                type="button"
+                class="risk-toggle-row"
+                data-risk-key={rf.key}
+                data-risk-weight={rf.weight}
+                aria-pressed="false"
+              >
+                <div class="risk-toggle-text">
+                  <strong>{rf.label}</strong>
+                  <span class="risk-note">{rf.evidenceNote}</span>
+                  <span class="risk-target">Mục tiêu giảm nguy cơ: {rf.targetAction}</span>
+                </div>
+                <span class="risk-pill-state">Đang TẮT</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div class="card risk-gauge-panel">
+          <span class="badge badge-teal">Đồng hồ Phân tầng Nguy cơ Nền (Ước tính giáo dục sức khỏe)</span>
+          <div class="gauge-wrap">
+            <svg viewBox="0 0 260 152" width="100%" style="max-width:290px; display:block; margin-inline:auto;">
+              <path d="M 25 130 A 105 105 0 0 1 62 49" fill="none" stroke="#15803D" stroke-width="22" />
+              <path d="M 65 47 A 105 105 0 0 1 128 25" fill="none" stroke="#F0B323" stroke-width="22" />
+              <path d="M 132 25 A 105 105 0 0 1 195 47" fill="none" stroke="#D97706" stroke-width="22" />
+              <path d="M 198 49 A 105 105 0 0 1 235 130" fill="none" stroke="#B91C1C" stroke-width="22" />
+              <g id="risk-gauge-needle" transform="rotate(-68, 130, 130)" style="transition: transform 0.4s ease;">
+                <line x1="130" y1="130" x2="130" y2="42" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+                <circle cx="130" cy="130" r="8.5" fill="currentColor" />
+              </g>
+            </svg>
+            <div class="gauge-labels">
+              <span>Thấp</span>
+              <span>Trung bình</span>
+              <span>Cao</span>
+              <span>Rất cao</span>
+            </div>
+          </div>
+
+          <div id="risk-verdict-box" class="risk-verdict-box">
+            <span class="ho-label">MỨC NGUY CƠ NỀN HIỆN TẠI:</span>
+            <strong id="risk-level-title" style="font-size:var(--fs-xl); display:block;">Trung bình</strong>
+            <p id="risk-level-advice" style="margin:0.4rem 0 0.85rem; color:var(--ink-secondary);"></p>
+            <button type="button" id="btn-save-risk-record" class="btn btn-primary" style="width:100%;">
+              Lưu mức nguy cơ này vào Lịch sử theo dõi
+            </button>
+            <p id="risk-save-msg" class="save-note"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Targeted Screening Roadmap (NÊN làm vs KHÔNG lạm dụng) -->
+      <div class="card" style="margin-top:1.35rem;">
+        <h2>Lộ trình Tầm soát Có Đích: Xét nghiệm NÊN làm & KHÔNG nên lạm dụng (AHA 2024 & USPSTF)</h2>
+        <div class="screening-grid">
+          {TARGETED_SCREENING_PROFILES.map((sp) => (
+            <div class="screening-card">
+              <h3>{sp.group}</h3>
+              <p class="scr-do"><strong>NÊN LÀM:</strong> {sp.shouldDo}</p>
+              <p class="scr-dont"><strong>KHÔNG LẠM DỤNG:</strong> {sp.doNotAbuse}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         PANEL 4: ENCRYPTED LOCAL TEST HISTORY (RULES H1–H9)
+         ====================================================================== -->
+    <section id="panel-history" role="tabpanel" aria-labelledby="tabbtn-history" class="tab-panel hidden">
+      <div class="card">
+        <div class="section-head-row">
+          <div>
+            <h2>Lịch sử các lần kiểm tra trên thiết bị này</h2>
+            <p style="margin:0; color:var(--ink-secondary); font-size:var(--fs-sm);">
+              Dữ liệu chỉ lưu cục bộ trên máy của bạn (mã hóa phần cứng AndroidKeyStore trên bản .apk), không tải lên máy chủ đám mây.
+            </p>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:0.55rem;">
+            <button type="button" id="btn-export-history" class="btn btn-outline">
+              <Fragment set:html={renderIcon('download', 20)} />
+              <span>Xuất tệp JSON</span>
+            </button>
+            <button type="button" id="btn-clear-history" class="btn btn-warn">
+              Xóa tất cả lịch sử
+            </button>
+          </div>
+        </div>
+
+        <div id="history-filter-bar" class="chips-wrap" style="margin-block:1rem;"></div>
+        <div id="history-records-container" class="history-list"></div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .test-hub-stack {
+    display: grid;
+    gap: 1.35rem;
+  }
+  .hub-sub {
+    color: var(--ink-secondary);
+    margin-bottom: 1rem;
+  }
+  .hub-tabs,
+  .chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+  .question-card {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .q-top-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+  }
+  .q-progress-dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+  .q-dot {
+    min-width: 34px;
+    height: 34px;
+    padding-inline: 0.35rem;
+    border-radius: 10px;
+    background: var(--bg-subtle);
+    color: var(--ink-muted);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    display: grid;
+    place-items: center;
+  }
+  .q-dot.current {
+    background: var(--primary);
+    color: var(--on-primary);
+  }
+  .q-dot.done {
+    background: var(--primary-soft);
+    color: var(--primary-ink);
+  }
+  .q-how-box {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--r-md);
+    padding: 1rem 1.15rem;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .q-how-label {
+    font-size: var(--fs-xs);
+    color: var(--primary-ink);
+    letter-spacing: 0.04em;
+  }
+  [data-theme="dark"] .q-how-label { color: var(--primary); }
+  .q-tool-box {
+    background: var(--bg-card);
+    border: 1.5px dashed var(--primary);
+    border-radius: var(--r-md);
+    padding: 0.9rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .q-tool-caption {
+    display: block;
+    font-size: var(--fs-xs);
+    color: var(--ink-muted);
+    font-weight: 700;
+  }
+  .speech-quote {
+    margin: 0.25rem 0 0;
+    font-size: var(--fs-lg);
+    font-weight: 800;
+    color: var(--primary-ink);
+  }
+  [data-theme="dark"] .speech-quote { color: var(--primary); }
+  .timer-readout {
+    font-size: var(--fs-xl);
+    color: var(--primary-ink);
+  }
+  [data-theme="dark"] .timer-readout { color: var(--primary); }
+  .q-prompt {
+    font-size: var(--fs-lg);
+    font-weight: 800;
+    margin: 0;
+  }
+  .answer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  @media (min-width: 680px) {
+    .answer-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .ans-unsure {
+      grid-column: 1 / -1;
+    }
+  }
+  .ans-btn {
+    min-height: 72px;
+    padding: 0.9rem 1.15rem;
+    border-radius: var(--r-lg);
+    font-weight: 800;
+    font-size: var(--fs-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: var(--bg-card);
+    border: 2.5px solid var(--border-strong);
+  }
+  .ans-yes {
+    border-color: var(--emergency);
+    color: var(--emergency-ink);
+    background: var(--emergency-soft);
+  }
+  .ans-no {
+    border-color: var(--primary);
+    color: var(--primary-ink);
+  }
+  [data-theme="dark"] .ans-no { color: var(--primary); }
+  .ans-unsure {
+    min-height: 58px;
+    font-size: var(--fs-base);
+    color: var(--ink-secondary);
+  }
+  .q-footer-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-soft);
+  }
+  .save-note {
+    margin: 0.45rem 0 0;
+    font-size: var(--fs-xs);
+    color: var(--ink-muted);
+    font-weight: 600;
+  }
+
+  .tia-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+    margin-top: 0.75rem;
+  }
+  @media (min-width: 780px) {
+    .tia-form-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+  .tia-form-grid label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+  .text-input {
+    min-height: 50px;
+    padding: 0.55rem 0.85rem;
+    border-radius: var(--r-sm);
+    border: 1.5px solid var(--border-strong);
+    background: var(--bg-card);
+    width: 100%;
+  }
+
+  .risk-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+  @media (min-width: 920px) {
+    .risk-layout {
+      grid-template-columns: 7fr 5fr;
+    }
+  }
+  .age-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-block: 0.85rem;
+  }
+  .risk-factors-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .risk-toggle-row {
+    width: 100%;
+    min-height: 76px;
+    padding: 0.9rem 1rem;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--border-soft);
+    background: var(--bg-subtle);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+  }
+  .risk-toggle-row[aria-pressed="true"] {
+    border: 2px solid var(--warn);
+    background: var(--warn-soft);
+  }
+  .risk-toggle-text {
+    display: grid;
+    gap: 0.25rem;
+  }
+  .risk-note {
+    font-size: var(--fs-xs);
+    color: var(--ink-secondary);
+  }
+  .risk-target {
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    color: var(--primary-ink);
+  }
+  [data-theme="dark"] .risk-target { color: var(--primary); }
+  .risk-pill-state {
+    min-height: 36px;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--r-pill);
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .gauge-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    color: var(--ink-secondary);
+    margin-top: 0.25rem;
+  }
+  .risk-verdict-box {
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: var(--r-md);
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-soft);
+  }
+  .screening-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    margin-top: 1rem;
+  }
+  @media (min-width: 820px) {
+    .screening-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .screening-card {
+    padding: 1rem 1.15rem;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--border-soft);
+    background: var(--bg-subtle);
+    display: grid;
+    gap: 0.45rem;
+  }
+  .scr-do {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--ink-primary);
+  }
+  .scr-dont {
+    margin: 0;
+    font-size: var(--fs-sm);
+    color: var(--emergency-ink);
+  }
+  .history-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+</style>
+
+<script>
+  import {
+    loadVault,
+    saveVault,
+    addTestRecord,
+    assignRecordToPerson,
+    detect48hTiaResolvedPattern,
+    findCandidateLkwFromHistory,
+    formatClockVi,
+    formatRelativeVi,
+    makeUuid,
+    type StepAnswer,
+    type TestRecord,
+  } from '../../lib/history-store';
+  import { writeLkwState } from '../../lib/lkw-clock';
+  import { playMetronomeClick, vibrateDevice, scheduleLocalRecheck } from '../../lib/native-bridge';
+
+  // Tab switching
+  const tabMap: Record<string, string> = {
+    acute: 'panel-acute',
+    tia: 'panel-tia',
+    risk: 'panel-risk',
+    history: 'panel-history',
+  };
+
+  function switchHubTab(tabKey: string) {
+    Object.entries(tabMap).forEach(([k, panelId]) => {
+      const btn = document.querySelector(`[data-hub-tab="${k}"]`);
+      const panel = document.getElementById(panelId);
+      const active = k === tabKey;
+      btn?.classList.toggle('active', active);
+      btn?.setAttribute('aria-selected', active ? 'true' : 'false');
+      panel?.classList.toggle('hidden', !active);
+    });
+    if (tabKey === 'history') renderHistoryList('all');
+  }
+
+  document.querySelectorAll('[data-hub-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const key = (btn as HTMLElement).dataset.hubTab || 'acute';
+      switchHubTab(key);
+    });
+  });
+  document.querySelectorAll('[data-jump-tab]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      switchHubTab((btn as HTMLElement).dataset.jumpTab || 'risk');
+    });
+  });
+
+  if (window.location.hash === '#tab-tia') switchHubTab('tia');
+  else if (window.location.hash === '#tab-risk') switchHubTab('risk');
+  else if (window.location.hash === '#tab-history') switchHubTab('history');
+
+  // =========================================================================
+  // 1. ACUTE 6-STEP ENGINE WITH TRUE 0s SHORT-CIRCUIT (Fixes K1, G1, G2, G3, K2, K5)
+  // =========================================================================
+  const acuteSteps = JSON.parse(document.getElementById('acute-steps-json')?.textContent || '[]');
+  let stepIdx = 0;
+  let startedIso = new Date().toISOString();
+  let answers: Record<string, StepAnswer> = {};
+  let timer10sHandle: number | null = null;
+  let currentRecordId = '';
+
+  function clear10sTimer() {
+    if (timer10sHandle !== null) {
+      window.clearInterval(timer10sHandle);
+      timer10sHandle = null;
+    }
+    const disp = document.getElementById('acute-timer-display');
+    if (disp) disp.textContent = '10.0 giây';
+  }
+
+  function renderAcuteStep() {
+    clear10sTimer();
+    const step = acuteSteps[stepIdx];
+    if (!step) return;
+
+    document.getElementById('acute-question-card')?.classList.remove('hidden');
+    document.getElementById('acute-result-panel')?.classList.add('hidden');
+
+    const ind = document.getElementById('acute-step-indicator');
+    const title = document.getElementById('acute-q-title');
+    const how = document.getElementById('acute-q-how');
+    const prompt = document.getElementById('acute-q-prompt');
+    const speechBox = document.getElementById('acute-speech-box');
+    const speechText = document.getElementById('acute-speech-text');
+    const timerBox = document.getElementById('acute-timer-box');
+    const prevBtn = document.getElementById('btn-acute-prev') as HTMLButtonElement | null;
+
+    if (ind) ind.textContent = `Bước ${step.stepNumber} / ${acuteSteps.length} · ${step.badge}`;
+    if (title) title.textContent = step.title;
+    if (how) how.textContent = step.safeInstruction;
+    if (prompt) prompt.textContent = step.question;
+
+    if (step.speechSample) {
+      speechBox?.classList.remove('hidden');
+      if (speechText) speechText.textContent = `“${step.speechSample}”`;
+    } else {
+      speechBox?.classList.add('hidden');
+    }
+
+    if (step.hasTenSecTimer) {
+      timerBox?.classList.remove('hidden');
+    } else {
+      timerBox?.classList.add('hidden');
+    }
+
+    if (prevBtn) prevBtn.disabled = stepIdx === 0;
+
+    document.querySelectorAll('[data-dot-idx]').forEach((dot) => {
+      const idx = parseInt((dot as HTMLElement).dataset.dotIdx || '0', 10);
+      dot.className = 'q-dot ' + (idx === stepIdx ? 'current' : idx < stepIdx ? 'done' : '');
+    });
+  }
+
+  document.getElementById('btn-start-10s')?.addEventListener('click', () => {
+    clear10sTimer();
+    let tenths = 100;
+    const disp = document.getElementById('acute-timer-display');
+    timer10sHandle = window.setInterval(() => {
+      tenths--;
+      if (tenths <= 0) {
+        clear10sTimer();
+        playMetronomeClick(980, 0.12);
+        vibrateDevice([50]);
+        if (disp) disp.textContent = 'Hết 10 giây — Kiểm tra xem một tay có rơi thấp xuống không!';
+      } else if (disp) {
+        disp.textContent = `${(tenths / 10).toFixed(1)} giây`;
+      }
+    }, 100);
+  });
+
+  document.getElementById('btn-acute-speak')?.addEventListener('click', () => {
+    const step = acuteSteps[stepIdx];
+    if (!step) return;
+    const txt = `Bước ${step.stepNumber}. ${step.title}. ${step.safeInstruction}. ${
+      step.speechSample ? 'Câu đọc mẫu: ' + step.speechSample : ''
+    } ${step.question}`;
+    (window as any).__dotquySpeak?.(txt);
+  });
+
+  async function finalizeAcuteTest(outcome: 'emergency' | 'uncertain' | 'no_common_signs', triggeredSign?: string) {
+    clear10sTimer();
+    document.getElementById('acute-question-card')?.classList.add('hidden');
+    const resPanel = document.getElementById('acute-result-panel');
+    const verdictCard = document.getElementById('acute-verdict-card');
+    const tia48Alert = document.getElementById('acute-tia-48h-alert');
+    const candLkwBox = document.getElementById('acute-candidate-lkw-box');
+    resPanel?.classList.remove('hidden');
+    tia48Alert?.classList.add('hidden');
+    candLkwBox?.classList.add('hidden');
+
+    // Fill remaining unanswered steps as 'not_asked'
+    for (const st of acuteSteps) {
+      if (!answers[st.code]) answers[st.code] = 'not_asked';
+    }
+
+    const finishedIso = new Date().toISOString();
+    const posSigns = triggeredSign ? [triggeredSign] : [];
+
+    // Rule H8: Render verdict IMMEDIATELY (0ms synchronous DOM update) BEFORE any async storage I/O!
+    if (outcome === 'emergency' || outcome === 'uncertain') {
+      vibrateDevice([70, 80, 70]);
+      writeLkwState({ activeSigns: posSigns });
+      if (verdictCard) {
+        verdictCard.className = 'card-sos';
+        verdictCard.innerHTML = `
+          <span class="badge badge-gold">CẮT MẠCH KHẨN CẤP · BÁO ĐỘNG ĐỎ ĐỘT QUỴ</span>
+          <h2 style="margin-top:0.4rem;">
+            ${outcome === 'emergency' ? 'Phát hiện dấu hiệu nghi ngờ đột quỵ cấp!' : 'Dấu hiệu chưa chắc chắn — Phải xử trí an toàn như đột quỵ cấp!'}
+          </h2>
+          <p>
+            Đã ghi nhận tại bước kiểm tra: <strong>${triggeredSign || 'Triệu chứng thần kinh mới'}</strong>. Đừng làm tiếp các câu sau — mỗi phút trôi qua não mất 1,9 triệu tế bào thần kinh!
+          </p>
+          <div style="display:grid; gap:0.75rem; margin-top:0.95rem;">
+            <a href="/so-cuu/" class="btn btn-white-red" style="min-height:68px; width:100%; font-size:var(--fs-lg);">
+              GỌI 115 & MỞ SƠ CỨU NGAY →
+            </a>
+            <button type="button" id="btn-reset-from-verdict" class="btn sos-secondary-btn" style="width:100%; background:transparent; border:2px solid #FFF; color:#FFF !important;">
+              Kiểm tra lại từ đầu
+            </button>
+          </div>
+        `;
+      }
+    } else {
+      // STRICTLY NEUTRAL NEGATIVE RESULT — NO GREEN, NO "BÌNH THƯỜNG / AN TOÀN / ỔN" (Rule H2 & Gate 3!)
+      if (verdictCard) {
+        verdictCard.className = 'card';
+        verdictCard.style.borderWidth = '2px';
+        verdictCard.style.borderColor = 'var(--border-strong)';
+        verdictCard.innerHTML = `
+          <span class="badge badge-teal">KẾT QUẢ TẠI THỜI ĐIỂM ${formatClockVi(finishedIso)}</span>
+          <h2 style="margin-top:0.4rem;">Chưa thấy các dấu hiệu đột quỵ thường gặp</h2>
+          <p style="font-weight:700; color:var(--emergency-ink);">
+            Lưu ý bắt buộc: Kết quả này KHÔNG loại trừ 100% đột quỵ! Không một bài kiểm tra tại nhà nào thay thế được bác sĩ và chụp CT/MRI sọ não.
+          </p>
+          <p style="color:var(--ink-secondary);">
+            Nếu người bệnh vẫn có bất kỳ thay đổi thần kinh lạ nào mới khởi phát đột ngột (hoặc triệu chứng vừa xuất hiện vài phút trước rồi tự hết), hãy gọi ngay <strong>115</strong>.
+          </p>
+
+          <div style="background:var(--bg-subtle); border-radius:var(--r-md); padding:0.9rem 1rem; margin-block:0.85rem;">
+            <strong style="display:block; margin-bottom:0.45rem;">Nhắc kiểm tra lại (Chỉ dành cho kết quả chưa thấy dấu hiệu):</strong>
+            <div style="display:flex; flex-wrap:wrap; gap:0.55rem;">
+              <button type="button" class="chip" data-recheck-mins="15">Nhắc sau 15 phút</button>
+              <button type="button" class="chip" data-recheck-mins="60">Nhắc sau 1 giờ</button>
+            </div>
+            <p id="recheck-feedback" class="save-note"></p>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:0.65rem;">
+            <button type="button" id="btn-jump-tia-from-neg" class="btn btn-warn">Dấu hiệu vừa tự hết? Kiểm tra TIA</button>
+            <a href="tel:115" class="btn btn-emergency" data-call-115="true">Vẫn lo lắng → Gọi 115</a>
+            <button type="button" id="btn-reset-from-verdict" class="btn btn-outline">Làm lại bài kiểm tra</button>
+          </div>
+        `;
+      }
+    }
+
+    document.getElementById('btn-reset-from-verdict')?.addEventListener('click', restartAcuteTest);
+    document.getElementById('btn-jump-tia-from-neg')?.addEventListener('click', () => switchHubTab('tia'));
+
+    const { vault } = await loadVault();
+    // Rule H9: Only auto-assign if strictly 1 profile exists; otherwise require explicit 1-tap confirmation!
+    const initialPerson =
+      vault.profiles.length === 1
+        ? { id: vault.profiles[0].id, label: vault.profiles[0].label }
+        : { id: 'unassigned', label: 'Chưa chọn tên' };
+
+    const rec: TestRecord = {
+      id: makeUuid(),
+      schema: 1,
+      test: 'acute_befast',
+      testVersion: 'befast-6steps-v3.0',
+      personId: initialPerson.id,
+      personLabel: initialPerson.label,
+      startedAt: startedIso,
+      finishedAt: finishedIso,
+      answers: { ...answers },
+      positiveSigns: posSigns,
+      outcome,
+      actions: [],
+    };
+    currentRecordId = rec.id;
+    const saveRes = await addTestRecord(rec);
+
+    const saveNote = document.getElementById('acute-save-status');
+    if (saveNote) {
+      saveNote.textContent = saveRes.saved
+        ? `Đã tự động lưu lúc ${formatClockVi(rec.finishedAt)}.`
+        : 'Lần này chưa lưu được vào bộ nhớ máy, nhưng kết quả bên trên vẫn đầy đủ.';
+    }
+
+    // Wire person confirmation chips & run Rule H3 (48h TIA Resolved) / Rule H5 (Candidate LKW)
+    const personWrap = document.getElementById('acute-person-chips');
+    const evaluatePersonHistoryHooks = (pid: string, plabel: string, allRecords: TestRecord[]) => {
+      if (outcome === 'no_common_signs') {
+        const priorPos = detect48hTiaResolvedPattern(allRecords, currentRecordId, pid);
+        if (priorPos && tia48Alert) {
+          tia48Alert.className = 'care-card level-emergency';
+          tia48Alert.innerHTML = `
+            <div class="care-card-header">CẢNH BÁO MẪU "CÓ RỒI TỰ HẾT" TRONG 48 GIỜ QUA (NGHI TIA)!</div>
+            <div class="care-card-body">
+              <p>
+                Lúc <strong>${formatClockVi(priorPos.finishedAt)}</strong> hồ sơ của <strong>${plabel}</strong> đã ghi nhận dấu hiệu (<strong>${
+                  priorPos.positiveSigns.join(', ') || 'nghi ngờ đột quỵ'
+                }</strong>), dù hiện tại không còn thấy nữa! Triệu chứng tự hết VẪN LÀ CẤP CỨU KHẨN — cần đến ngay Khoa Cấp cứu có Đơn vị Đột quỵ!
+              </p>
+              <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
+                <a href="tel:115" class="btn btn-emergency" data-call-115="true">Gọi 115 ngay</a>
+                <a href="/benh-vien/" class="btn btn-primary">Xem Bệnh viện Đột quỵ</a>
+              </div>
+            </div>
+          `;
+          tia48Alert.classList.remove('hidden');
+        }
+      } else {
+        const priorNeg = findCandidateLkwFromHistory(allRecords, currentRecordId, pid);
+        if (priorNeg && candLkwBox) {
+          const tClock = formatClockVi(priorNeg.finishedAt);
+          candLkwBox.innerHTML = `
+            <strong>Gợi ý thu hẹp mốc Giờ Vàng (Last Known Well) từ lịch sử kiểm tra:</strong>
+            <p style="margin:0.35rem 0 0.75rem; color:var(--ink-secondary);">
+              Lúc <strong>${tClock}</strong> hôm nay bạn từng kiểm tra cho <strong>${plabel}</strong> và chưa thấy dấu hiệu. Có phải <strong>${tClock}</strong> là lần cuối thấy ${plabel} hoàn toàn bình thường không?
+            </p>
+            <button type="button" id="btn-confirm-cand-lkw" class="btn btn-primary">
+              Xác nhận ${tClock} là giờ LKW & Sang Sơ cứu
+            </button>
+          `;
+          candLkwBox.classList.remove('hidden');
+          document.getElementById('btn-confirm-cand-lkw')?.addEventListener('click', () => {
+            writeLkwState({
+              mode: 'known',
+              lkwTimestampMs: new Date(priorNeg.finishedAt).getTime(),
+              activePersonId: pid,
+            });
+            window.location.href = '/so-cuu/';
+          });
+        }
+      }
+    };
+
+    if (personWrap) {
+      personWrap.innerHTML =
+        saveRes.vault.profiles
+          .map(
+            (p) =>
+              `<button type="button" class="chip" data-assign-person="${p.id}" data-assign-label="${p.label}" aria-pressed="${
+                p.id === initialPerson.id ? 'true' : 'false'
+              }">${p.label}</button>`
+          )
+          .join('') +
+        `<button type="button" class="chip" data-assign-person="other" data-assign-label="Người khác" aria-pressed="false">Người khác</button>`;
+
+      personWrap.querySelectorAll('[data-assign-person]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          personWrap.querySelectorAll('[data-assign-person]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+          btn.setAttribute('aria-pressed', 'true');
+          const el = btn as HTMLElement;
+          const pid = el.dataset.assignPerson || 'other';
+          const plabel = el.dataset.assignLabel || 'Người khác';
+          const updatedVault = await assignRecordToPerson(currentRecordId, pid, plabel);
+          writeLkwState({ activePersonId: pid });
+          if (saveNote) saveNote.textContent = `Đã gắn kết quả lúc ${formatClockVi(rec.finishedAt)} vào hồ sơ "${plabel}".`;
+          evaluatePersonHistoryHooks(pid, plabel, updatedVault.records);
+        });
+      });
+
+      if (initialPerson.id !== 'unassigned') {
+        evaluatePersonHistoryHooks(initialPerson.id, initialPerson.label, saveRes.vault.records);
+      }
+    }
+
+    document.getElementById('btn-reset-from-verdict')?.addEventListener('click', restartAcuteTest);
+    document.getElementById('btn-jump-tia-from-neg')?.addEventListener('click', () => switchHubTab('tia'));
+    document.querySelectorAll('[data-recheck-mins]').forEach((rb) => {
+      rb.addEventListener('click', async () => {
+        const mins = parseInt((rb as HTMLElement).dataset.recheckMins || '15', 10);
+        const out = await scheduleLocalRecheck(mins, rec.personLabel || 'người thân');
+        const fb = document.getElementById('recheck-feedback');
+        if (fb) fb.textContent = out.note;
+      });
+    });
+  }
+
+  function restartAcuteTest() {
+    stepIdx = 0;
+    startedIso = new Date().toISOString();
+    answers = {};
+    renderAcuteStep();
+  }
+
+  // Answer click handler — IMMEDIATE SHORT-CIRCUIT ON 'yes' OR 'unsure' (Gate 1!)
+  document.querySelectorAll('[data-acute-ans]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const val = (btn as HTMLElement).dataset.acuteAns as StepAnswer;
+      const curStep = acuteSteps[stepIdx];
+      if (!curStep) return;
+      answers[curStep.code] = val;
+
+      if (val === 'yes') {
+        finalizeAcuteTest('emergency', curStep.signLabel);
+        return;
+      }
+      if (val === 'unsure') {
+        finalizeAcuteTest('uncertain', `Chưa chắc: ${curStep.signLabel}`);
+        return;
+      }
+
+      if (stepIdx < acuteSteps.length - 1) {
+        stepIdx++;
+        renderAcuteStep();
+      } else {
+        finalizeAcuteTest('no_common_signs');
+      }
+    });
+  });
+
+  document.getElementById('btn-acute-prev')?.addEventListener('click', () => {
+    if (stepIdx > 0) {
+      stepIdx--;
+      renderAcuteStep();
+    }
+  });
+  document.getElementById('btn-acute-restart-inline')?.addEventListener('click', restartAcuteTest);
+
+  renderAcuteStep();
+
+  // =========================================================================
+  // 2. TIA RESOLVED CHECK CONTROLLER
+  // =========================================================================
+  document.querySelectorAll('[data-tia-choice]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const choice = (btn as HTMLElement).dataset.tiaChoice;
+      const posBox = document.getElementById('tia-positive-box');
+      const negBox = document.getElementById('tia-negative-box');
+      if (choice === 'yes') {
+        posBox?.classList.remove('hidden');
+        negBox?.classList.add('hidden');
+        vibrateDevice([60, 60]);
+        await addTestRecord({
+          id: makeUuid(),
+          schema: 1,
+          test: 'tia_resolved',
+          testVersion: 'tia-v3.0',
+          personId: 'unassigned',
+          personLabel: 'Người kiểm tra TIA',
+          startedAt: new Date().toISOString(),
+          finishedAt: new Date().toISOString(),
+          answers: { TIA: 'yes' },
+          positiveSigns: ['Triệu chứng xuất hiện rồi tự hết (nghi TIA)'],
+          outcome: 'tia_warning',
+          actions: [],
+        });
+      } else {
+        posBox?.classList.add('hidden');
+        negBox?.classList.remove('hidden');
+      }
+    });
+  });
+
+  document.getElementById('btn-save-tia-log')?.addEventListener('click', async () => {
+    const signsText = (document.getElementById('tia-signs-input') as HTMLInputElement | null)?.value?.trim() || 'Dấu hiệu thoáng qua tự hết';
+    const dur = (document.getElementById('tia-duration-select') as HTMLSelectElement | null)?.value as any;
+    const side = (document.getElementById('tia-side-select') as HTMLSelectElement | null)?.value as any;
+    await addTestRecord({
+      id: makeUuid(),
+      schema: 1,
+      test: 'tia_resolved',
+      testVersion: 'tia-v3.0',
+      personId: 'unassigned',
+      personLabel: 'Ghi chú TIA',
+      startedAt: new Date().toISOString(),
+      finishedAt: new Date().toISOString(),
+      answers: { TIA: 'yes' },
+      positiveSigns: [`TIA tự hết: ${signsText} (${dur}, bên ${side})`],
+      outcome: 'tia_warning',
+      resolvedDetails: { signs: [signsText], onsetDesc: 'Trong 48h qua', duration: dur, side },
+      actions: [],
+    });
+    writeLkwState({ activeSigns: [`TIA vừa tự hết: ${signsText}`] });
+    const msg = document.getElementById('tia-save-msg');
+    if (msg) msg.textContent = 'Đã lưu thông tin cơn thoáng qua vào Thẻ Bàn Giao Bác Sĩ!';
+  });
+
+  // =========================================================================
+  // 3. BASELINE RISK CALCULATOR (4 LEVELS — ZERO ARBITRARY DECIMALS)
+  // =========================================================================
+  const activeRisks = new Set<string>();
+  const ageSelect = document.getElementById('risk-age-select') as HTMLSelectElement | null;
+
+  function computeBaselineRisk() {
+    const agePts = parseInt(ageSelect?.value || '4', 10);
+    let modPts = 0;
+    document.querySelectorAll('[data-risk-key]').forEach((row) => {
+      const k = (row as HTMLElement).dataset.riskKey || '';
+      const w = parseInt((row as HTMLElement).dataset.riskWeight || '0', 10);
+      if (activeRisks.has(k)) modPts += w;
+    });
+
+    const total = agePts + modPts;
+    let level: { key: TestRecord['outcome']; label: string; angle: number; advice: string };
+
+    if (total <= 3) {
+      level = {
+        key: 'risk_low',
+        label: 'Thấp',
+        angle: -68,
+        advice: 'Nền tảng mạch máu hiện tại thuận lợi. Hãy duy trì đo huyết áp định kỳ, ăn nhạt < 5g muối/ngày và vận động 150 phút/tuần.',
+      };
+    } else if (total <= 8) {
+      level = {
+        key: 'risk_medium',
+        label: 'Trung bình',
+        angle: -22,
+        advice: 'Có yếu tố nguy cơ tích lũy theo tuổi hoặc lối sống. Nên kiểm tra huyết áp, đường huyết, mỡ máu hằng năm và điều chỉnh sớm.',
+      };
+    } else if (total <= 14) {
+      level = {
+        key: 'risk_high',
+        label: 'Cao',
+        angle: 24,
+        advice: 'Nguy cơ đột quỵ dài hạn ở mức CAO. Cần khám chuyên khoa Tim mạch / Nội khoa để kiểm soát huyết áp < 130/80 mmHg, mỡ máu và nhịp tim chuẩn xác.',
+      };
+    } else {
+      level = {
+        key: 'risk_very_high',
+        label: 'Rất cao',
+        angle: 68,
+        advice: 'Tích tụ nhiều yếu tố nguy cơ mạnh (như Tăng huyết áp / Rung nhĩ / Hút thuốc). Cần khám chuyên khoa ngay theo lịch gần nhất và tuân thủ thuốc dự phòng nghiêm ngặt mỗi ngày!',
+      };
+    }
+
+    document.getElementById('risk-gauge-needle')?.setAttribute('transform', `rotate(${level.angle}, 130, 130)`);
+    const titleEl = document.getElementById('risk-level-title');
+    const advEl = document.getElementById('risk-level-advice');
+    if (titleEl) titleEl.textContent = level.label;
+    if (advEl) advEl.textContent = level.advice;
+    return level;
+  }
+
+  document.querySelectorAll('[data-risk-key]').forEach((row) => {
+    row.addEventListener('click', () => {
+      const k = (row as HTMLElement).dataset.riskKey || '';
+      const pill = row.querySelector('.risk-pill-state');
+      if (activeRisks.has(k)) {
+        activeRisks.delete(k);
+        row.setAttribute('aria-pressed', 'false');
+        if (pill) pill.textContent = 'Đang TẮT';
+      } else {
+        activeRisks.add(k);
+        row.setAttribute('aria-pressed', 'true');
+        if (pill) pill.textContent = 'Đang CÓ';
+      }
+      computeBaselineRisk();
+    });
+  });
+  ageSelect?.addEventListener('change', computeBaselineRisk);
+  computeBaselineRisk();
+
+  document.getElementById('btn-save-risk-record')?.addEventListener('click', async () => {
+    const lv = computeBaselineRisk();
+    await addTestRecord({
+      id: makeUuid(),
+      schema: 1,
+      test: 'baseline_risk',
+      testVersion: 'risk-v3.0',
+      personId: 'toi',
+      personLabel: 'Tôi',
+      startedAt: new Date().toISOString(),
+      finishedAt: new Date().toISOString(),
+      answers: {},
+      positiveSigns: [],
+      outcome: lv.key,
+      riskLevelLabel: lv.label,
+      actions: [],
+    });
+    const msg = document.getElementById('risk-save-msg');
+    if (msg) msg.textContent = `Đã lưu mức nguy cơ "${lv.label}" lúc ${formatClockVi(new Date().toISOString())}.`;
+  });
+
+  // =========================================================================
+  // 4. HISTORY VIEWER, FILTER, EXPORT & SAFE CLEAR
+  // =========================================================================
+  async function renderHistoryList(personFilter: string) {
+    const { vault } = await loadVault();
+    const filterBar = document.getElementById('history-filter-bar');
+    const listWrap = document.getElementById('history-records-container');
+    if (!filterBar || !listWrap) return;
+
+    const filters = [
+      { id: 'all', label: 'Tất cả' },
+      ...vault.profiles.map((p) => ({ id: p.id, label: p.label })),
+      { id: 'other', label: 'Người khác' },
+    ];
+    filterBar.innerHTML = filters
+      .map(
+        (f) =>
+          `<button type="button" class="chip ${f.id === personFilter ? 'active' : ''}" data-hist-filter="${f.id}">${f.label}</button>`
+      )
+      .join('');
+
+    filterBar.querySelectorAll('[data-hist-filter]').forEach((b) => {
+      b.addEventListener('click', () => renderHistoryList((b as HTMLElement).dataset.histFilter || 'all'));
+    });
+
+    const filtered = vault.records.filter((r) => personFilter === 'all' || r.personId === personFilter);
+    if (filtered.length === 0) {
+      listWrap.innerHTML = `<p style="color:var(--ink-muted);">Chưa có bản ghi kiểm tra nào trong mục này.</p>`;
+      return;
+    }
+
+    listWrap.innerHTML = filtered
+      .map((r) => {
+        const badgeCls =
+          r.outcome === 'emergency' || r.outcome === 'uncertain'
+            ? 'badge-red'
+            : r.outcome === 'tia_warning'
+            ? 'badge-warn'
+            : 'badge-teal';
+        const desc =
+          r.outcome === 'emergency' || r.outcome === 'uncertain'
+            ? `Có dấu hiệu nghi ngờ: ${r.positiveSigns.join(', ')}`
+            : r.outcome === 'tia_warning'
+            ? r.positiveSigns.join(', ') || 'Cảnh báo cơn thoáng qua TIA'
+            : r.outcome.startsWith('risk_')
+            ? `Đánh giá nguy cơ nền: ${r.riskLevelLabel || ''}`
+            : 'Chưa thấy dấu hiệu thường gặp (Không loại trừ đột quỵ)';
+
+        return `
+          <div class="card" style="padding:0.95rem 1.15rem; background:var(--bg-subtle); display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem; min-height:68px;">
+            <div style="display:grid; gap:0.25rem;">
+              <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                <span class="badge ${badgeCls}">${formatClockVi(r.finishedAt)} · ${formatRelativeVi(r.finishedAt)}</span>
+                <strong>${r.personLabel || 'Chưa gắn tên'}</strong>
+              </div>
+              <span>${desc}</span>
+            </div>
+          </div>
+        `;
+      })
+      .join('');
+  }
+
+  document.getElementById('btn-export-history')?.addEventListener('click', async () => {
+    const { vault } = await loadVault();
+    const blob = new Blob([JSON.stringify(vault, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lich-su-dot-quy-115-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('btn-clear-history')?.addEventListener('click', async () => {
+    if (!window.confirm('Bạn có chắc muốn xóa toàn bộ lịch sử các lần kiểm tra trên máy này không? (Hồ sơ thuốc Thẻ Y Tế vẫn được giữ nguyên)')) {
+      return;
+    }
+    const { vault } = await loadVault();
+    vault.records = [];
+    await saveVault(vault);
+    renderHistoryList('all');
+  });
+</script>

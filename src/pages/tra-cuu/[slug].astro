@@ -1,0 +1,284 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { renderIcon } from '../../components/icons/Icons';
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('articles')).sort((a, b) => a.data.order - b.data.order);
+  return entries.map((entry, idx) => ({
+    params: { slug: entry.id.replace(/\.md$/, '') },
+    props: {
+      entry,
+      prevEntry: idx > 0 ? entries[idx - 1] : null,
+      nextEntry: idx < entries.length - 1 ? entries[idx + 1] : null,
+    },
+  }));
+}
+
+const { entry, prevEntry, nextEntry } = Astro.props;
+const { Content } = await render(entry);
+const { title, categoryLabel, actionLevel, tldr15s, dos, donts, reviewedBy, updated } = entry.data;
+---
+
+<BaseLayout title={title} description={tldr15s.join(' ')} currentNav="library">
+  <article class="container article-reader-stack" itemscope itemtype="https://schema.org/MedicalWebPage">
+    <nav class="breadcrumb-row" aria-label="Đường dẫn chuyên mục">
+      <a href="/tra-cuu/" class="chip">← Quay lại Cẩm nang</a>
+      <span class={`badge ${actionLevel === 'emergency' ? 'badge-red' : actionLevel === 'urgent_today' ? 'badge-warn' : 'badge-teal'}`}>
+        {categoryLabel}
+      </span>
+    </nav>
+
+    <header class="card article-head-card">
+      <h1 itemprop="headline">{title}</h1>
+
+      <div class="audit-meta-row">
+        <span class="audit-pill">
+          <Fragment set:html={renderIcon('shieldCheck', 18)} />
+          <span>Thẩm định: {reviewedBy}</span>
+        </span>
+        <span>Cập nhật: <strong>{updated}</strong></span>
+      </div>
+
+      <div class="reader-toolbar">
+        <button type="button" id="btn-read-article" class="btn btn-primary">
+          <Fragment set:html={renderIcon('speaker', 20)} />
+          <span>Nghe đọc tóm tắt & hướng dẫn</span>
+        </button>
+        <button type="button" id="btn-share-article" class="btn btn-outline">
+          <Fragment set:html={renderIcon('share', 20)} />
+          <span>Chia sẻ qua Zalo / Tin nhắn</span>
+        </button>
+        {actionLevel === 'emergency' && (
+          <a href="/so-cuu/" class="btn btn-emergency">
+            <Fragment set:html={renderIcon('phone', 20)} />
+            <span>Đang gặp ca này → Sơ cứu 0 giây</span>
+          </a>
+        )}
+      </div>
+    </header>
+
+    <!-- LAYER 1: 15-SECOND EXECUTIVE SUMMARY FOR SENIORS & HURRIED CAREGIVERS -->
+    <section class="card layer1-card" aria-labelledby="layer1-heading">
+      <div class="layer-tag">LỚP 1 · TÓM TẮT CỐT LÕI TRONG 15 GIÂY</div>
+      <h2 id="layer1-heading" class="sr-only">Tóm tắt cốt lõi</h2>
+      <ul id="article-tldr-list" class="tldr-list">
+        {tldr15s.map((point) => (
+          <li>{point}</li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- LAYER 2: PAIRED ACTIONABLE DO / DON'T GUARDRAILS -->
+    <section class="card" aria-labelledby="layer2-heading">
+      <div class="layer-tag">LỚP 2 · HÀNH ĐỘNG CHUẨN & ĐIỀU TUYỆT ĐỐI TRÁNH</div>
+      <h2 id="layer2-heading" class="sr-only">Hướng dẫn nên làm và cấm làm</h2>
+      <div class="do-dont-split" style="margin-bottom:0;">
+        <div class="guard-do">
+          <div class="guard-do-title">
+            <Fragment set:html={renderIcon('shieldCheck', 22)} />
+            <span>VIỆC CẦN LÀM NGAY</span>
+          </div>
+          <ul id="article-dos-list" class="guard-list">
+            {dos.map((d) => (
+              <li>{d}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="guard-dont">
+          <div class="guard-dont-title">
+            <Fragment set:html={renderIcon('ban', 22)} />
+            <span>TUYỆT ĐỐI CẤM / TRÁNH</span>
+          </div>
+          <ul id="article-donts-list" class="guard-list" style="font-weight:700;">
+            {donts.map((dn) => (
+              <li>{dn}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- LAYER 3: EXPANDABLE CLINICAL MECHANISM & RCT EVIDENCE AUDIT -->
+    <section class="card layer3-card" aria-labelledby="layer3-heading">
+      <details open>
+        <summary class="layer3-summary">
+          <div>
+            <span class="layer-tag" style="margin-bottom:0.15rem;">LỚP 3 · DÀNH CHO NGƯỜI MUỐN TÌM HIỂU SÂU</span>
+            <h2 id="layer3-heading" style="font-size:var(--fs-lg); margin:0;">
+              Cơ chế bệnh sinh & Bằng chứng lâm sàng kiểm chứng (Bấm đóng/mở)
+            </h2>
+          </div>
+          <span class="badge badge-teal">Y học thực chứng</span>
+        </summary>
+        <div class="prose-content" itemprop="articleBody">
+          <Content />
+        </div>
+      </details>
+    </section>
+
+    <!-- PREV / NEXT NAVIGATION -->
+    <nav class="prev-next-grid" aria-label="Bài viết liên quan">
+      {prevEntry ? (
+        <a href={`/tra-cuu/${prevEntry.id.replace(/\.md$/, '')}/`} class="card nav-adj-card">
+          <span class="ho-label">← CHUYÊN ĐỀ TRƯỚC</span>
+          <strong>{prevEntry.data.title}</strong>
+        </a>
+      ) : <div />}
+
+      {nextEntry ? (
+        <a href={`/tra-cuu/${nextEntry.id.replace(/\.md$/, '')}/`} class="card nav-adj-card">
+          <span class="ho-label">CHUYÊN ĐỀ TIẾP THEO →</span>
+          <strong>{nextEntry.data.title}</strong>
+        </a>
+      ) : <div />}
+    </nav>
+  </article>
+</BaseLayout>
+
+<style>
+  .article-reader-stack {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 960px;
+  }
+  .breadcrumb-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+  }
+  .article-head-card {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .audit-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.25rem;
+    font-size: var(--fs-xs);
+    color: var(--ink-secondary);
+  }
+  .audit-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 700;
+    color: var(--primary-ink);
+  }
+  [data-theme="dark"] .audit-pill { color: var(--primary); }
+  .reader-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+  .layer-tag {
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--primary-ink);
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  [data-theme="dark"] .layer-tag { color: var(--primary); }
+  .layer1-card {
+    border-left: 6px solid var(--golden);
+    background: var(--golden-soft);
+  }
+  .tldr-list {
+    margin: 0;
+    padding-left: 1.35rem;
+    font-weight: 700;
+    font-size: var(--fs-md);
+    display: grid;
+    gap: 0.55rem;
+  }
+  .layer3-summary {
+    min-height: 58px;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    cursor: pointer;
+  }
+  .layer3-summary::-webkit-details-marker { display: none; }
+  .prose-content {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1.5px solid var(--border-soft);
+    overflow-x: auto;
+  }
+  .prose-content :global(h3) {
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  .prose-content :global(ul),
+  .prose-content :global(ol) {
+    padding-left: 1.35rem;
+    margin-block: 0.5rem 1rem;
+  }
+  .prose-content :global(li) {
+    margin-bottom: 0.45rem;
+  }
+  .prose-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-block: 1rem;
+    font-size: var(--fs-sm);
+  }
+  .prose-content :global(th),
+  .prose-content :global(td) {
+    border: 1px solid var(--border-soft);
+    padding: 0.7rem 0.85rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose-content :global(th) {
+    background: var(--bg-subtle);
+    font-weight: 800;
+  }
+  .prev-next-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  @media (min-width: 720px) {
+    .prev-next-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .nav-adj-card {
+    text-decoration: none;
+    color: var(--ink-primary) !important;
+    display: grid;
+    gap: 0.25rem;
+  }
+</style>
+
+<script>
+  document.getElementById('btn-read-article')?.addEventListener('click', () => {
+    const h1 = document.querySelector('h1')?.textContent || '';
+    const tldr = document.getElementById('article-tldr-list')?.innerText || '';
+    const dos = document.getElementById('article-dos-list')?.innerText || '';
+    const donts = document.getElementById('article-donts-list')?.innerText || '';
+    (window as any).__dotquySpeak?.(
+      `${h1}. Tóm tắt cốt lõi: ${tldr}. Việc cần làm ngay: ${dos}. Tuyệt đối cấm: ${donts}`
+    );
+  });
+
+  document.getElementById('btn-share-article')?.addEventListener('click', async () => {
+    const title = document.querySelector('h1')?.textContent || 'Cẩm Nang Đột Quỵ 115';
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title, url }).catch(() => {});
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(`${title} — ${url}`).catch(() => {});
+      alert('Đã sao chép liên kết bài viết để dán vào Zalo!');
+    }
+  });
+</script>

@@ -1,0 +1,882 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { renderIcon } from '../../components/icons/Icons';
+import { FIRST_AID_ILLUSTRATIONS } from '../../components/illustrations/FirstAidArt';
+import {
+  LKW_PRESETS,
+  SURVIVAL_GATE_OPTIONS,
+  EMERGENCY_BRANCHES,
+  TEN_ABSOLUTE_DONTS,
+} from '../../data/emergency-scenarios';
+import { STROKE_HOSPITALS_VN } from '../../data/stroke-hospitals-vn';
+---
+
+<BaseLayout
+  title="Cấp cứu & Sơ cứu Đột quỵ 0 Giây"
+  currentNav="emergency"
+  emergencyMode={true}
+>
+  <div class="container em-flow-stack">
+    <!-- STEP 1: TOP-OF-SCREEN GIANT 115 BUTTON (y < 220px, >=98px tall, ZERO SCROLL!) -->
+    <section class="card em-step1-card" aria-labelledby="em-step1-heading">
+      <div class="em-step-tag">BƯỚC 1 · GỌI CẤP CỨU & GHI MỐC GIỜ VÀNG</div>
+      <h1 id="em-step1-heading" class="sr-only">Gọi cấp cứu 115 và xử trí sơ cứu đột quỵ khẩn cấp</h1>
+
+      <a href="tel:115" id="btn-primary-call-115" class="btn-call-giant" data-call-115="true">
+        <Fragment set:html={renderIcon('phone', 36)} />
+        <span>GỌI 115 NGAY</span>
+      </a>
+
+      <div class="dispatcher-box">
+        <div class="dispatcher-head">
+          <strong>Đọc to 3 thông tin này với tổng đài 115:</strong>
+          <button type="button" id="btn-gps-locate" class="chip">
+            <Fragment set:html={renderIcon('pin', 18)} />
+            <span>Lấy tọa độ GPS hiện tại</span>
+          </button>
+        </div>
+        <p class="dispatcher-script" id="dispatcher-script-text">
+          “Có người nghi bị <strong>đột quỵ não cấp</strong>. Địa chỉ tại: <strong id="gps-address-text">[Đọc rõ số nhà, ngõ/đường, phường/xã]</strong>. Lần cuối thấy bình thường: <strong id="script-lkw-text">vừa mới xảy ra</strong>.”
+        </p>
+        <div class="sms-row">
+          <button type="button" id="btn-share-family-sms" class="btn btn-outline">
+            <Fragment set:html={renderIcon('share', 20)} />
+            <span>Gửi tin nhắn báo vị trí cho người thân</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 7 LKW Presets + Custom Time Input -->
+      <div class="lkw-picker-block">
+        <strong class="block-label">Lần cuối thấy người bệnh hoàn toàn bình thường (Last Known Well):</strong>
+        <div class="lkw-chips" role="group" aria-label="Chọn mốc giờ lần cuối bình thường">
+          {LKW_PRESETS.map((preset) => (
+            <button
+              type="button"
+              class="chip"
+              data-lkw-preset={preset.id}
+              data-lkw-mins={preset.minutesAgo !== null ? String(preset.minutesAgo) : ''}
+              data-lkw-wakeup={preset.isWakeUp ? 'true' : 'false'}
+              aria-pressed="false"
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+
+        <div class="custom-time-row">
+          <label for="custom-lkw-input">Hoặc chọn giờ cụ thể:</label>
+          <input id="custom-lkw-input" type="time" class="time-input" />
+          <button type="button" id="btn-apply-custom-lkw" class="btn btn-outline">Lưu giờ này</button>
+        </div>
+        <p id="lkw-phase-guidance" class="lkw-guidance-note"></p>
+      </div>
+    </section>
+
+    <!-- STEP 2: 3-STATE SURVIVAL TRIAGE GATE (>=74px buttons -> 1-tap CPR or Recovery Position!) -->
+    <section class="card" id="survival-gate-section" aria-labelledby="em-step2-heading">
+      <div class="em-step-tag">BƯỚC 2 · CHỌN ĐÚNG TÌNH TRẠNG HIỆN TẠI (1 CHẠM)</div>
+      <h2 id="em-step2-heading">Người bệnh đang như thế nào ngay lúc này?</h2>
+
+      <div class="gate-buttons-stack">
+        {SURVIVAL_GATE_OPTIONS.map((opt) => (
+          <button
+            type="button"
+            class={`btn-triage gate-${opt.severityColor}`}
+            data-gate-branch={opt.defaultBranch}
+            aria-pressed={opt.defaultBranch === 'awake' ? 'true' : 'false'}
+          >
+            <div class="gate-text">
+              <strong>{opt.title}</strong>
+              <span>{opt.subtitle}</span>
+            </div>
+            <Fragment set:html={renderIcon('chevRight', 24)} />
+          </button>
+        ))}
+      </div>
+
+      <!-- Specific Sub-Scenario Refinement Strip -->
+      <div class="sub-branch-row" role="group" aria-label="Tình huống chi tiết">
+        {Object.values(EMERGENCY_BRANCHES).map((br) => (
+          <button
+            type="button"
+            class="chip"
+            data-branch-select={br.id}
+            aria-pressed={br.id === 'awake' ? 'true' : 'false'}
+          >
+            {br.shortLabel}
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- STEP 3: ACTIVE SCENARIO ACTION CARD WITH PAIRED DO / DON'T & 110 BPM CPR METRONOME -->
+    <section class="card active-aid-card" id="active-aid-section" aria-live="polite">
+      <div class="aid-card-top">
+        <div>
+          <span id="aid-badge" class="badge badge-red"></span>
+          <h2 id="aid-title" style="margin-top:0.4rem;"></h2>
+        </div>
+        <button type="button" id="btn-speak-aid-card" class="btn btn-primary">
+          <Fragment set:html={renderIcon('speaker', 20)} />
+          <span>Loa đọc bước này</span>
+        </button>
+      </div>
+
+      <p id="aid-lead" class="aid-lead-text"></p>
+
+      <!-- 110 BPM CPR Metronome Box (Immediately visible when 'arrest' is selected!) -->
+      <div id="cpr-metronome-box" class="cpr-panel hidden">
+        <div class="cpr-info">
+          <div id="cpr-pulse-circle" class="cpr-circle tabular">110</div>
+          <div>
+            <strong class="cpr-head">Máy Đếm Nhịp Ép Tim Chuẩn AHA (110 lần/phút)</strong>
+            <p class="cpr-sub">Ấn thẳng giữa xương ức sâu 5–6 cm theo từng tiếng "Bíp" cho đến khi xe 115 tới!</p>
+          </div>
+        </div>
+        <button type="button" id="btn-toggle-cpr" class="btn btn-emergency" aria-pressed="false">
+          Bật tiếng nhịp ép tim
+        </button>
+      </div>
+
+      <!-- Anatomically Accurate Vector Illustration -->
+      <div id="aid-illustration-slot" class="aid-art-box"></div>
+
+      <!-- Paired Side-by-Side Do / Don't Guardrails ON THE SAME CARD -->
+      <div class="do-dont-split">
+        <div class="guard-do">
+          <div class="guard-do-title">
+            <Fragment set:html={renderIcon('shieldCheck', 22)} />
+            <span>VIỆC CẦN LÀM NGAY</span>
+          </div>
+          <ul id="aid-dos-list" class="guard-list"></ul>
+        </div>
+
+        <div class="guard-dont">
+          <div class="guard-dont-title">
+            <Fragment set:html={renderIcon('ban', 22)} />
+            <span>TUYỆT ĐỐI CẤM LÀM</span>
+          </div>
+          <ul id="aid-donts-list" class="guard-list" style="font-weight: 700;"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: DOCTOR HANDOFF CARD (LKW + WEIGHT + ANTICOAGULANTS + 24H TIMELINE + HOSPITALS) -->
+    <section class="card handoff-section" id="doctor-handoff-section" aria-labelledby="handoff-heading">
+      <div class="aid-card-top">
+        <div>
+          <span class="badge badge-gold">BƯỚC 3 · ĐƯA MÀN HÌNH NÀY CHO BÁC SĨ / KÍP 115</span>
+          <h2 id="handoff-heading" style="margin-top:0.35rem;">Thẻ Bàn Giao Cấp Cứu Đột Quỵ</h2>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:0.55rem;">
+          <button type="button" id="btn-fullscreen-handoff" class="btn btn-outline">
+            <Fragment set:html={renderIcon('expand', 20)} />
+            <span>Phóng to cho bác sĩ đọc</span>
+          </button>
+          <a href="/ho-so/" class="btn btn-outline">Sửa hồ sơ thuốc</a>
+        </div>
+      </div>
+
+      <!-- Quick Family Member Selector (Rule H9: Explicit 1-tap person confirmation!) -->
+      <div class="person-confirm-bar">
+        <span>Đang cấp cứu cho ai?</span>
+        <div id="handoff-person-chips" class="person-chips-wrap"></div>
+      </div>
+
+      <div id="handoff-card-printable" class="handoff-grid">
+        <div class="ho-cell ho-highlight-time">
+          <span class="ho-label">LẦN CUỐI BÌNH THƯỜNG (LAST KNOWN WELL)</span>
+          <strong id="ho-lkw-value" class="ho-big-val tabular">Chưa chọn mốc giờ</strong>
+          <span id="ho-lkw-phase" class="ho-sub">Hãy chọn mốc giờ ở Bước 1 phía trên</span>
+        </div>
+
+        <div class="ho-cell ho-highlight-anticoag">
+          <span class="ho-label">THUỐC CHỐNG ĐÔNG / KHÁNG TIỂU CẦU ĐANG UỐNG</span>
+          <strong id="ho-anticoag-value" class="ho-med-val">Chưa khai báo (Kiểm tra vỏ thuốc mang theo!)</strong>
+          <span class="ho-sub">Thông tin quyết định tiêu sợi huyết & thuốc hóa giải xuất huyết não</span>
+        </div>
+
+        <div class="ho-cell">
+          <span class="ho-label">HỌ TÊN · NĂM SINH · CÂN NẶNG ƯỚC TÍNH (TÍNH LIỀU MG/KG)</span>
+          <strong id="ho-identity-value">Chưa chọn thành viên gia đình</strong>
+        </div>
+
+        <div class="ho-cell">
+          <span class="ho-label">BỆNH NỀN · THUỐC KHÁC · DỊ ỨNG</span>
+          <span id="ho-conditions-value">Tăng huyết áp / Chưa khai báo chi tiết</span>
+        </div>
+
+        <div class="ho-cell ho-span-full">
+          <span class="ho-label">DIỄN BIẾN KIỂM TRA TRONG 24–48 GIỜ GẦN ĐÂY (DỮ LIỆU GỐC)</span>
+          <div id="ho-timeline-list" class="ho-timeline">Chưa có bản ghi kiểm tra trước đó trên máy này.</div>
+        </div>
+      </div>
+
+      <div class="handoff-share-row">
+        <button type="button" id="btn-copy-handoff" class="btn btn-primary">
+          <Fragment set:html={renderIcon('share', 20)} />
+          <span>Sao chép / Chia sẻ Zalo cho người nhà & bác sĩ</span>
+        </button>
+        <a href="/benh-vien/" class="btn btn-outline">
+          <Fragment set:html={renderIcon('hospital', 20)} />
+          <span>Xem {STROKE_HOSPITALS_VN.length} cụm Bệnh viện Đột quỵ 3 miền</span>
+        </a>
+      </div>
+      <p id="handoff-copy-feedback" class="hidden" style="color:var(--primary-ink); font-weight:700; margin-top:0.5rem;"></p>
+    </section>
+
+    <!-- COMPLETE 10 ABSOLUTE PROHIBITIONS REFERENCE -->
+    <section class="card" aria-labelledby="ten-donts-heading">
+      <h2 id="ten-donts-heading">10 Điều Tuyệt Đối Không Làm Khi Nghi Đột Quỵ (Bấm xem lý do khoa học)</h2>
+      <div class="donts-accordion">
+        {TEN_ABSOLUTE_DONTS.map((item, idx) => (
+          <details class="dont-item" open={idx < 2}>
+            <summary class="dont-summary">
+              <span class="dont-icon"><Fragment set:html={renderIcon('ban', 22)} /></span>
+              <span class="dont-title">{item.title}</span>
+              <span class="dont-why">Vì sao?</span>
+            </summary>
+            <div class="dont-body">
+              <p>{item.reason}</p>
+              <span class="badge badge-teal">{item.source}</span>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <script
+      type="application/json"
+      id="em-branches-data"
+      set:html={JSON.stringify({ branches: EMERGENCY_BRANCHES, illustrations: FIRST_AID_ILLUSTRATIONS })}
+    ></script>
+  </div>
+</BaseLayout>
+
+<style>
+  .em-flow-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+  }
+  .em-step-tag {
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--emergency-ink);
+    margin-bottom: 0.15rem;
+  }
+  .em-step1-card {
+    border: 2.5px solid var(--emergency);
+    padding: 0.9rem 1rem 1.15rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+  .dispatcher-box {
+    background: var(--bg-subtle);
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--r-md);
+    padding: 1rem;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .dispatcher-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .dispatcher-script {
+    font-size: var(--fs-md);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .lkw-picker-block {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .block-label {
+    font-size: var(--fs-base);
+  }
+  .lkw-chips,
+  .sub-branch-row,
+  .person-chips-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+  .custom-time-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .time-input {
+    min-height: 48px;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--r-sm);
+    border: 1.5px solid var(--border-strong);
+    background: var(--bg-card);
+    font-weight: 700;
+  }
+  .lkw-guidance-note {
+    margin: 0;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--emergency-ink);
+  }
+
+  .gate-buttons-stack {
+    display: grid;
+    gap: 0.75rem;
+    margin-block: 0.75rem 1rem;
+  }
+  .gate-text {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .gate-text strong {
+    font-size: var(--fs-md);
+  }
+  .gate-text span {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--ink-secondary);
+  }
+  .gate-red { border-color: var(--emergency); background: var(--emergency-soft); }
+  .gate-warn { border-color: var(--warn); background: var(--warn-soft); }
+  .gate-teal { border-color: var(--primary); }
+  .btn-triage[aria-pressed="true"] {
+    box-shadow: 0 0 0 3px var(--golden);
+  }
+
+  .aid-card-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.85rem;
+  }
+  .aid-lead-text {
+    font-size: var(--fs-md);
+    font-weight: 600;
+    margin-block: 0.65rem 1rem;
+  }
+  .aid-art-box {
+    margin-block: 0.75rem;
+  }
+
+  .cpr-panel {
+    background: var(--emergency-soft);
+    border: 2.5px solid var(--emergency);
+    border-radius: var(--r-lg);
+    padding: 1rem 1.15rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .cpr-info {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex: 1;
+    min-width: 240px;
+  }
+  .cpr-circle {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--emergency);
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: var(--fs-md);
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: transform 0.08s ease;
+  }
+  .cpr-circle.beat {
+    transform: scale(1.25);
+  }
+  .cpr-head {
+    display: block;
+    color: var(--emergency-ink);
+    font-size: var(--fs-md);
+  }
+  .cpr-sub {
+    margin: 0.15rem 0 0;
+    font-size: var(--fs-sm);
+  }
+
+  .person-confirm-bar {
+    margin-block: 0.85rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-subtle);
+    border-radius: var(--r-md);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    font-weight: 700;
+  }
+  .handoff-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    margin-block: 1rem;
+  }
+  @media (min-width: 780px) {
+    .handoff-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .ho-span-full {
+      grid-column: 1 / -1;
+    }
+  }
+  .ho-cell {
+    padding: 1rem 1.15rem;
+    border-radius: var(--r-md);
+    border: 1.5px solid var(--border-soft);
+    background: var(--bg-subtle);
+    display: grid;
+    gap: 0.25rem;
+  }
+  .ho-highlight-time {
+    background: var(--emergency-soft);
+    border-color: var(--emergency);
+  }
+  .ho-highlight-anticoag {
+    background: var(--warn-soft);
+    border: 2px solid var(--warn);
+  }
+  .ho-label {
+    font-size: var(--fs-xs);
+    font-weight: 800;
+    color: var(--ink-muted);
+    letter-spacing: 0.04em;
+  }
+  .ho-big-val {
+    font-size: var(--fs-xl);
+    color: var(--emergency-ink);
+  }
+  .ho-med-val {
+    font-size: var(--fs-lg);
+    color: var(--warn-ink);
+  }
+  .ho-sub {
+    font-size: var(--fs-xs);
+    color: var(--ink-secondary);
+  }
+  .ho-timeline {
+    font-size: var(--fs-sm);
+    display: grid;
+    gap: 0.35rem;
+  }
+  .handoff-share-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .handoff-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: var(--bg-card);
+    padding: 1.25rem;
+    overflow-y: auto;
+  }
+
+  .donts-accordion {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+  }
+  .dont-item {
+    border: 1.5px solid var(--border-soft);
+    border-radius: var(--r-md);
+    background: var(--bg-subtle);
+    overflow: hidden;
+  }
+  .dont-summary {
+    min-height: 58px;
+    padding: 0.75rem 1rem;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-weight: 800;
+    cursor: pointer;
+  }
+  .dont-summary::-webkit-details-marker { display: none; }
+  .dont-icon { color: var(--emergency-ink); display: grid; }
+  .dont-title { flex: 1; }
+  .dont-why { font-size: var(--fs-xs); color: var(--primary); }
+  .dont-body {
+    padding: 0 1rem 1rem 2.9rem;
+    color: var(--ink-secondary);
+    font-size: var(--fs-sm);
+  }
+</style>
+
+<script>
+  import {
+    setEmergencyWakeLock,
+    playMetronomeClick,
+    vibrateDevice,
+    stopSpeaking,
+  } from '../../lib/native-bridge';
+  import { readLkwState, writeLkwState, computeGoldenHourStatus } from '../../lib/lkw-clock';
+  import { loadVault, formatClockVi, type FamilyProfile } from '../../lib/history-store';
+
+  // Keep screen awake continuously in Emergency Mode!
+  setEmergencyWakeLock(true);
+  window.addEventListener('pagehide', () => {
+    setEmergencyWakeLock(false);
+    stopCpr();
+    stopSpeaking();
+  });
+
+  const parsedData = JSON.parse(document.getElementById('em-branches-data')?.textContent || '{}');
+  const branches = parsedData.branches || {};
+  const illustrations = parsedData.illustrations || {};
+
+  let currentBranchId = 'awake';
+  let cprInterval: number | null = null;
+  let activeProfile: FamilyProfile | null = null;
+
+  function stopCpr() {
+    if (cprInterval !== null) {
+      window.clearInterval(cprInterval);
+      cprInterval = null;
+    }
+    const btn = document.getElementById('btn-toggle-cpr');
+    if (btn) {
+      btn.textContent = 'Bật tiếng nhịp ép tim';
+      btn.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  function startCpr() {
+    stopCpr();
+    const btn = document.getElementById('btn-toggle-cpr');
+    const circle = document.getElementById('cpr-pulse-circle');
+    if (btn) {
+      btn.textContent = 'Dừng tiếng nhịp ép tim';
+      btn.setAttribute('aria-pressed', 'true');
+    }
+    const beat = () => {
+      playMetronomeClick(880, 0.07);
+      vibrateDevice([35]);
+      circle?.classList.add('beat');
+      window.setTimeout(() => circle?.classList.remove('beat'), 120);
+    };
+    beat();
+    cprInterval = window.setInterval(beat, Math.round(60000 / 110));
+  }
+
+  function renderBranch(branchId: string, autoScroll = false) {
+    const br = branches[branchId] || branches.awake;
+    currentBranchId = br.id;
+
+    document.querySelectorAll('[data-branch-select]').forEach((b) => {
+      b.setAttribute('aria-pressed', (b as HTMLElement).dataset.branchSelect === br.id ? 'true' : 'false');
+    });
+    document.querySelectorAll('[data-gate-branch]').forEach((g) => {
+      const gId = (g as HTMLElement).dataset.gateBranch;
+      const isMatch =
+        (gId === 'arrest' && br.gateGroup === 'arrest') ||
+        (gId === 'airway' && br.gateGroup === 'airway') ||
+        (gId === 'awake' && br.gateGroup === 'awake');
+      g.setAttribute('aria-pressed', isMatch ? 'true' : 'false');
+    });
+
+    const badgeEl = document.getElementById('aid-badge');
+    const titleEl = document.getElementById('aid-title');
+    const leadEl = document.getElementById('aid-lead');
+    const artEl = document.getElementById('aid-illustration-slot');
+    const dosEl = document.getElementById('aid-dos-list');
+    const dontsEl = document.getElementById('aid-donts-list');
+    const cprBox = document.getElementById('cpr-metronome-box');
+
+    if (badgeEl) badgeEl.textContent = br.badge;
+    if (titleEl) titleEl.textContent = br.title;
+    if (leadEl) leadEl.textContent = br.lead;
+    if (artEl) artEl.innerHTML = illustrations[br.illustrationKey]?.svg || '';
+    if (dosEl) dosEl.innerHTML = br.dos.map((d: string) => `<li>${d}</li>`).join('');
+    if (dontsEl) dontsEl.innerHTML = br.donts.map((d: string) => `<li>${d}</li>`).join('');
+
+    if (br.showCprMetronome) {
+      cprBox?.classList.remove('hidden');
+    } else {
+      cprBox?.classList.add('hidden');
+      stopCpr();
+    }
+
+    if (autoScroll) {
+      document.getElementById('active-aid-section')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  // Gate & sub-branch clicks
+  document.querySelectorAll('[data-gate-branch]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = (btn as HTMLElement).dataset.gateBranch || 'awake';
+      renderBranch(target, true);
+    });
+  });
+  document.querySelectorAll('[data-branch-select]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = (btn as HTMLElement).dataset.branchSelect || 'awake';
+      renderBranch(target, false);
+    });
+  });
+
+  document.getElementById('btn-toggle-cpr')?.addEventListener('click', () => {
+    if (cprInterval !== null) stopCpr();
+    else startCpr();
+  });
+
+  function speakCurrentBranch() {
+    const br = branches[currentBranchId] || branches.awake;
+    const text = `${br.title}. ${br.lead} Việc cần làm ngay: ${br.dos.join(' ')} Tuyệt đối cấm: ${br.donts.join(' ')}`;
+    (window as any).__dotquySpeak?.(text);
+  }
+  document.getElementById('btn-speak-aid-card')?.addEventListener('click', speakCurrentBranch);
+  document.getElementById('btn-em-speak')?.addEventListener('click', speakCurrentBranch);
+
+  // LKW Preset & Custom Time handling
+  function refreshLkwViews() {
+    const st = readLkwState();
+    const info = computeGoldenHourStatus(st);
+    const scriptLkw = document.getElementById('script-lkw-text');
+    const guidance = document.getElementById('lkw-phase-guidance');
+    const hoVal = document.getElementById('ho-lkw-value');
+    const hoPhase = document.getElementById('ho-lkw-phase');
+
+    if (scriptLkw) scriptLkw.textContent = info.clockText;
+    if (guidance) guidance.textContent = `${info.phaseBadge}: ${info.phaseMessage}`;
+    if (hoVal) {
+      hoVal.textContent =
+        st.mode === 'known' ? `${info.clockText} (${info.elapsedText})` : info.clockText;
+    }
+    if (hoPhase) hoPhase.textContent = `${info.phaseBadge} — ${info.phaseMessage}`;
+  }
+
+  document.querySelectorAll('[data-lkw-preset]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-lkw-preset]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', 'true');
+      const el = btn as HTMLElement;
+      const isWake = el.dataset.lkwWakeup === 'true';
+      const minsStr = el.dataset.lkwMins || '';
+      if (isWake) {
+        writeLkwState({ mode: 'wakeup', lkwTimestampMs: null });
+        renderBranch('wakeup', false);
+      } else if (minsStr === '') {
+        writeLkwState({ mode: 'unknown', lkwTimestampMs: null });
+      } else {
+        const mins = parseInt(minsStr, 10) || 0;
+        writeLkwState({ mode: 'known', lkwTimestampMs: Date.now() - mins * 60000 });
+      }
+      refreshLkwViews();
+    });
+  });
+
+  document.getElementById('btn-apply-custom-lkw')?.addEventListener('click', () => {
+    const val = (document.getElementById('custom-lkw-input') as HTMLInputElement | null)?.value;
+    if (!val) return;
+    const [hh, mm] = val.split(':').map((x) => parseInt(x, 10));
+    const d = new Date();
+    d.setHours(hh, mm, 0, 0);
+    // If chosen time is in the future relative to current clock, treat as yesterday night!
+    if (d.getTime() > Date.now()) {
+      d.setDate(d.getDate() - 1);
+    }
+    writeLkwState({ mode: 'known', lkwTimestampMs: d.getTime() });
+    refreshLkwViews();
+  });
+
+  // GPS Coordinates helper
+  const gpsBtn = document.getElementById('btn-gps-locate');
+  const gpsText = document.getElementById('gps-address-text');
+  let currentCoords = '';
+  gpsBtn?.addEventListener('click', () => {
+    if (!navigator.geolocation) {
+      if (gpsText) gpsText.textContent = 'Máy không hỗ trợ GPS (Hãy đọc rõ số nhà, đường, phường/xã)';
+      return;
+    }
+    if (gpsText) gpsText.textContent = 'Đang lấy tọa độ vệ tinh...';
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(5);
+        const lng = pos.coords.longitude.toFixed(5);
+        currentCoords = `${lat}, ${lng}`;
+        if (gpsText) gpsText.textContent = `Tọa độ GPS ${currentCoords} (Đọc kèm số nhà/tên đường cho 115)`;
+      },
+      () => {
+        if (gpsText) gpsText.textContent = 'Chưa bật quyền vị trí — Hãy đọc rõ số nhà, ngõ, phường/xã cho 115';
+      },
+      { enableHighAccuracy: true, timeout: 6000 }
+    );
+  });
+
+  document.getElementById('btn-share-family-sms')?.addEventListener('click', () => {
+    const st = readLkwState();
+    const info = computeGoldenHourStatus(st);
+    const body = encodeURIComponent(
+      `[KHẨN CẤP ĐỘT QUỴ 115] Gia đình đang có người nghi đột quỵ cấp (${info.clockText}). Vị trí: ${
+        currentCoords ? `https://maps.google.com/?q=${currentCoords}` : 'Liên hệ điện thoại ngay!'
+      }`
+    );
+    window.location.href = `sms:?body=${body}`;
+  });
+
+  // Load Family Profiles & 24-48h Timeline into Doctor Handoff Card (Rule H5 & H9)
+  async function loadHandoffData() {
+    const { vault } = await loadVault();
+    const chipsWrap = document.getElementById('handoff-person-chips');
+    const st = readLkwState();
+
+    const selectProfile = (prof: FamilyProfile | null) => {
+      activeProfile = prof;
+      const idEl = document.getElementById('ho-identity-value');
+      const antiEl = document.getElementById('ho-anticoag-value');
+      const condEl = document.getElementById('ho-conditions-value');
+      const tlEl = document.getElementById('ho-timeline-list');
+
+      if (!prof) {
+        if (idEl) idEl.textContent = 'Người khác / Chưa chọn hồ sơ thành viên';
+        if (antiEl) antiEl.textContent = 'Hỏi người nhà & kiểm tra toàn bộ vỏ thuốc đang dùng!';
+        if (condEl) condEl.textContent = 'Chưa có hồ sơ lưu sẵn';
+      } else {
+        if (idEl) {
+          idEl.textContent = `${prof.fullName || prof.label} · Sinh năm ${prof.birthYear || '--'} · Nặng ~${prof.weightKg || '--'} kg`;
+        }
+        if (antiEl) {
+          antiEl.textContent = prof.anticoagulants?.trim()
+            ? prof.anticoagulants
+            : 'Không ghi nhận thuốc chống đông trong hồ sơ (vẫn cần kiểm tra vỏ thuốc thực tế)';
+        }
+        if (condEl) {
+          condEl.textContent = `Bệnh nền: ${prof.conditions || 'Không rõ'} · Thuốc khác: ${prof.otherMeds || 'Không rõ'} · Dị ứng: ${prof.allergies || 'Không'}`;
+        }
+      }
+
+      // Raw 48h symptom logs for this person (Rule H5: raw timestamped records only!)
+      const targetPersonId = prof?.id || 'other';
+      const recentLogs = vault.records
+        .filter((r) => {
+          if (r.outcome === 'abandoned') return false;
+          if (prof && r.personId !== targetPersonId) return false;
+          return Date.now() - new Date(r.finishedAt).getTime() <= 48 * 3600000;
+        })
+        .slice(0, 5);
+
+      if (tlEl) {
+        if (recentLogs.length === 0) {
+          tlEl.textContent = st.activeSigns?.length
+            ? `Vừa ghi nhận từ bài kiểm tra: ${st.activeSigns.join(', ')}`
+            : 'Chưa có bản ghi kiểm tra trước đó trong 48 giờ qua.';
+        } else {
+          tlEl.innerHTML = recentLogs
+            .map(
+              (r) =>
+                `<div>• <strong>${formatClockVi(r.finishedAt)}</strong>: ${
+                  r.positiveSigns.length
+                    ? r.positiveSigns.join(', ')
+                    : r.outcome === 'tia_warning'
+                    ? 'Dấu hiệu xuất hiện rồi tự hết (nghi TIA)'
+                    : 'Chưa thấy dấu hiệu BE-FAST lúc khám'
+                }</div>`
+            )
+            .join('');
+        }
+      }
+    };
+
+    if (chipsWrap) {
+      const preselectedId =
+        vault.profiles.length === 1
+          ? vault.profiles[0].id
+          : st.activePersonId && st.activePersonId !== 'unassigned'
+          ? st.activePersonId
+          : '';
+
+      chipsWrap.innerHTML =
+        vault.profiles
+          .map(
+            (p) =>
+              `<button type="button" class="chip" data-ho-person="${p.id}" aria-pressed="${
+                p.id === preselectedId ? 'true' : 'false'
+              }">${p.label}${p.weightKg ? ` (${p.weightKg}kg)` : ''}</button>`
+          )
+          .join('') +
+        `<button type="button" class="chip" data-ho-person="other" aria-pressed="false">Người khác</button>`;
+
+      chipsWrap.querySelectorAll('[data-ho-person]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          chipsWrap.querySelectorAll('[data-ho-person]').forEach((b) => b.setAttribute('aria-pressed', 'false'));
+          btn.setAttribute('aria-pressed', 'true');
+          const pid = (btn as HTMLElement).dataset.hoPerson;
+          const found = vault.profiles.find((p) => p.id === pid) || null;
+          writeLkwState({ activePersonId: pid || 'other' });
+          selectProfile(found);
+        });
+      });
+
+      const initialProf = vault.profiles.find((p) => p.id === preselectedId) || null;
+      selectProfile(initialProf);
+    }
+  }
+
+  // Fullscreen toggle & Copy/Share Doctor Card
+  const handoffSection = document.getElementById('doctor-handoff-section');
+  const btnFs = document.getElementById('btn-fullscreen-handoff');
+  btnFs?.addEventListener('click', () => {
+    const active = handoffSection?.classList.toggle('handoff-fullscreen');
+    if (btnFs) btnFs.textContent = active ? 'Thu nhỏ Thẻ bác sĩ' : 'Phóng to cho bác sĩ đọc';
+  });
+
+  document.getElementById('btn-copy-handoff')?.addEventListener('click', async () => {
+    const st = readLkwState();
+    const info = computeGoldenHourStatus(st);
+    const summary = [
+      '=== THẺ BÀN GIAO CẤP CỨU ĐỘT QUỴ 115 ===',
+      `• Giờ bình thường cuối (LKW): ${info.clockText} (${info.phaseBadge})`,
+      `• Người bệnh: ${document.getElementById('ho-identity-value')?.textContent || ''}`,
+      `• Thuốc chống đông: ${document.getElementById('ho-anticoag-value')?.textContent || ''}`,
+      `• Bệnh nền & Dị ứng: ${document.getElementById('ho-conditions-value')?.textContent || ''}`,
+      `• Ghi nhận triệu chứng: ${document.getElementById('ho-timeline-list')?.innerText || ''}`,
+    ].join('\n');
+
+    const fb = document.getElementById('handoff-copy-feedback');
+    if (navigator.share) {
+      navigator.share({ title: 'Thẻ Bàn Giao Cấp Cứu Đột Quỵ 115', text: summary }).catch(() => {});
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(summary).catch(() => {});
+      if (fb) {
+        fb.textContent = 'Đã sao chép toàn bộ Thẻ bàn giao! Bạn có thể dán gửi ngay qua Zalo hoặc tin nhắn.';
+        fb.classList.remove('hidden');
+      }
+    }
+  });
+
+  // Check URL query param (e.g. ?branch=arrest from Widget or ?from=test)
+  const params = new URLSearchParams(window.location.search);
+  const branchParam = params.get('branch');
+  if (branchParam && branches[branchParam]) {
+    renderBranch(branchParam, false);
+  } else {
+    renderBranch('awake', false);
+  }
+
+  refreshLkwViews();
+  window.setInterval(refreshLkwViews, 1000);
+  loadHandoffData();
+</script>

@@ -1,0 +1,502 @@
+---
+import '../styles/global.css';
+import { renderIcon, renderBrandMark } from '../components/icons/Icons';
+
+interface Props {
+  title: string;
+  description?: string;
+  currentNav?: 'home' | 'test' | 'emergency' | 'library' | 'hospitals' | 'profile';
+  emergencyMode?: boolean;
+}
+
+const {
+  title,
+  description = 'Cẩm Nang Đột Quỵ — Sơ cứu & Phòng bệnh (Đột Quỵ 115): Nhận diện sớm BE-FAST & 5 Dấu hiệu Đỏ, sơ cứu 0 giây có giọng đọc tiếng Việt, chống mẹo dân gian nguy hiểm — hoạt động 100% Offline.',
+  currentNav = 'home',
+  emergencyMode = false,
+} = Astro.props;
+
+const fullTitle = title.includes('Cẩm Nang Đột Quỵ')
+  ? title
+  : `${title} | Cẩm Nang Đột Quỵ — Sơ cứu & Phòng bệnh`;
+
+const reviewerName =
+  import.meta.env.PUBLIC_MEDICAL_REVIEWER ||
+  'Hội đồng Chuyên môn Đột quỵ (Đối chiếu QĐ 3312/QĐ-BYT & AHA/ASA 2026)';
+const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
+---
+
+<!doctype html>
+<html lang="vi" data-theme="warm" data-scale="1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#B91C1C" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Restore Senior Accessibility Preferences Before First Paint -->
+    <script is:inline>
+      (function () {
+        try {
+          var th = localStorage.getItem('dotquy115_theme') || 'warm';
+          var sc = localStorage.getItem('dotquy115_scale') || '1';
+          document.documentElement.setAttribute('data-theme', th);
+          document.documentElement.setAttribute('data-scale', sc);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class={emergencyMode ? 'is-emergency' : ''} data-emergency={emergencyMode ? 'true' : 'false'}>
+    <script is:inline>
+      (function () {
+        try {
+          var isCap = Boolean(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+          var isParam = window.location.search.indexOf('apk=1') !== -1;
+          if (isCap || isParam) {
+            document.body.classList.add('is-apk');
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    {emergencyMode ? (
+      <!-- PERSISTENT EMERGENCY HEADER: Guaranteed 115 Call Button + Golden Hour Ruler on EVERY step -->
+      <header class="sticky-em-bar" id="emergency-sticky-header" role="banner">
+        <div class="container em-bar-inner">
+          <div class="em-bar-row">
+            <a href="/" class="em-top-btn" aria-label="Thoát hướng dẫn cấp cứu về trang chủ">
+              <Fragment set:html={renderIcon('close', 20)} />
+              <span>Thoát</span>
+            </a>
+
+            <div class="em-bar-actions">
+              <button type="button" id="btn-em-speak" class="em-top-btn" aria-pressed="false">
+                <Fragment set:html={renderIcon('speaker', 20)} />
+                <span id="em-speak-label">Đọc to</span>
+              </button>
+
+              <a href="tel:115" id="sticky-115-btn" class="em-top-call115" data-call-115="true">
+                <Fragment set:html={renderIcon('phone', 20)} />
+                <span>Gọi 115</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="em-onset-strip" aria-live="polite">
+            <div class="em-onset-meta">
+              <span id="global-lkw-clock" class="tabular">Chưa chọn mốc giờ</span>
+              <span id="global-lkw-phase" class="em-phase-pill">GỌI 115 NGAY</span>
+            </div>
+            <div class="golden-ruler-track" id="global-golden-ruler" style="--progress: 8%;">
+              <span class="golden-ruler-thumb"></span>
+            </div>
+          </div>
+        </div>
+      </header>
+    ) : (
+      <Fragment>
+        <!-- OTA Update Ready Banner (Appears quietly in Calm Mode when a new web bundle is verified) -->
+        <div id="ota-ready-banner" class="ota-banner hidden" role="status" aria-live="polite">
+          <div class="container ota-banner-inner">
+            <span id="ota-banner-msg">Đã tải bản cập nhật nội dung & giao diện mới từ Website.</span>
+            <button type="button" id="btn-apply-ota" class="strip-btn">Áp dụng ngay</button>
+          </div>
+        </div>
+
+        <!-- Top Emergency Strip -->
+        <div class="top-sos-strip" role="region" aria-label="Đường dây cấp cứu nhanh">
+          <div class="top-sos-inner">
+            <span>Đang có người nghi bị đột quỵ / tai biến? Đừng chần chừ!</span>
+            <div class="top-sos-actions">
+              <a href="tel:115" class="strip-btn" data-call-115="true">
+                <Fragment set:html={renderIcon('phone', 18)} />
+                <span>Gọi 115 ngay</span>
+              </a>
+              <a href="/so-cuu/" class="strip-btn outline">
+                <Fragment set:html={renderIcon('aid', 18)} />
+                <span>Sơ cứu 0 giây</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Sticky Header -->
+        <header class="site-header" role="banner">
+          <div class="header-inner">
+            <a href="/" class="brand-link">
+              <span class="brand-badge">
+                <Fragment set:html={renderBrandMark(34)} />
+              </span>
+              <span>
+                <span class="brand-name">Cẩm Nang Đột Quỵ</span>
+                <span class="brand-tagline">Đột Quỵ 115 · Sơ cứu & Phòng bệnh</span>
+              </span>
+            </a>
+
+            <nav class="desktop-nav" aria-label="Điều hướng chính">
+              <a href="/" class="nav-link" aria-current={currentNav === 'home' ? 'page' : undefined}>Trang chủ</a>
+              <a href="/kiem-tra/" class="nav-link" aria-current={currentNav === 'test' ? 'page' : undefined}>Kiểm tra nhanh</a>
+              <a href="/so-cuu/" class="nav-link" aria-current={currentNav === 'emergency' ? 'page' : undefined}>Sơ cứu</a>
+              <a href="/tra-cuu/" class="nav-link" aria-current={currentNav === 'library' ? 'page' : undefined}>Cẩm nang</a>
+              <a href="/benh-vien/" class="nav-link" aria-current={currentNav === 'hospitals' ? 'page' : undefined}>Bệnh viện</a>
+              <a href="/ho-so/" class="nav-link" aria-current={currentNav === 'profile' ? 'page' : undefined}>Thẻ Y Tế & Cài đặt</a>
+            </nav>
+
+            <div class="header-tools">
+              <button type="button" id="btn-cycle-font" class="icon-action-btn" aria-label="Đổi cỡ chữ lớn cho người cao tuổi">
+                <span id="font-scale-indicator">Aa</span>
+              </button>
+              <button type="button" id="btn-cycle-theme" class="icon-action-btn" aria-label="Đổi chế độ màu sắc và tương phản">
+                <Fragment set:html={renderIcon('contrast', 20)} />
+                <span id="theme-indicator" class="hide-xs">Ấm dịu</span>
+              </button>
+              <button type="button" id="btn-page-tts" class="icon-action-btn" aria-label="Nghe đọc nội dung trang này">
+                <Fragment set:html={renderIcon('speaker', 20)} />
+                <span class="hide-xs">Nghe</span>
+              </button>
+            </div>
+          </div>
+        </header>
+      </Fragment>
+    )}
+
+    <!-- Live TTS Status Toast -->
+    <div id="tts-live-bar" class="tts-live-bar hidden" role="status" aria-live="polite">
+      <div class="container tts-live-inner">
+        <span id="tts-live-msg">Đang phát hướng dẫn giọng nói tiếng Việt...</span>
+        <button type="button" id="btn-stop-tts" class="icon-action-btn">Dừng đọc</button>
+      </div>
+    </div>
+
+    <main id="main-content" class="main-wrap">
+      <slot />
+    </main>
+
+    {!emergencyMode && (
+      <footer class="site-footer" role="contentinfo">
+        <div class="container footer-inner">
+          <div>
+            <strong>Cẩm Nang Đột Quỵ — Sơ cứu & Phòng bệnh (Ứng dụng Đột Quỵ 115)</strong>
+            <p class="footer-meta">
+              Thẩm định nội dung: {reviewerName} · Cập nhật y khoa: {lastAuditDate}
+            </p>
+          </div>
+          <p class="footer-disclaimer">
+            Tuyên bố an toàn y khoa: Ứng dụng và Website cung cấp hướng dẫn sơ cứu an toàn trước viện và giáo dục sức khỏe dựa trên bằng chứng khoa học, không phải thiết bị chẩn đoán y tế và không thay thế chỉ định trực tiếp của bác sĩ. Trong mọi tình huống nghi ngờ đột quỵ cấp: gọi ngay <strong>115</strong>.
+          </p>
+        </div>
+      </footer>
+    )}
+
+    <!-- Mobile Browser Sticky 2-Button Thumb Bar -->
+    {!emergencyMode && (
+      <nav class="mobile-web-bar" aria-label="Hành động khẩn cấp trên điện thoại">
+        <a href="tel:115" class="btn btn-emergency" data-call-115="true">
+          <Fragment set:html={renderIcon('phone', 20)} />
+          <span>Gọi 115</span>
+        </a>
+        <a href="/so-cuu/" class="btn btn-outline">
+          <Fragment set:html={renderIcon('aid', 20)} />
+          <span>Sơ cứu</span>
+        </a>
+      </nav>
+    )}
+
+    <!-- Android APK 5-Tab Bottom Navigation -->
+    {!emergencyMode && (
+      <nav class="apk-tab-bar" aria-label="Điều hướng ứng dụng Đột Quỵ 115">
+        <a href="/" class="apk-tab" aria-current={currentNav === 'home' ? 'page' : undefined}>
+          <Fragment set:html={renderIcon('home', 22)} />
+          <span>Trang chủ</span>
+        </a>
+        <a href="/kiem-tra/" class="apk-tab" aria-current={currentNav === 'test' ? 'page' : undefined}>
+          <Fragment set:html={renderIcon('clipboard', 22)} />
+          <span>Kiểm tra</span>
+        </a>
+        <a href="/so-cuu/" class="apk-tab sos-center" aria-current={currentNav === 'emergency' ? 'page' : undefined}>
+          <Fragment set:html={renderIcon('phone', 22)} />
+          <span>Cấp cứu</span>
+        </a>
+        <a href="/tra-cuu/" class="apk-tab" aria-current={currentNav === 'library' ? 'page' : undefined}>
+          <Fragment set:html={renderIcon('book', 22)} />
+          <span>Tra cứu</span>
+        </a>
+        <a href="/ho-so/" class="apk-tab" aria-current={currentNav === 'profile' ? 'page' : undefined}>
+          <Fragment set:html={renderIcon('userCard', 22)} />
+          <span>Hồ sơ</span>
+        </a>
+      </nav>
+    )}
+
+    <style is:global>
+      .main-wrap {
+        padding-block: 1.35rem 2.5rem;
+      }
+      body.is-emergency .main-wrap {
+        padding-block: 0.65rem 2rem;
+      }
+      .sticky-em-bar {
+        position: sticky;
+        top: 0;
+        z-index: 60;
+        background: var(--emergency);
+        color: #FFFFFF;
+        padding-block: 0.4rem 0.5rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.22);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+      }
+      .em-bar-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.4rem;
+      }
+      .em-bar-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.4rem;
+      }
+      .em-bar-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .em-top-btn {
+        min-height: 48px;
+        min-width: 48px;
+        padding: 0.35rem 0.65rem;
+        border-radius: var(--r-sm);
+        border: 1.5px solid rgba(255, 255, 255, 0.5);
+        background: rgba(255, 255, 255, 0.14);
+        color: #FFFFFF !important;
+        font-weight: 800;
+        font-size: var(--fs-xs);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+      .em-top-call115 {
+        min-height: 48px;
+        min-width: 96px;
+        padding: 0.35rem 0.8rem;
+        border-radius: var(--r-sm);
+        background: #FFFFFF;
+        color: #991B1B !important;
+        font-weight: 800;
+        font-size: var(--fs-sm);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        border: 2px solid #FFFFFF;
+      }
+      .em-onset-strip {
+        background: rgba(0, 0, 0, 0.22);
+        border-radius: var(--r-sm);
+        padding: 0.45rem 0.75rem 0.6rem;
+      }
+      .em-onset-meta {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: var(--fs-xs);
+        font-weight: 700;
+      }
+      .em-phase-pill {
+        background: var(--golden);
+        color: var(--on-golden);
+        padding: 0.12rem 0.55rem;
+        border-radius: var(--r-pill);
+        font-weight: 800;
+        font-size: var(--fs-xs);
+      }
+      .ota-banner {
+        background: var(--primary);
+        color: var(--on-primary);
+        padding: 0.45rem 0;
+        font-size: var(--fs-sm);
+        font-weight: 700;
+      }
+      .ota-banner-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.65rem;
+      }
+      .tts-live-bar {
+        background: var(--primary-soft);
+        border-bottom: 1.5px solid var(--primary);
+        padding: 0.5rem 0;
+        font-size: var(--fs-sm);
+        font-weight: 700;
+        color: var(--primary-ink);
+      }
+      .tts-live-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+      .site-footer {
+        background: var(--bg-card);
+        border-top: 1.5px solid var(--border-soft);
+        padding-block: 1.75rem 2.25rem;
+        margin-top: 2rem;
+      }
+      .footer-inner {
+        display: grid;
+        gap: 0.75rem;
+      }
+      .footer-meta {
+        color: var(--ink-secondary);
+        font-size: var(--fs-sm);
+        margin-top: 0.25rem;
+      }
+      .footer-disclaimer {
+        color: var(--ink-muted);
+        font-size: var(--fs-xs);
+        margin: 0;
+      }
+      @media (max-width: 560px) {
+        .hide-xs { display: none; }
+      }
+    </style>
+
+    <script>
+      import { triggerCall115, speakVietnamese, stopSpeaking, DotQuyNative } from '../lib/native-bridge';
+      import { initOtaLifecycle } from '../lib/ota-client';
+      import { readLkwState, computeGoldenHourStatus } from '../lib/lkw-clock';
+
+      const isEmergency = document.body.dataset.emergency === 'true';
+
+      // Initialize OTA check & healthy boot signal
+      initOtaLifecycle(isEmergency);
+
+      // Wire all [data-call-115] triggers
+      document.addEventListener('click', (e) => {
+        const target = (e.target as HTMLElement | null)?.closest('[data-call-115]');
+        if (target) {
+          e.preventDefault();
+          triggerCall115();
+        }
+      });
+
+      // Font scale cycler (1 -> lg -> xl)
+      const scaleOrder = ['1', 'lg', 'xl'];
+      const scaleLabels: Record<string, string> = { '1': 'Aa', lg: 'A+', xl: 'A++' };
+      const btnFont = document.getElementById('btn-cycle-font');
+      const indFont = document.getElementById('font-scale-indicator');
+      const updateFontIndicator = () => {
+        const cur = document.documentElement.getAttribute('data-scale') || '1';
+        if (indFont) indFont.textContent = scaleLabels[cur] || 'Aa';
+      };
+      updateFontIndicator();
+      btnFont?.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-scale') || '1';
+        const next = scaleOrder[(scaleOrder.indexOf(cur) + 1) % scaleOrder.length];
+        document.documentElement.setAttribute('data-scale', next);
+        try { localStorage.setItem('dotquy115_scale', next); } catch {}
+        updateFontIndicator();
+        window.dispatchEvent(new CustomEvent('dotquy:prefs-changed'));
+      });
+
+      // Theme cycler (warm -> contrast -> dark -> system)
+      const themeOrder = ['warm', 'contrast', 'dark', 'system'];
+      const themeNames: Record<string, string> = {
+        warm: 'Ấm dịu',
+        contrast: 'Rõ nét AAA',
+        dark: 'Ban đêm',
+        system: 'Theo máy',
+      };
+      const btnTheme = document.getElementById('btn-cycle-theme');
+      const indTheme = document.getElementById('theme-indicator');
+      const updateThemeIndicator = () => {
+        const cur = document.documentElement.getAttribute('data-theme') || 'warm';
+        if (indTheme) indTheme.textContent = themeNames[cur] || 'Ấm dịu';
+      };
+      updateThemeIndicator();
+      btnTheme?.addEventListener('click', () => {
+        const cur = document.documentElement.getAttribute('data-theme') || 'warm';
+        const next = themeOrder[(themeOrder.indexOf(cur) + 1) % themeOrder.length];
+        document.documentElement.setAttribute('data-theme', next);
+        try { localStorage.setItem('dotquy115_theme', next); } catch {}
+        updateThemeIndicator();
+        window.dispatchEvent(new CustomEvent('dotquy:prefs-changed'));
+      });
+
+      // Global TTS helper
+      const ttsBar = document.getElementById('tts-live-bar');
+      const ttsMsg = document.getElementById('tts-live-msg');
+      const btnPageTts = document.getElementById('btn-page-tts');
+      const btnStopTts = document.getElementById('btn-stop-tts');
+
+      async function speakContent(text: string) {
+        if (ttsBar && ttsMsg) {
+          ttsBar.classList.remove('hidden');
+          ttsMsg.textContent = 'Đang đọc hướng dẫn tiếng Việt...';
+        }
+        const res = await speakVietnamese(text, () => {
+          ttsBar?.classList.add('hidden');
+        });
+        if (res.warning && ttsMsg) {
+          ttsMsg.textContent = res.warning;
+        }
+      }
+
+      btnPageTts?.addEventListener('click', () => {
+        const mainText = document.getElementById('main-content')?.innerText?.slice(0, 750) || '';
+        speakContent(mainText);
+      });
+      btnStopTts?.addEventListener('click', () => {
+        stopSpeaking();
+        ttsBar?.classList.add('hidden');
+      });
+
+      (window as any).__dotquySpeak = speakContent;
+
+      // OTA banner handler
+      const otaBanner = document.getElementById('ota-ready-banner');
+      const otaMsg = document.getElementById('ota-banner-msg');
+      const btnApplyOta = document.getElementById('btn-apply-ota');
+      window.addEventListener('dotquy:ota-ready', (ev: any) => {
+        if (otaBanner && otaMsg) {
+          otaMsg.textContent = `Đã tải xong bản cập nhật ${ev.detail?.version || 'mới'} từ Website.`;
+          otaBanner.classList.remove('hidden');
+        }
+      });
+      btnApplyOta?.addEventListener('click', () => {
+        DotQuyNative.applyPendingUpdate().catch(() => window.location.reload());
+      });
+
+      // Live Golden Hour Ruler sync when in Emergency Mode
+      if (isEmergency) {
+        const clockEl = document.getElementById('global-lkw-clock');
+        const phaseEl = document.getElementById('global-lkw-phase');
+        const rulerEl = document.getElementById('global-golden-ruler');
+        const syncHeaderLkw = () => {
+          const st = readLkwState();
+          const info = computeGoldenHourStatus(st);
+          if (clockEl) {
+            clockEl.textContent =
+              st.mode === 'known' ? `${info.clockText} · Đã qua ${info.elapsedText}` : info.clockText;
+          }
+          if (phaseEl) phaseEl.textContent = info.phaseBadge;
+          if (rulerEl) rulerEl.style.setProperty('--progress', `${info.rulerProgressPct}%`);
+        };
+        syncHeaderLkw();
+        window.setInterval(syncHeaderLkw, 1000);
+        window.addEventListener('dotquy:lkw-updated', syncHeaderLkw);
+      }
+    </script>
+  </body>
+</html>

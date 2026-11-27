@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { renderIcon } from '../../components/icons/Icons';
+import { STROKE_HOSPITALS_VN } from '../../data/stroke-hospitals-vn';
+---
+
+<BaseLayout
+  title="Danh bạ Bệnh viện & Đơn vị Đột quỵ 3 Miền (Tra cứu Offline)"
+  currentNav="hospitals"
+>
+  <div class="container hosp-stack">
+    <header class="card">
+      <span class="badge badge-teal">Mạng lưới Cấp cứu Đột quỵ Việt Nam · Tra cứu không cần mạng</span>
+      <h1 style="margin-top:0.4rem;">Danh bạ Bệnh viện & Đơn vị Đột quỵ trên toàn quốc</h1>
+      <p style="color:var(--ink-secondary);">
+        Nguyên tắc vàng: Luôn gọi <strong>115</strong> đầu tiên để được điều phối tới cơ sở gần nhất có <strong>máy chụp CT sọ não 24/7 và thuốc Tiêu sợi huyết (IVT) / Lấy huyết khối cơ học (EVT)</strong>. Không tự ý chạy xe máy hoặc bỏ qua bệnh viện tỉnh đã có Đơn vị Đột quỵ nếu trung tâm tuyến cuối ở cách xa nhiều giờ!
+      </p>
+
+      <div class="hosp-controls">
+        <label for="hosp-filter-input" class="sr-only">Tìm theo tên tỉnh thành hoặc bệnh viện</label>
+        <input
+          id="hosp-filter-input"
+          type="search"
+          class="hosp-search-input"
+          placeholder="Nhập tên Tỉnh / Thành phố hoặc tên Bệnh viện (ví dụ: Hà Nội, Cần Thơ, Đà Nẵng, Phú Thọ...)"
+        />
+        <div class="region-chips" role="group" aria-label="Lọc theo vùng miền">
+          <button type="button" class="chip active" data-region-btn="all">Tất cả 3 miền</button>
+          <button type="button" class="chip" data-region-btn="Bắc">Miền Bắc</button>
+          <button type="button" class="chip" data-region-btn="Trung">Miền Trung & Tây Nguyên</button>
+          <button type="button" class="chip" data-region-btn="Nam">Miền Nam & ĐBSCL</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="hosp-grid" id="hosp-list-grid">
+      {STROKE_HOSPITALS_VN.map((h) => (
+        <article
+          class="card hosp-card"
+          data-hosp-region={h.region}
+          data-hosp-search={`${h.name} ${h.province} ${h.address}`}
+        >
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.5rem;">
+            <span class="badge badge-teal">{h.province} · Miền {h.region}</span>
+            <span class={`badge ${h.capability === 'EVT_24_7' ? 'badge-red' : 'badge-warn'}`}>
+              {h.capability === 'EVT_24_7' ? 'IVT + Can thiệp mạch EVT 24/7' : 'CT + Tiêu sợi huyết IVT'}
+            </span>
+          </div>
+          <h2>{h.name}</h2>
+          <p class="hosp-cap">{h.capabilityLabel}</p>
+          <p class="hosp-addr">
+            <Fragment set:html={renderIcon('pin', 18)} />
+            <span>{h.address}</span>
+          </p>
+          <p class="hosp-note">{h.note}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .hosp-stack {
+    display: grid;
+    gap: 1.35rem;
+  }
+  .hosp-controls {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  .hosp-search-input {
+    width: 100%;
+    min-height: 54px;
+    padding: 0.65rem 1rem;
+    border-radius: var(--r-md);
+    border: 2px solid var(--primary);
+    background: var(--bg-card);
+    font-weight: 600;
+  }
+  .region-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+  }
+  .hosp-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  @media (min-width: 820px) {
+    .hosp-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .hosp-card {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+  }
+  .hosp-card h2 {
+    font-size: var(--fs-lg);
+    margin: 0.15rem 0 0;
+  }
+  .hosp-cap {
+    font-weight: 700;
+    color: var(--primary-ink);
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+  [data-theme="dark"] .hosp-cap { color: var(--primary); }
+  .hosp-addr {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    font-size: var(--fs-sm);
+    margin: 0;
+  }
+  .hosp-note {
+    font-size: var(--fs-xs);
+    color: var(--ink-secondary);
+    margin: 0;
+  }
+</style>
+
+<script>
+  import { normalizeVietnamese } from '../../lib/search-engine';
+
+  let selectedRegion = 'all';
+  const input = document.getElementById('hosp-filter-input') as HTMLInputElement | null;
+
+  function applyHospitalFilter() {
+    const q = normalizeVietnamese(input?.value || '');
+    document.querySelectorAll('[data-hosp-region]').forEach((el) => {
+      const card = el as HTMLElement;
+      const regOk = selectedRegion === 'all' || card.dataset.hospRegion === selectedRegion;
+      const text = normalizeVietnamese(card.dataset.hospSearch || '');
+      const searchOk = !q || text.includes(q);
+      card.classList.toggle('hidden', !(regOk && searchOk));
+    });
+  }
+
+  document.querySelectorAll('[data-region-btn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-region-btn]').forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedRegion = (btn as HTMLElement).dataset.regionBtn || 'all';
+      applyHospitalFilter();
+    });
+  });
+
+  input?.addEventListener('input', applyHospitalFilter);
+</script>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- White protective medical shield inside 66dp safe zone -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,24L30,33v18.5C30,66.9 40.2,81.1 54,85c13.8,-3.9 24,-18.1 24,-33.5V33L54,24z" />
+    <!-- Medical emergency cross in crimson #DC2626 -->
+    <path
+        android:fillColor="#DC2626"
+        android:pathData="M50,38h8v11h11v8H58v11h-8V57H39v-8h11V38z" />
+</vector>

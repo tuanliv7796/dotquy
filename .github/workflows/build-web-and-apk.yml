@@ -1,0 +1,61 @@
+name: Build Web, Verify 10 Safety Gates & Package Android APK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup Java 21 for Android Gradle
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro Static Website & SHA-256 OTA Bundle
+        env:
+          PUBLIC_SITE_URL: ${{ vars.PUBLIC_SITE_URL || '' }}
+          PUBLIC_OTA_MANIFEST_URL: ${{ vars.PUBLIC_OTA_MANIFEST_URL || '' }}
+        run: npm run build
+
+      - name: Install Chromium & Run 10 Playwright Medical Safety Gates
+        run: |
+          npx playwright install --with-deps chromium
+          CHROME_PATH="" npx playwright test
+
+      - name: Sync Web Bundle into Android & Assemble APK
+        run: |
+          npx cap sync android
+          chmod +x android/gradlew
+          ./android/gradlew -p android testDebugUnitTest assembleDebug
+          cp android/app/build/outputs/apk/debug/app-debug.apk dist/dot-quy-115-v1.0.apk
+
+      - name: Upload Website + OTA Bundle Artifact (dist/)
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-and-ota-dist
+          path: dist/
+
+      - name: Upload Standalone Android APK (dot-quy-115-v1.0.apk)
+        uses: actions/upload-artifact@v4
+        with:
+          name: dot-quy-115-android-apk
+          path: dist/dot-quy-115-v1.0.apk
