@@ -1,0 +1,11 @@
+{
+  "buildId": "1.0.0-20261127154625-18c4f2e8d8",
+  "version": "1.0.0",
+  "schemaVersion": 1,
+  "minNativeVersion": 1,
+  "builtAt": "2026-11-27T15:46:25.239Z",
+  "bundleUrl": "./bundle.zip",
+  "bundleSha256": "18c4f2e8d81143ad7d3eec9caa976f1805a4f66c21c3f3e9baef712ffd511b3e",
+  "bundleSizeBytes": 426820,
+  "fileCount": 64
+}
