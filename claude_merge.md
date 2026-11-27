@@ -883,7 +883,7 @@ Danh mục rút gọn. Danh sách đầy đủ (khoảng 400 trích dẫn) nằm
 
 ## Phụ lục: dùng tài liệu này cho website và app
 
-Gợi ý ánh xạ nội dung sang các màn hình trong bản thiết kế `docs/ui-ux/`:
+Gợi ý ánh xạ nội dung sang các màn hình trong bản thiết kế `claude/docs/ui-ux/`:
 
 | Màn hình, chuyên mục | Lấy từ mục |
 |---|---|

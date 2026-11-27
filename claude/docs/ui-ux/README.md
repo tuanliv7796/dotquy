@@ -2,7 +2,7 @@
 
 Website + app Android về phòng chống và sơ cứu đột quỵ. Bản 0.1 · 27/11/2026.
 
-- **Bản đầy đủ có prototype bấm thử được:** mở `docs/ui-ux/ban-thiet-ke.html` bằng trình duyệt.
+- **Bản đầy đủ có prototype bấm thử được:** mở `claude/docs/ui-ux/ban-thiet-ke.html` bằng trình duyệt.
 - Nội dung y khoa trong bản mẫu chỉ để minh hoạ bố cục, sẽ thay bằng tài liệu `.md` chính thức và cần bác sĩ duyệt.
 
 ## Luận điểm
