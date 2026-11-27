@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../../lib/site-path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { renderIcon } from '../../components/icons/Icons';
 import {
@@ -49,7 +50,7 @@ import {
           <p style="margin:0;">
             Người bệnh đang <strong>bất tỉnh, khó thở / thở ngáp cá, lên cơn co giật, nôn vọt lơ mơ</strong> hoặc <strong>đau đầu dữ dội như sét đánh</strong>!
           </p>
-          <a href="/so-cuu/" class="btn btn-emergency">Vào thẳng Sơ cứu & Gọi 115</a>
+          <a href={sitePath('/so-cuu/')} class="btn btn-emergency">Vào thẳng Sơ cứu & Gọi 115</a>
         </div>
       </div>
 
@@ -197,7 +198,7 @@ import {
 
               <div style="display:flex; flex-wrap:wrap; gap:0.65rem; margin-top:0.85rem;">
                 <a href="tel:115" class="btn btn-emergency" data-call-115="true">Gọi 115 ngay</a>
-                <a href="/benh-vien/" class="btn btn-primary">Xem Đơn vị Đột quỵ gần nhất</a>
+                <a href={sitePath('/benh-vien/')} class="btn btn-primary">Xem Đơn vị Đột quỵ gần nhất</a>
               </div>
             </div>
           </div>
@@ -660,6 +661,7 @@ import {
 </style>
 
 <script>
+  import { sitePath } from '../../lib/site-path';
   import {
     loadVault,
     saveVault,
@@ -834,7 +836,7 @@ import {
             Đã ghi nhận tại bước kiểm tra: <strong>${triggeredSign || 'Triệu chứng thần kinh mới'}</strong>. Đừng làm tiếp các câu sau — mỗi phút trôi qua não mất 1,9 triệu tế bào thần kinh!
           </p>
           <div style="display:grid; gap:0.75rem; margin-top:0.95rem;">
-            <a href="/so-cuu/" class="btn btn-white-red" style="min-height:68px; width:100%; font-size:var(--fs-lg);">
+            <a href="${sitePath(`/so-cuu/`)}" class="btn btn-white-red" style="min-height:68px; width:100%; font-size:var(--fs-lg);">
               GỌI 115 & MỞ SƠ CỨU NGAY →
             </a>
             <button type="button" id="btn-reset-from-verdict" class="btn sos-secondary-btn" style="width:100%; background:transparent; border:2px solid #FFF; color:#FFF !important;">
@@ -928,7 +930,7 @@ import {
               </p>
               <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
                 <a href="tel:115" class="btn btn-emergency" data-call-115="true">Gọi 115 ngay</a>
-                <a href="/benh-vien/" class="btn btn-primary">Xem Bệnh viện Đột quỵ</a>
+                <a href="${sitePath(`/benh-vien/`)}" class="btn btn-primary">Xem Bệnh viện Đột quỵ</a>
               </div>
             </div>
           `;
@@ -954,7 +956,7 @@ import {
               lkwTimestampMs: new Date(priorNeg.finishedAt).getTime(),
               activePersonId: pid,
             });
-            window.location.href = '/so-cuu/';
+            window.location.href = sitePath('/so-cuu/');
           });
         }
       }

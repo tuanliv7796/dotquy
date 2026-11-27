@@ -144,6 +144,7 @@ const quickChips = [
 </style>
 
 <script>
+  import { sitePath } from '../lib/site-path';
   import { runMedicalSafetySearch, type SearchableArticle } from '../lib/search-engine';
   import { triggerCall115 } from '../lib/native-bridge';
 
@@ -195,7 +196,7 @@ const quickChips = [
               <a href="${b.primaryCtaHref}" class="btn btn-outline" style="padding:0.55rem 1rem;">${escapeHtml(b.primaryCtaLabel)}</a>
               ${
                 b.secondaryArticleSlug
-                  ? `<a href="/tra-cuu/${b.secondaryArticleSlug}/" class="btn btn-outline" style="padding:0.55rem 1rem;">${escapeHtml(b.secondaryArticleLabel || 'Đọc chi tiết')}</a>`
+                  ? `<a href="${sitePath(`/tra-cuu/${b.secondaryArticleSlug}/`)}" class="btn btn-outline" style="padding:0.55rem 1rem;">${escapeHtml(b.secondaryArticleLabel || 'Đọc chi tiết')}</a>`
                   : ''
               }
             </div>
@@ -208,7 +209,7 @@ const quickChips = [
           ${res.results
             .map(
               (item) => `
-            <a href="/tra-cuu/${item.slug}/" class="card" style="padding:0.9rem 1.1rem; text-decoration:none; display:grid; gap:0.25rem; min-height:60px;">
+            <a href="${sitePath(`/tra-cuu/${item.slug}/`)}" class="card" style="padding:0.9rem 1.1rem; text-decoration:none; display:grid; gap:0.25rem; min-height:60px;">
               <span class="badge ${item.actionLevel === 'emergency' ? 'badge-red' : item.actionLevel === 'urgent_today' ? 'badge-warn' : 'badge-teal'}" style="justify-self:start;">
                 ${escapeHtml(item.categoryLabel)}
               </span>
@@ -221,7 +222,7 @@ const quickChips = [
         </div>`;
       } else if (res.banners.length === 0) {
         html += `<div class="card" style="padding:1rem;">
-          <p style="margin:0; color:var(--ink-secondary);">Chưa tìm thấy bài khớp chính xác với "${escapeHtml(raw)}". Nếu có bất kỳ dấu hiệu thần kinh lạ khởi phát đột ngột, hãy bấm <strong>Gọi 115</strong> hoặc mở <a href="/so-cuu/" style="display:inline-flex; align-items:center; min-height:48px; padding-inline:0.4rem;">Sơ cứu 0 giây</a>.</p>
+          <p style="margin:0; color:var(--ink-secondary);">Chưa tìm thấy bài khớp chính xác với "${escapeHtml(raw)}". Nếu có bất kỳ dấu hiệu thần kinh lạ khởi phát đột ngột, hãy bấm <strong>Gọi 115</strong> hoặc mở <a href="${sitePath(`/so-cuu/`)}" style="display:inline-flex; align-items:center; min-height:48px; padding-inline:0.4rem;">Sơ cứu 0 giây</a>.</p>
         </div>`;
       }
 

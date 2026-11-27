@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../../lib/site-path';
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { renderIcon } from '../../components/icons/Icons';
@@ -23,7 +24,7 @@ const { title, categoryLabel, actionLevel, tldr15s, dos, donts, reviewedBy, upda
 <BaseLayout title={title} description={tldr15s.join(' ')} currentNav="library">
   <article class="container article-reader-stack" itemscope itemtype="https://schema.org/MedicalWebPage">
     <nav class="breadcrumb-row" aria-label="Đường dẫn chuyên mục">
-      <a href="/tra-cuu/" class="chip">← Quay lại Cẩm nang</a>
+      <a href={sitePath('/tra-cuu/')} class="chip">← Quay lại Cẩm nang</a>
       <span class={`badge ${actionLevel === 'emergency' ? 'badge-red' : actionLevel === 'urgent_today' ? 'badge-warn' : 'badge-teal'}`}>
         {categoryLabel}
       </span>
@@ -50,7 +51,7 @@ const { title, categoryLabel, actionLevel, tldr15s, dos, donts, reviewedBy, upda
           <span>Chia sẻ qua Zalo / Tin nhắn</span>
         </button>
         {actionLevel === 'emergency' && (
-          <a href="/so-cuu/" class="btn btn-emergency">
+          <a href={sitePath('/so-cuu/')} class="btn btn-emergency">
             <Fragment set:html={renderIcon('phone', 20)} />
             <span>Đang gặp ca này → Sơ cứu 0 giây</span>
           </a>
@@ -121,14 +122,14 @@ const { title, categoryLabel, actionLevel, tldr15s, dos, donts, reviewedBy, upda
     <!-- PREV / NEXT NAVIGATION -->
     <nav class="prev-next-grid" aria-label="Bài viết liên quan">
       {prevEntry ? (
-        <a href={`/tra-cuu/${prevEntry.id.replace(/\.md$/, '')}/`} class="card nav-adj-card">
+        <a href={sitePath(`/tra-cuu/${prevEntry.id.replace(/\.md$/, '')}/`)} class="card nav-adj-card">
           <span class="ho-label">← CHUYÊN ĐỀ TRƯỚC</span>
           <strong>{prevEntry.data.title}</strong>
         </a>
       ) : <div />}
 
       {nextEntry ? (
-        <a href={`/tra-cuu/${nextEntry.id.replace(/\.md$/, '')}/`} class="card nav-adj-card">
+        <a href={sitePath(`/tra-cuu/${nextEntry.id.replace(/\.md$/, '')}/`)} class="card nav-adj-card">
           <span class="ho-label">CHUYÊN ĐỀ TIẾP THEO →</span>
           <strong>{nextEntry.data.title}</strong>
         </a>

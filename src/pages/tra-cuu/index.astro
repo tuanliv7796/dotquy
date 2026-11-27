@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../../lib/site-path';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SearchBox from '../../components/SearchBox.astro';
@@ -51,7 +52,7 @@ const categories = [
             : 'badge-teal';
         return (
           <a
-            href={`/tra-cuu/${slug}/`}
+            href={sitePath(`/tra-cuu/${slug}/`)}
             class="card article-card"
             data-article-cat={entry.data.category}
           >

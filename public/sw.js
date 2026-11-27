@@ -1,4 +1,6 @@
-const CACHE_NAME = 'dotquy115-pwa-v3';
+const BASE = new URL(self.registration.scope).pathname;
+const CACHE_PREFIX = `dotquy115:${BASE}:`;
+const CACHE_NAME = `${CACHE_PREFIX}v4`;
 const CORE_ROUTES = [
   '/',
   '/so-cuu/',
@@ -8,7 +10,7 @@ const CORE_ROUTES = [
   '/ho-so/',
   '/data/search-index.json',
   '/favicon.svg',
-];
+].map((route) => BASE + route.slice(1));
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -19,7 +21,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(keys.filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME).map((k) => caches.delete(k)))
     ).then(() => self.clients.claim())
   );
 });
@@ -28,9 +30,9 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin || !url.pathname.startsWith(BASE)) return;
   // Never cache OTA manifest so checks are always fresh
-  if (url.pathname.startsWith('/ota/')) return;
+  if (url.pathname.startsWith(BASE + 'ota/')) return;
 
   event.respondWith(
     fetch(req)
@@ -41,6 +43,6 @@ self.addEventListener('fetch', (event) => {
         }
         return networkRes;
       })
-      .catch(() => caches.match(req).then((cached) => cached || caches.match('/')))
+      .catch(() => caches.match(req).then((cached) => cached || caches.match(BASE)))
   );
 });

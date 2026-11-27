@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../../lib/site-path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { renderIcon } from '../../components/icons/Icons';
 ---
@@ -81,7 +82,7 @@ import { renderIcon } from '../../components/icons/Icons';
             <Fragment set:html={renderIcon('shieldCheck', 20)} />
             <span>Lưu Thẻ Y Tế trên máy này</span>
           </button>
-          <a href="/so-cuu/#doctor-handoff-section" class="btn btn-outline">Xem thử trên Thẻ Bàn Giao 115 →</a>
+          <a href={sitePath('/so-cuu/#doctor-handoff-section')} class="btn btn-outline">Xem thử trên Thẻ Bàn Giao 115 →</a>
           <span id="prof-save-status" class="save-msg"></span>
         </div>
       </form>

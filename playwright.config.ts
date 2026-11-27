@@ -9,7 +9,7 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4321',
     trace: 'off',
     launchOptions: {
-      executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome',
+      executablePath: process.env.CHROME_PATH || undefined,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
   },

@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../lib/site-path';
 import '../styles/global.css';
 import { renderIcon, renderBrandMark } from '../components/icons/Icons';
 
@@ -34,8 +35,8 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#B91C1C" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href={sitePath('/favicon.svg')} />
+    <link rel="manifest" href={sitePath('/manifest.webmanifest')} />
 
     <!-- Restore Senior Accessibility Preferences Before First Paint -->
     <script is:inline>
@@ -67,7 +68,7 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
       <header class="sticky-em-bar" id="emergency-sticky-header" role="banner">
         <div class="container em-bar-inner">
           <div class="em-bar-row">
-            <a href="/" class="em-top-btn" aria-label="Thoát hướng dẫn cấp cứu về trang chủ">
+            <a href={sitePath('/')} class="em-top-btn" aria-label="Thoát hướng dẫn cấp cứu về trang chủ">
               <Fragment set:html={renderIcon('close', 20)} />
               <span>Thoát</span>
             </a>
@@ -115,7 +116,7 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
                 <Fragment set:html={renderIcon('phone', 18)} />
                 <span>Gọi 115 ngay</span>
               </a>
-              <a href="/so-cuu/" class="strip-btn outline">
+              <a href={sitePath('/so-cuu/')} class="strip-btn outline">
                 <Fragment set:html={renderIcon('aid', 18)} />
                 <span>Sơ cứu 0 giây</span>
               </a>
@@ -126,7 +127,7 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
         <!-- Main Sticky Header -->
         <header class="site-header" role="banner">
           <div class="header-inner">
-            <a href="/" class="brand-link">
+            <a href={sitePath('/')} class="brand-link">
               <span class="brand-badge">
                 <Fragment set:html={renderBrandMark(34)} />
               </span>
@@ -137,12 +138,12 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
             </a>
 
             <nav class="desktop-nav" aria-label="Điều hướng chính">
-              <a href="/" class="nav-link" aria-current={currentNav === 'home' ? 'page' : undefined}>Trang chủ</a>
-              <a href="/kiem-tra/" class="nav-link" aria-current={currentNav === 'test' ? 'page' : undefined}>Kiểm tra nhanh</a>
-              <a href="/so-cuu/" class="nav-link" aria-current={currentNav === 'emergency' ? 'page' : undefined}>Sơ cứu</a>
-              <a href="/tra-cuu/" class="nav-link" aria-current={currentNav === 'library' ? 'page' : undefined}>Cẩm nang</a>
-              <a href="/benh-vien/" class="nav-link" aria-current={currentNav === 'hospitals' ? 'page' : undefined}>Bệnh viện</a>
-              <a href="/ho-so/" class="nav-link" aria-current={currentNav === 'profile' ? 'page' : undefined}>Thẻ Y Tế & Cài đặt</a>
+              <a href={sitePath('/')} class="nav-link" aria-current={currentNav === 'home' ? 'page' : undefined}>Trang chủ</a>
+              <a href={sitePath('/kiem-tra/')} class="nav-link" aria-current={currentNav === 'test' ? 'page' : undefined}>Kiểm tra nhanh</a>
+              <a href={sitePath('/so-cuu/')} class="nav-link" aria-current={currentNav === 'emergency' ? 'page' : undefined}>Sơ cứu</a>
+              <a href={sitePath('/tra-cuu/')} class="nav-link" aria-current={currentNav === 'library' ? 'page' : undefined}>Cẩm nang</a>
+              <a href={sitePath('/benh-vien/')} class="nav-link" aria-current={currentNav === 'hospitals' ? 'page' : undefined}>Bệnh viện</a>
+              <a href={sitePath('/ho-so/')} class="nav-link" aria-current={currentNav === 'profile' ? 'page' : undefined}>Thẻ Y Tế & Cài đặt</a>
             </nav>
 
             <div class="header-tools">
@@ -198,7 +199,7 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
           <Fragment set:html={renderIcon('phone', 20)} />
           <span>Gọi 115</span>
         </a>
-        <a href="/so-cuu/" class="btn btn-outline">
+        <a href={sitePath('/so-cuu/')} class="btn btn-outline">
           <Fragment set:html={renderIcon('aid', 20)} />
           <span>Sơ cứu</span>
         </a>
@@ -208,23 +209,23 @@ const lastAuditDate = import.meta.env.PUBLIC_LAST_MEDICAL_AUDIT || '27/11/2026';
     <!-- Android APK 5-Tab Bottom Navigation -->
     {!emergencyMode && (
       <nav class="apk-tab-bar" aria-label="Điều hướng ứng dụng Đột Quỵ 115">
-        <a href="/" class="apk-tab" aria-current={currentNav === 'home' ? 'page' : undefined}>
+        <a href={sitePath('/')} class="apk-tab" aria-current={currentNav === 'home' ? 'page' : undefined}>
           <Fragment set:html={renderIcon('home', 22)} />
           <span>Trang chủ</span>
         </a>
-        <a href="/kiem-tra/" class="apk-tab" aria-current={currentNav === 'test' ? 'page' : undefined}>
+        <a href={sitePath('/kiem-tra/')} class="apk-tab" aria-current={currentNav === 'test' ? 'page' : undefined}>
           <Fragment set:html={renderIcon('clipboard', 22)} />
           <span>Kiểm tra</span>
         </a>
-        <a href="/so-cuu/" class="apk-tab sos-center" aria-current={currentNav === 'emergency' ? 'page' : undefined}>
+        <a href={sitePath('/so-cuu/')} class="apk-tab sos-center" aria-current={currentNav === 'emergency' ? 'page' : undefined}>
           <Fragment set:html={renderIcon('phone', 22)} />
           <span>Cấp cứu</span>
         </a>
-        <a href="/tra-cuu/" class="apk-tab" aria-current={currentNav === 'library' ? 'page' : undefined}>
+        <a href={sitePath('/tra-cuu/')} class="apk-tab" aria-current={currentNav === 'library' ? 'page' : undefined}>
           <Fragment set:html={renderIcon('book', 22)} />
           <span>Tra cứu</span>
         </a>
-        <a href="/ho-so/" class="apk-tab" aria-current={currentNav === 'profile' ? 'page' : undefined}>
+        <a href={sitePath('/ho-so/')} class="apk-tab" aria-current={currentNav === 'profile' ? 'page' : undefined}>
           <Fragment set:html={renderIcon('userCard', 22)} />
           <span>Hồ sơ</span>
         </a>

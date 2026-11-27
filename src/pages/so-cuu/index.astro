@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../../lib/site-path';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { renderIcon } from '../../components/icons/Icons';
 import { FIRST_AID_ILLUSTRATIONS } from '../../components/illustrations/FirstAidArt';
@@ -174,7 +175,7 @@ import { STROKE_HOSPITALS_VN } from '../../data/stroke-hospitals-vn';
             <Fragment set:html={renderIcon('expand', 20)} />
             <span>Phóng to cho bác sĩ đọc</span>
           </button>
-          <a href="/ho-so/" class="btn btn-outline">Sửa hồ sơ thuốc</a>
+          <a href={sitePath('/ho-so/')} class="btn btn-outline">Sửa hồ sơ thuốc</a>
         </div>
       </div>
 
@@ -218,7 +219,7 @@ import { STROKE_HOSPITALS_VN } from '../../data/stroke-hospitals-vn';
           <Fragment set:html={renderIcon('share', 20)} />
           <span>Sao chép / Chia sẻ Zalo cho người nhà & bác sĩ</span>
         </button>
-        <a href="/benh-vien/" class="btn btn-outline">
+        <a href={sitePath('/benh-vien/')} class="btn btn-outline">
           <Fragment set:html={renderIcon('hospital', 20)} />
           <span>Xem {STROKE_HOSPITALS_VN.length} cụm Bệnh viện Đột quỵ 3 miền</span>
         </a>

@@ -1,4 +1,5 @@
 ---
+import { sitePath } from '../lib/site-path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBox from '../components/SearchBox.astro';
 import { renderIcon } from '../components/icons/Icons';
@@ -29,7 +30,7 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
             <Fragment set:html={renderIcon('phone', 24)} />
             <span>Gọi 115 ngay</span>
           </a>
-          <a href="/so-cuu/" class="btn sos-secondary-btn">
+          <a href={sitePath('/so-cuu/')} class="btn sos-secondary-btn">
             <Fragment set:html={renderIcon('aid', 22)} />
             <span>Sơ cứu 0 giây (Có loa đọc)</span>
           </a>
@@ -62,21 +63,21 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
     <section aria-labelledby="heading-doors">
       <h2 id="heading-doors" class="section-heading">Bạn đang cần hỗ trợ việc gì ngay lúc này?</h2>
       <div class="doors-grid">
-        <a href="/kiem-tra/#tab-acute" class="card door-card door-red">
+        <a href={sitePath('/kiem-tra/#tab-acute')} class="card door-card door-red">
           <span class="badge badge-red">60 giây · Có cắt mạch khẩn</span>
           <h3>1. Kiểm tra dấu hiệu đang xảy ra</h3>
           <p>6 bước thực hành an toàn (BE-FAST + 5 Dấu hiệu Đỏ), có đếm 10 giây giơ tay và câu đọc mẫu.</p>
           <span class="door-go">Bắt đầu kiểm tra ngay →</span>
         </a>
 
-        <a href="/kiem-tra/#tab-tia" class="card door-card door-warn">
+        <a href={sitePath('/kiem-tra/#tab-tia')} class="card door-card door-warn">
           <span class="badge badge-warn">1 phút · Cảnh báo sớm TIA</span>
           <h3>2. Dấu hiệu vừa xuất hiện rồi tự hết?</h3>
           <p>Méo miệng, tê yếu tay, mờ 1 mắt vài phút rồi tự khỏi — đánh giá nguy cơ cao nhất trong 48 giờ đầu.</p>
           <span class="door-go">Kiểm tra cơn thoáng qua →</span>
         </a>
 
-        <a href="/kiem-tra/#tab-risk" class="card door-card door-teal">
+        <a href={sitePath('/kiem-tra/#tab-risk')} class="card door-card door-teal">
           <span class="badge badge-teal">3 phút · Khi đang khỏe mạnh</span>
           <h3>3. Tầm soát "Nguy cơ của tôi"</h3>
           <p>Phân tầng nguy cơ nền 4 mức, mô phỏng thay đổi lối sống và xem xét nghiệm nên làm / không lạm dụng.</p>
@@ -94,7 +95,7 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
             Chạm vào từng ô bên dưới để xem cách kiểm tra an toàn. Lưu ý: thang FAST thông thường bỏ sót ~40% đột quỵ tuần hoàn sau!
           </p>
         </div>
-        <a href="/kiem-tra/" class="btn btn-primary">Mở Bài Test Thực Hành</a>
+        <a href={sitePath('/kiem-tra/')} class="btn btn-primary">Mở Bài Test Thực Hành</a>
       </div>
 
       <div class="befast-grid">
@@ -135,7 +136,7 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
           <p id="drawer-sign-body" class="drawer-body"></p>
         </div>
         <div class="sign-drawer-actions">
-          <a href="/so-cuu/" class="btn btn-emergency">Có dấu hiệu này → Sơ cứu ngay</a>
+          <a href={sitePath('/so-cuu/')} class="btn btn-emergency">Có dấu hiệu này → Sơ cứu ngay</a>
           <button type="button" id="btn-close-drawer" class="btn btn-outline">Đóng</button>
         </div>
       </div>
@@ -147,11 +148,11 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
     <section aria-labelledby="heading-myths">
       <div class="section-head-row">
         <h2 id="heading-myths">3 Sai lầm dân gian cướp mất Giờ Vàng nhiều nhất tại Việt Nam</h2>
-        <a href="/tra-cuu/" class="btn btn-outline">Xem đủ 24 chuyên đề kiểm chứng →</a>
+        <a href={sitePath('/tra-cuu/')} class="btn btn-outline">Xem đủ 24 chuyên đề kiểm chứng →</a>
       </div>
 
       <div class="doors-grid">
-        <a href="/tra-cuu/02-cam-thuoc-ha-huyet-ap-va-aspirin/" class="card myth-card">
+        <a href={sitePath('/tra-cuu/02-cam-thuoc-ha-huyet-ap-va-aspirin/')} class="card myth-card">
           <div class="myth-wrong">
             <Fragment set:html={renderIcon('ban', 22)} />
             <span>Tự ngậm thuốc hạ huyết áp hoặc uống Aspirin tại nhà</span>
@@ -162,7 +163,7 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
           </div>
         </a>
 
-        <a href="/tra-cuu/03-su-that-chich-mau-ngon-tay-xoa-co/" class="card myth-card">
+        <a href={sitePath('/tra-cuu/03-su-that-chich-mau-ngon-tay-xoa-co/')} class="card myth-card">
           <div class="myth-wrong">
             <Fragment set:html={renderIcon('ban', 22)} />
             <span>Chích máu 10 đầu ngón tay, cạo gió, xoa bóp cổ</span>
@@ -173,7 +174,7 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
           </div>
         </a>
 
-        <a href="/tra-cuu/04-kiem-chung-an-cung-nguu-hoang-hoan/" class="card myth-card">
+        <a href={sitePath('/tra-cuu/04-kiem-chung-an-cung-nguu-hoang-hoan/')} class="card myth-card">
           <div class="myth-wrong">
             <Fragment set:html={renderIcon('ban', 22)} />
             <span>Cạy miệng đút An Cung Ngưu Hoàng Hoàn / nước gừng</span>
@@ -196,11 +197,11 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
         </p>
       </div>
       <div style="display:flex; flex-wrap:wrap; gap:0.65rem;">
-        <a href="/benh-vien/" class="btn btn-primary">
+        <a href={sitePath('/benh-vien/')} class="btn btn-primary">
           <Fragment set:html={renderIcon('hospital', 20)} />
           <span>Mở Danh bạ Bệnh viện</span>
         </a>
-        <a href="/ho-so/" class="btn btn-outline">
+        <a href={sitePath('/ho-so/')} class="btn btn-outline">
           <Fragment set:html={renderIcon('userCard', 20)} />
           <span>Điền sẵn Thẻ Y Tế Gia Đình</span>
         </a>
@@ -460,6 +461,7 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
 </style>
 
 <script>
+  import { sitePath } from '../lib/site-path';
   import {
     loadVault,
     logRecordAction,
@@ -583,8 +585,8 @@ const redFlagCards = HOME_SIGN_CARDS.filter((c) => c.group === 'redflag');
           }
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
-          <a href="/kiem-tra/" class="btn btn-primary">Kiểm tra lại ngay</a>
-          <a href="/kiem-tra/#tab-history" class="btn btn-outline">Lịch sử (${validRecords.length})</a>
+          <a href="${sitePath(`/kiem-tra/`)}" class="btn btn-primary">Kiểm tra lại ngay</a>
+          <a href="${sitePath(`/kiem-tra/#tab-history`)}" class="btn btn-outline">Lịch sử (${validRecords.length})</a>
         </div>
       </div>
     `;

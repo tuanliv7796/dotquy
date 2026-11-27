@@ -2,14 +2,15 @@
   "name": "Cẩm Nang Đột Quỵ — Sơ cứu & Phòng bệnh",
   "short_name": "Đột Quỵ 115",
   "description": "Nhận diện sớm BE-FAST & 5 Dấu hiệu Đỏ, sơ cứu đột quỵ 0 giây có giọng đọc tiếng Việt, chống mẹo dân gian nguy hiểm — hoạt động Offline.",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#FAF9F6",
   "theme_color": "#B91C1C",
   "lang": "vi",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "./favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

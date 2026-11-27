@@ -1,3 +1,4 @@
+import { sitePath } from './site-path';
 export interface SearchableArticle {
   slug: string;
   title: string;
@@ -185,7 +186,7 @@ export function runMedicalSafetySearch(
         title: hb.title,
         message: hb.message,
         primaryCtaLabel: 'Mở hướng dẫn Sơ cứu đúng',
-        primaryCtaHref: '/so-cuu/',
+        primaryCtaHref: sitePath('/so-cuu/'),
         secondaryArticleSlug: hb.articleSlug,
         secondaryArticleLabel: hb.articleLabel,
       });
@@ -200,7 +201,7 @@ export function runMedicalSafetySearch(
       title: 'Triệu chứng này đang xảy ra đột ngột ngay lúc này?',
       message: 'Đừng đọc tiếp bài dài! Hãy xử trí như ĐỘT QUỴ CẤP: gọi 115 ngay lập tức và ghi nhớ giờ bình thường cuối cùng (LKW).',
       primaryCtaLabel: 'Gọi 115 & Mở Sơ cứu 0 giây',
-      primaryCtaHref: '/so-cuu/',
+      primaryCtaHref: sitePath('/so-cuu/'),
     });
   }
 

@@ -1,3 +1,4 @@
+import { sitePath } from './site-path';
 import { DotQuyNative, isAndroidApk, type OtaStatusInfo } from './native-bridge';
 
 const CUSTOM_OTA_URL_KEY = 'dotquy115_ota_manifest_url';
@@ -41,7 +42,7 @@ export async function initOtaLifecycle(isEmergencyScreen: boolean): Promise<void
 
   // Register PWA Service Worker when running in standard browser
   if (!isAndroidApk() && 'serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register(sitePath('/sw.js'), { scope: sitePath('/') }).catch(() => {});
     return;
   }
 

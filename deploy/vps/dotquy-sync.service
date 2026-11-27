@@ -1,0 +1,28 @@
+[Unit]
+Description=Receive tested DotQuy static builds from GitHub Actions
+After=network-online.target nginx.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=dotquy-deploy
+Group=dotquy-deploy
+ExecStart=/usr/bin/python3 /usr/local/lib/dotquy-deploy/sync.py
+StateDirectory=dotquy-deploy
+UMask=0022
+Environment=GIT_TERMINAL_PROMPT=0
+TimeoutStartSec=180
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ReadWritePaths=/var/www/dotquy
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=256M
+TasksMax=32
