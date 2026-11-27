@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="warm">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Bản mẫu thiết kế UI/UX tương tác cho Website và Ứng dụng Android (.apk) Phòng chống & Sơ cứu Đột quỵ Não — Thiết kế Đa thế hệ (WCAG AAA) đồng bộ tri thức y khoa gemini_merge.md." />
+  <title>Cẩm Nang Đột Quỵ — Bản Demo UI/UX Website & Android App (.apk)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ==========================================================================
+       1. DESIGN SYSTEM TOKENS (WCAG 2.2 AAA SENIOR-FIRST & DUAL-STATE MEDICAL UI)
+       ========================================================================== */
+    :root {
+      --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --base-size: 16px;
+
+      /* Calm Medical Warm Alabaster Palette (Reduces cataract glare for seniors) */
+      --bg-canvas: #F3F1EC;
+      --bg-surface: #FAF9F6;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F1F5F4;
+      --text-primary: #0F172A;      /* Contrast 16.8:1 */
+      --text-secondary: #334155;    /* Contrast 9.8:1 */
+      --text-muted: #475569;        /* Contrast 7.1:1 (AAA) */
+      --border-soft: #DCE3E1;
+      --border-strong: #94A3B8;
+
+      /* Brand & Semantic Medical Accents */
+      --brand-teal: #0F766E;
+      --brand-teal-hover: #115E59;
+      --brand-teal-soft: #CCFBF1;
+      --brand-teal-text: #FFFFFF;
+
+      /* Strictly Reserved Emergency & Harm Guardrail Colors */
+      --sos-red: #DC2626;
+      --sos-red-hover: #B91C1C;
+      --sos-red-soft: #FEF2F2;
+      --sos-red-border: #FCA5A5;
+
+      /* Clinical 4-Stage Spectrum */
+      --do-green: #15803D;
+      --do-green-soft: #F0FDF4;
+      --warn-amber: #B45309;
+      --warn-amber-soft: #FFFBEB;
+      --early-orange: #C2410C;
+      --early-orange-soft: #FFF7ED;
+
+      /* Tactile Elevation */
+      --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-elevated: 0 12px 28px rgba(15, 23, 42, 0.10), 0 2px 6px rgba(15, 23, 42, 0.06);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 26px;
+    }
+
+    /* High-Contrast AAA Mode (Outdoor sunlight / Severe low vision) */
+    [data-theme="contrast"] {
+      --bg-canvas: #FFFFFF;
+      --bg-surface: #FFFFFF;
+      --bg-card: #FFFFFF;
+      --bg-subtle: #F1F5F9;
+      --text-primary: #000000;
+      --text-secondary: #111827;
+      --text-muted: #1E293B;
+      --border-soft: #0F172A;
+      --border-strong: #000000;
+      --brand-teal: #065F46;
+      --sos-red: #B91C1C;
+      --shadow-card: none;
+    }
+
+    /* Low-Light Night Mode (No purple, warm slate clinical dark) */
+    [data-theme="dark"] {
+      --bg-canvas: #0B1114;
+      --bg-surface: #11191E;
+      --bg-card: #182329;
+      --bg-subtle: #1F2E35;
+      --text-primary: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --text-muted: #94A3B8;
+      --border-soft: #2A3B44;
+      --border-strong: #475569;
+      --brand-teal: #14B8A6;
+      --brand-teal-hover: #2DD4BF;
+      --brand-teal-soft: #134E4A;
+      --brand-teal-text: #042F2E;
+      --sos-red: #EF4444;
+      --sos-red-hover: #DC2626;
+      --sos-red-soft: #2D1215;
+      --sos-red-border: #7F1D1D;
+      --do-green: #22C55E;
+      --do-green-soft: #0F291A;
+      --warn-amber: #F59E0B;
+      --warn-amber-soft: #2B1F0A;
+      --early-orange: #FB923C;
+      --early-orange-soft: #2D180A;
+    }
+
+    /* Senior Accessibility Live Font Scaling */
+    html.font-a   { font-size: 16px; }
+    html.font-ap  { font-size: 18.5px; }
+    html.font-app { font-size: 21px; }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--bg-canvas);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      font-size: inherit;
+    }
+    button { cursor: pointer; }
+
+    /* ==========================================================================
+       2. STUDIO BAR (PLATFORM & ACCESSIBILITY CONTROLS)
+       ========================================================================== */
+    .studio-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0.65rem 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .studio-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+    }
+    .segmented {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      background: var(--bg-subtle);
+      padding: 0.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-soft);
+    }
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 0.45rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 38px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .seg-btn:hover { color: var(--text-primary); }
+    .seg-btn.active {
+      background: var(--brand-teal);
+      color: var(--brand-teal-text);
+    }
+
+    .access-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .access-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 0.22rem 0.45rem;
+      font-size: 0.8rem;
+    }
+    .access-label {
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 0 0.3rem;
+    }
+    .tts-trigger {
+      border: 1px solid var(--brand-teal);
+      background: var(--bg-card);
+      color: var(--brand-teal);
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: var(--radius-md);
+      min-height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    [data-theme="dark"] .tts-trigger { color: var(--brand-teal); }
+
+    .tts-banner {
+      display: none;
+      background: var(--brand-teal-soft);
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--brand-teal);
+      padding: 0.55rem 1rem;
+      font-size: 0.88rem;
+    }
+    .tts-banner.show { display: block; }
+    .tts-banner-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    /* ==========================================================================
+       3. WORKSPACE SHELL (WEB FULL-WIDTH VS ANDROID 412PX MOBILE VIEWPORT)
+       ========================================================================== */
+    .stage-wrap {
+      padding: 1.25rem 1rem 3rem;
+    }
+    .app-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-elevated);
+      overflow: hidden;
+      transition: max-width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .app-shell.mobile-mode {
+      max-width: 420px;
+      border-width: 3px;
+      border-color: var(--border-strong);
+      border-radius: 34px;
+    }
+
+    /* Android Simulated Status Bar (Visible only in Mobile App mode) */
+    .android-status-bar {
+      display: none;
+      background: var(--bg-card);
+      padding: 0.45rem 1.2rem 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .app-shell.mobile-mode .android-status-bar { display: flex; }
+
+    /* Top App / Web Header */
+    .main-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-soft);
+      padding: 0.9rem 1.35rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.85rem;
+    }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+    }
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: var(--brand-teal);
+      color: var(--brand-teal-text);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.35rem;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.12rem;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+    .brand-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .web-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .app-shell.mobile-mode .web-nav { display: none; }
+
+    .nav-tab {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 0.6rem 1rem;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 0.92rem;
+      min-height: 46px;
+    }
+    .nav-tab:hover { background: var(--bg-subtle); color: var(--text-primary); }
+    .nav-tab.active {
+      background: var(--brand-teal);
+      color: var(--brand-teal-text);
+    }
+
+    .btn-sos-header {
+      border: none;
+      background: var(--sos-red);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 0.92rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: var(--radius-md);
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 3px 10px rgba(220, 38, 38, 0.28);
+    }
+    .btn-sos-header:hover { background: var(--sos-red-hover); }
+
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.88); }
+    }
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      display: inline-block;
+      animation: pulseDot 1.5s infinite;
+    }
+
+    /* Main Content Container */
+    .shell-body {
+      padding: 1.35rem;
+    }
+    .app-shell.mobile-mode .shell-body {
+      padding: 1rem;
+    }
+
+    /* Android Bottom Thumb Navigation (Visible only in Mobile App mode) */
+    .mobile-bottom-nav {
+      display: none;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.35rem;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-soft);
+      padding: 0.5rem 0.5rem 0.75rem;
+    }
+    .app-shell.mobile-mode .mobile-bottom-nav { display: grid; }
+
+    .mob-tab {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 0.25rem;
+      border-radius: var(--radius-md);
+      min-height: 58px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .mob-tab.active {
+      background: var(--bg-subtle);
+      color: var(--brand-teal);
+    }
+    .mob-tab.sos-tab {
+      background: var(--sos-red);
+      color: #FFFFFF;
+    }
+
+    /* ==========================================================================
+       4. REUSABLE MEDICAL UI COMPONENTS
+       ========================================================================== */
+    .hidden { display: none !important; }
+
+    .grid-hero {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 1.15rem;
+    }
+    .app-shell.mobile-mode .grid-hero { grid-template-columns: 1fr; }
+    @media (max-width: 900px) { .grid-hero { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      box-shadow: var(--shadow-card);
+    }
+    .card-emergency {
+      background: var(--sos-red-soft);
+      border: 2px solid var(--sos-red);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.45rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .eyebrow-red { color: var(--sos-red); }
+    .eyebrow-teal { color: var(--brand-teal); }
+
+    h1, h2, h3, h4 { margin: 0 0 0.5rem; line-height: 1.28; letter-spacing: -0.015em; }
+    p { margin: 0 0 0.75rem; }
+
+    /* Senior-Safe Large Action Buttons (Min height 54px) */
+    .btn-primary-sos {
+      width: 100%;
+      min-height: 56px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--sos-red);
+      color: #FFFFFF;
+      font-weight: 800;
+      font-size: 1.02rem;
+      padding: 0.85rem 1.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-primary-sos:hover { background: var(--sos-red-hover); }
+    .btn-primary-sos:active { transform: scale(0.99); }
+
+    .btn-primary-teal {
+      width: 100%;
+      min-height: 54px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--brand-teal);
+      color: var(--brand-teal-text);
+      font-weight: 800;
+      font-size: 0.98rem;
+      padding: 0.8rem 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary-teal:hover { background: var(--brand-teal-hover); }
+
+    .btn-outline {
+      min-height: 50px;
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 0.92rem;
+      padding: 0.65rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+    }
+    .btn-outline:hover { border-color: var(--brand-teal); }
+
+    /* Stage Mini Badges */
+    .stage-mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+      margin: 0.85rem 0 1rem;
+    }
+    .stage-pill {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem 0.65rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Search & Zero-Typing Symptom Chips */
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-bottom: 0.75rem;
+    }
+    .search-input-wrap {
+      flex: 1;
+      min-width: 240px;
+      position: relative;
+    }
+    .search-input {
+      width: 100%;
+      min-height: 52px;
+      padding: 0.75rem 1rem 0.75rem 2.65rem;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-soft);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--brand-teal);
+    }
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+    .chip-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+    .chip {
+      border: 1px solid var(--border-soft);
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      padding: 0.45rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      min-height: 38px;
+    }
+    .chip:hover, .chip.active {
+      background: var(--brand-teal);
+      color: var(--brand-teal-text);
+      border-color: var(--brand-teal);
+    }
+
+    /* BE-FAST + 5 Red Flags Grid */
+    .befast-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.7rem;
+      margin-top: 0.75rem;
+    }
+    .app-shell.mobile-mode .befast-grid { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 960px) { .befast-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .befast-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .sign-card {
+      text-align: left;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 0.9rem;
+      transition: border-color 0.15s, transform 0.12s;
+    }
+    .sign-card:hover {
+      border-color: var(--brand-teal);
+      transform: translateY(-1px);
+    }
+    .sign-card.red-accent { border-color: var(--sos-red); }
+    .sign-letter {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--brand-teal);
+    }
+    .sign-card.red-accent .sign-letter { color: var(--sos-red); }
+
+    .redflags-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.65rem;
+      margin-top: 0.75rem;
+    }
+    .app-shell.mobile-mode .redflags-grid { grid-template-columns: 1fr; }
+    @media (max-width: 960px) { .redflags-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .redflags-grid { grid-template-columns: 1fr; } }
+
+    /* Emergency Mode Split Do / Don't */
+    .do-dont-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    .app-shell.mobile-mode .do-dont-grid { grid-template-columns: 1fr; }
+    @media (max-width: 768px) { .do-dont-grid { grid-template-columns: 1fr; } }
+
+    .box-do {
+      background: var(--do-green-soft);
+      border-left: 5px solid var(--do-green);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.1rem;
+    }
+    .box-dont {
+      background: var(--sos-red-soft);
+      border-left: 5px solid var(--sos-red);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.1rem;
+    }
+    .clean-list {
+      margin: 0.5rem 0 0;
+      padding-left: 1.15rem;
+    }
+    .clean-list li { margin-bottom: 0.45rem; }
+
+    /* Two-column Triage & Library Layouts */
+    .split-12 {
+      display: grid;
+      grid-template-columns: 7fr 5fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+    .split-library {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: 1.2rem;
+      align-items: start;
+    }
+    .app-shell.mobile-mode .split-12,
+    .app-shell.mobile-mode .split-library { grid-template-columns: 1fr; }
+    @media (max-width: 900px) {
+      .split-12, .split-library { grid-template-columns: 1fr; }
+    }
+
+    .option-btn {
+      width: 100%;
+      min-height: 56px;
+      text-align: left;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-soft);
+      border-radius: var(--radius-md);
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .option-btn:hover {
+      border-color: var(--brand-teal);
+      background: var(--bg-card);
+    }
+
+    /* CPR Metronome Visual Beat */
+    .cpr-box {
+      background: var(--sos-red-soft);
+      border: 2px solid var(--sos-red);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .cpr-heart {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--sos-red);
+      color: #FFF;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      transition: transform 0.08s ease-out;
+    }
+    .cpr-heart.beat { transform: scale(1.24); }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(15, 23, 42, 0.68);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-card {
+      background: var(--bg-card);
+      border: 2px solid var(--brand-teal);
+      border-radius: var(--radius-lg);
+      max-width: 580px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.4rem;
+      box-shadow: var(--shadow-elevated);
+    }
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border-soft);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       STUDIO CONTROL BAR: SWITCH WEBSITE / ANDROID APK / WIDGET / DESIGN SYSTEM
+       ======================================================================== -->
+  <div class="studio-bar" role="region" aria-label="Thanh điều khiển chế độ xem và trợ năng">
+    <div class="studio-inner">
+      <div class="segmented" role="tablist">
+        <button id="plat-web" class="seg-btn active" onclick="switchPlatform('web')">🌐 Giao diện Website</button>
+        <button id="plat-app" class="seg-btn" onclick="switchPlatform('app')">📱 Android App (.apk)</button>
+        <button id="plat-widget" class="seg-btn" onclick="switchPlatform('widget')">📲 Widget Màn Hình Chính</button>
+        <button id="plat-tokens" class="seg-btn" onclick="switchPlatform('tokens')">🎨 Nguyên Tắc & Design System</button>
+      </div>
+
+      <div class="access-controls">
+        <div class="access-pill" aria-label="Chỉnh cỡ chữ cho người cao tuổi">
+          <span class="access-label">Cỡ chữ:</span>
+          <button id="f-a" class="seg-btn active" onclick="setFont('a')">A</button>
+          <button id="f-ap" class="seg-btn" onclick="setFont('ap')">A+</button>
+          <button id="f-app" class="seg-btn" onclick="setFont('app')">A++</button>
+        </div>
+
+        <div class="access-pill" aria-label="Chế độ tương phản">
+          <button id="th-warm" class="seg-btn active" onclick="setTheme('warm')">Ấm dịu</button>
+          <button id="th-contrast" class="seg-btn" onclick="setTheme('contrast')">Rõ nét AAA</button>
+          <button id="th-dark" class="seg-btn" onclick="setTheme('dark')">Ban đêm</button>
+        </div>
+
+        <button class="tts-trigger" onclick="speakActiveView()">🔊 Đọc màn hình</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Vietnamese Voice Readout Status Bar -->
+  <div id="tts-banner" class="tts-banner">
+    <div class="tts-banner-inner">
+      <span id="tts-status-text" style="font-weight:700;">🔊 Đang phát hướng dẫn giọng nói tiếng Việt...</span>
+      <button class="btn-outline" style="min-height:34px; padding:0.25rem 0.75rem; font-size:0.8rem;" onclick="stopTTS()">Dừng đọc ✕</button>
+    </div>
+  </div>
+
+  <div class="stage-wrap">
+
+    <!-- ======================================================================
+         SHOWCASE A: ANDROID HOME SCREEN OFFLINE SOS WIDGET (4x2)
+         ====================================================================== -->
+    <div id="panel-widget" class="hidden" style="max-width:460px; margin:0 auto;">
+      <div class="card" style="border-radius:28px;">
+        <div class="eyebrow eyebrow-teal">Đặc quyền trên bản cài đặt Android (.apk) • 100% Offline</div>
+        <h2>Widget Cấp Cứu Đặt Ngay Ngoài Màn Hình Chính</h2>
+        <p style="color:var(--text-secondary); font-size:0.92rem;">
+          Người lớn tuổi khi choáng váng hoặc người nhà đang hoảng loạn thường <strong>không kịp mở khóa tìm icon ứng dụng</strong>. Widget 4x2 đặt ngay màn hình chính điện thoại cho phép bấm 1 chạm vào thẳng quy trình sơ cứu có giọng đọc hoặc gọi 115 kèm gửi tọa độ GPS.
+        </p>
+
+        <div class="card-emergency" style="margin:1.1rem 0;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+            <strong style="color:var(--sos-red); font-size:0.9rem;">🚨 SƠ CỨU ĐỘT QUỴ TỨC THÌ</strong>
+            <span style="font-size:0.74rem; font-weight:700; padding:0.2rem 0.55rem; border-radius:99px; background:var(--bg-card); border:1px solid var(--border-soft);">Sẵn sàng Offline</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem; margin-bottom:0.65rem;">
+            <button class="btn-primary-sos" style="flex-direction:column; align-items:flex-start; gap:0.15rem; padding:0.85rem;" onclick="switchPlatform('app'); showScreen('emergency')">
+              <span>🚨 SƠ CỨU NGAY</span>
+              <span style="font-size:0.75rem; font-weight:500; opacity:0.92;">Từng bước + Loa đọc</span>
+            </button>
+            <button class="btn-outline" style="flex-direction:column; align-items:flex-start; gap:0.15rem; padding:0.85rem; border-color:var(--sos-red);" onclick="openDoctorModal()">
+              <span style="color:var(--sos-red); font-weight:800;">📞 115 & THẺ Y TẾ</span>
+              <span style="font-size:0.75rem; color:var(--text-muted); font-weight:500;">Hiện giờ LKW & Thuốc</span>
+            </button>
+          </div>
+          <button class="btn-outline" style="width:100%; justify-content:space-between; min-height:46px; font-size:0.85rem;" onclick="switchPlatform('app'); showScreen('test')">
+            <span>🧪 Tê tay, chóng mặt, nói đớ nhẹ? Test 4 mức</span>
+            <span>→</span>
+          </button>
+        </div>
+
+        <div class="card" style="background:var(--bg-surface); padding:1rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+            <strong style="font-size:0.86rem; color:var(--brand-teal);">🪪 Thẻ Y Tế Màn Hình Khóa (Cho Kíp Cấp Cứu 115)</strong>
+            <button class="seg-btn" style="color:var(--brand-teal); padding:0.2rem 0.5rem;" onclick="openDoctorModal()">Sửa / Xem thẻ →</button>
+          </div>
+          <div style="font-size:0.84rem; color:var(--text-secondary);">
+            Hiển thị ngay tên thuốc chống đông (ví dụ <em>Rivaroxaban / Warfarin</em>), bệnh nền và mốc giờ <strong>Last Known Well</strong> để bác sĩ cấp cứu quyết định tiêu sợi huyết hoặc thuốc hóa giải trong vài phút đầu.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         SHOWCASE B: DESIGN PRINCIPLES & SYSTEM SUMMARY BOARD
+         ====================================================================== -->
+    <div id="panel-tokens" class="hidden" style="max-width:1080px; margin:0 auto;">
+      <div class="card" style="margin-bottom:1.2rem;">
+        <div class="eyebrow eyebrow-teal">Kiến trúc UI/UX đồng bộ cơ sở tri thức gemini_merge.md</div>
+        <h2>6 Nguyên Tắc Thiết Kế Cốt Lõi Cho Mọi Lứa Tuổi</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:1rem; margin-top:1rem;">
+          <div class="card" style="background:var(--bg-surface);">
+            <h3 style="font-size:1rem; color:var(--brand-teal);">1. Giao diện Thích ứng Kép (Dual-State)</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">Tách biệt hoàn toàn trạng thái <strong>Bình tĩnh học phòng bệnh</strong> (Nền kem ấm chống chói thủy tinh thể + Xanh ngọc y khoa) với trạng thái <strong>Khẩn cấp 0 giây</strong> (Đơn nhiệm, chữ lớn, giữ sáng màn hình, loa đọc tự động).</p>
+          </div>
+          <div class="card" style="background:var(--bg-surface);">
+            <h3 style="font-size:1rem; color:var(--sos-red);">2. Chống Sai Lầm Dân Gian Trực Diện</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">Mọi bước sơ cứu đều đối chiếu song song <strong>Nên làm</strong> và <strong>10 Điều Cấm</strong> (Cấm hạ áp mù trước chụp CT theo RCT <em>INTERACT4</em>, cấm Aspirin, cấm An Cung, cấm chích máu ngón tay, cấm xoa cổ, cấm cho uống nước).</p>
+          </div>
+          <div class="card" style="background:var(--bg-surface);">
+            <h3 style="font-size:1rem; color:var(--brand-teal);">3. Test 4 Giai Đoạn + "Cắt Mạch Cấp Cứu"</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">Tích hợp đồng hồ đếm 10s giơ 2 tay + câu đọc mẫu + 5 Dấu hiệu Đỏ ngoài BE-FAST. Hễ phát hiện dấu đột quỵ cấp hoặc cơn TIA vừa tự hết là <strong>cắt mạch báo gọi 115 ngay</strong>, không bắt làm hết bài.</p>
+          </div>
+          <div class="card" style="background:var(--bg-surface);">
+            <h3 style="font-size:1rem; color:var(--brand-teal);">4. Bộ Ghi Giờ Vàng LKW & Nhịp Ép Tim CPR</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">Lưu chính xác mốc <em>Last Known Well</em> bằng 1 chạm; tích hợp sẵn <strong>máy đếm nhịp ép tim 110 lần/phút</strong> (AHA CPR 2025) cho tình huống ngừng thở/thở ngáp cá.</p>
+          </div>
+          <div class="card" style="background:var(--bg-surface);">
+            <h3 style="font-size:1rem; color:var(--brand-teal);">5. Trợ Năng Người Cao Tuổi Chuẩn WCAG AAA</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">Độ tương phản chữ chính <strong>16.8:1</strong>, vùng chạm tối thiểu <strong>54px–60px</strong> chống run tay, đổi cỡ chữ <strong>A / A+ / A++</strong> trực tiếp, tìm kiếm tiếng Việt không dấu.</p>
+          </div>
+          <div class="card" style="background:var(--bg-surface);">
+            <h3 style="font-size:1rem; color:var(--brand-teal);">6. Đọc 3 Lớp Từ File Markdown (.md)</h3>
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin:0;">Mỗi chủ đề tự tách thành: <strong>Lớp 1</strong> (Tóm tắt 15 giây cho người vội/mắt yếu) → <strong>Lớp 2</strong> (Hành động Nên/Cấm) → <strong>Lớp 3</strong> (Bằng chứng RCT chuyên sâu 2024–2026).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================================
+         MAIN INTERACTIVE APPLICATION SHELL (WEBSITE & ANDROID APK)
+         ====================================================================== -->
+    <div id="app-shell" class="app-shell">
+
+      <!-- Simulated Android Top Status Bar (Only visible in Android App mode) -->
+      <div class="android-status-bar">
+        <span>10:30 • Chế độ Offline 100%</span>
+        <span>🔋 94%</span>
+      </div>
+
+      <!-- Persistent Header -->
+      <header class="main-header">
+        <div class="brand-box" onclick="showScreen('home')">
+          <div class="brand-mark">+</div>
+          <div>
+            <div class="brand-title">Cẩm Nang Đột Quỵ</div>
+            <div class="brand-sub">Chuẩn Y học Thực chứng 2026 • Sơ cứu 0 giây</div>
+          </div>
+        </div>
+
+        <nav class="web-nav" aria-label="Điều hướng chính trên Website">
+          <button class="nav-tab active" data-tab="home" onclick="showScreen('home')">Trang chủ</button>
+          <button class="nav-tab" data-tab="test" onclick="showScreen('test')">Test 4 Giai Đoạn</button>
+          <button class="nav-tab" data-tab="library" onclick="showScreen('library')">Cẩm nang & Kiểm chứng</button>
+          <button class="nav-tab" onclick="openDoctorModal()">🪪 Thẻ Báo Bác Sĩ</button>
+        </nav>
+
+        <button class="btn-sos-header" onclick="showScreen('emergency')">
+          <span class="live-dot"></span>
+          <span>🚨 SƠ CỨU KHẨN CẤP</span>
+        </button>
+      </header>
+
+      <!-- MAIN BODY -->
+      <main class="shell-body">
+
+        <!-- ==================================================================
+             SCREEN 1: TRANG CHỦ (DUAL-INTENT HERO + SEARCH + BE-FAST + 5 RED FLAGS)
+             ================================================================== -->
+        <section id="screen-home">
+          <div class="grid-hero">
+            <!-- Left Priority: Zero-Latency Emergency First Aid -->
+            <div class="card-emergency" style="display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div class="eyebrow eyebrow-red">⚡ Khẩn cấp • Mỗi phút mất 1,9 triệu tế bào thần kinh</div>
+                <h1 style="font-size:1.5rem;">Đang nghi ngờ có người bị Đột quỵ / Tai biến ngay lúc này?</h1>
+                <p style="color:var(--text-secondary);">
+                  Kể cả triệu chứng nhẹ, không méo miệng hay <strong>vừa tự hết sau vài phút (TIA)</strong> — bấm ngay bên dưới để xem hướng dẫn sơ cứu an toàn từng bước kèm <strong>loa đọc lớn tiếng Việt</strong> trong lúc chờ xe 115.
+                </p>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:0.65rem; margin-top:0.5rem;">
+                <button class="btn-primary-sos" style="flex:1; min-width:220px;" onclick="showScreen('emergency')">
+                  🚨 MỞ HƯỚNG DẪN SƠ CỨU NGAY →
+                </button>
+                <button class="btn-outline" style="border-color:var(--sos-red);" onclick="recordLKW(0); showScreen('emergency')">
+                  ⏱️ Bấm lưu "Giờ Vàng" vừa khởi phát
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Priority: 4-Stage Interactive Assessment -->
+            <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div class="eyebrow eyebrow-teal">🧪 Tầm soát & Phân tầng thực hành 60 giây</div>
+                <h2 style="font-size:1.25rem;">Bài Test Nhanh 4 Giai Đoạn</h2>
+                <p style="color:var(--text-secondary); font-size:0.92rem; margin-bottom:0.4rem;">
+                  Tích hợp đồng hồ đếm 10 giây giơ 2 tay, câu đọc mẫu và bộ rà soát triệu chứng kín đáo ngoài FAST:
+                </p>
+                <div class="stage-mini-grid">
+                  <div class="stage-pill"><span class="dot" style="background:var(--do-green);"></span> 1. Bình thường</div>
+                  <div class="stage-pill"><span class="dot" style="background:var(--warn-amber);"></span> 2. Rất sớm (Nguy cơ)</div>
+                  <div class="stage-pill"><span class="dot" style="background:var(--early-orange);"></span> 3. Sớm (Giờ vàng/TIA)</div>
+                  <div class="stage-pill"><span class="dot" style="background:var(--sos-red);"></span> 4. Muộn / Nguy kịch</div>
+                </div>
+              </div>
+              <button class="btn-primary-teal" onclick="showScreen('test')">
+                Bắt đầu Bài Test Tương Tác →
+              </button>
+            </div>
+          </div>
+
+          <!-- Zero-Typing & Accent-Insensitive Instant Search -->
+          <div class="card" style="margin-top:1.15rem;">
+            <div class="search-row">
+              <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input id="quick-search" class="search-input" type="text" oninput="handleQuickSearch(this.value)" placeholder="Gõ có dấu hoặc không dấu: chich mau, an cung, ha ap, tam dem, kho nuot, te tay..." aria-label="Tìm kiếm nhanh triệu chứng hoặc mẹo dân gian" />
+              </div>
+              <button class="btn-outline" onclick="showScreen('library')">Mở toàn bộ Cẩm nang →</button>
+            </div>
+            <div class="chip-strip">
+              <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700;">Chạm tra cứu ngay:</span>
+              <button class="chip" onclick="jumpToArticle('inter4')">⛔ Tại sao CẤM uống thuốc hạ áp & Aspirin?</button>
+              <button class="chip" onclick="jumpToArticle('bloodlet')">🩸 Sự thật chích máu 10 đầu ngón tay</button>
+              <button class="chip" onclick="jumpToArticle('ancung')">💊 Kiểm chứng An Cung Ngưu Hoàng Hoàn</button>
+              <button class="chip" onclick="jumpToArticle('bath')">🚿 Tắm đêm & 14 yếu tố châm ngòi</button>
+              <button class="chip" onclick="jumpToArticle('traps')">👁️ 8 bẫy đột quỵ không liệt tay chân</button>
+            </div>
+          </div>
+
+          <!-- Interactive BE-FAST + 5 Red Flags Outside BE-FAST -->
+          <div style="margin-top:1.35rem;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:baseline; gap:0.5rem;">
+              <div>
+                <h2 style="font-size:1.18rem; margin-bottom:0.2rem;">Nhận Diện Tức Thì: Quy Tắc B.E.F.A.S.T & 5 Dấu Hiệu Đỏ Ngoài FAST</h2>
+                <p style="font-size:0.86rem; color:var(--text-muted); margin:0;">Chạm vào bất kỳ thẻ nào bên dưới để xem cách kiểm tra chuẩn trong 10 giây (FAST âm tính vẫn KHÔNG loại trừ đột quỵ tuần hoàn sau!)</p>
+              </div>
+            </div>
+
+            <div class="befast-grid">
+              <button class="sign-card" onclick="openSignDetail('B')">
+                <div style="display:flex; justify-content:space-between;"><span class="sign-letter">B</span><span>🚶</span></div>
+                <strong style="display:block; margin:0.3rem 0 0.15rem;">Thăng bằng</strong>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Chóng mặt dữ dội, đi loạng choạng, không ngồi vững</span>
+              </button>
+              <button class="sign-card" onclick="openSignDetail('E')">
+                <div style="display:flex; justify-content:space-between;"><span class="sign-letter">E</span><span>👁️</span></div>
+                <strong style="display:block; margin:0.3rem 0 0.15rem;">Thị giác (Mắt)</strong>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Mù 1 mắt rèm che, nhìn đôi, mất nửa tầm nhìn</span>
+              </button>
+              <button class="sign-card" onclick="openSignDetail('F')">
+                <div style="display:flex; justify-content:space-between;"><span class="sign-letter">F</span><span>🙂</span></div>
+                <strong style="display:block; margin:0.3rem 0 0.15rem;">Khuôn mặt</strong>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Cười lệch một bên miệng, mờ rãnh mũi má</span>
+              </button>
+              <button class="sign-card" onclick="openSignDetail('A')">
+                <div style="display:flex; justify-content:space-between;"><span class="sign-letter">A</span><span>💪</span></div>
+                <strong style="display:block; margin:0.3rem 0 0.15rem;">Tay / Chân</strong>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Giơ 2 tay 10s một bên rơi/xoay sấp, tê yếu 1 bên</span>
+              </button>
+              <button class="sign-card" onclick="openSignDetail('S')">
+                <div style="display:flex; justify-content:space-between;"><span class="sign-letter">S</span><span>🗣️</span></div>
+                <strong style="display:block; margin:0.3rem 0 0.15rem;">Lời nói</strong>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Nói đớ, ngọng, khó tìm từ hoặc nói vô nghĩa</span>
+              </button>
+              <button class="sign-card red-accent" onclick="openSignDetail('T')">
+                <div style="display:flex; justify-content:space-between;"><span class="sign-letter">T</span><span>⏱️</span></div>
+                <strong style="display:block; margin:0.3rem 0 0.15rem; color:var(--sos-red);">Thời gian (115)</strong>
+                <span style="font-size:0.8rem; color:var(--text-muted);">Gọi 115 ngay & ghi mốc giờ bình thường cuối (LKW)</span>
+              </button>
+            </div>
+
+            <!-- 5 Subtle Red Flags Outside BE-FAST (From gemini_merge.md Section 1.2 & 6.2) -->
+            <div style="margin-top:0.9rem;">
+              <div class="eyebrow eyebrow-red" style="margin-bottom:0.2rem;">⚠️ 5 Dấu hiệu Đỏ ngoài BE-FAST cực dễ bị chẩn đoán nhầm tại nhà:</div>
+              <div class="redflags-grid">
+                <button class="sign-card" onclick="openSignDetail('RF1')">
+                  <strong style="font-size:0.88rem; display:block;">⚡ Đau đầu "sét đánh"</strong>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Đạt cực đại tức thì ("đau nhất đời") → Nghi vỡ phình mạch SAH</span>
+                </button>
+                <button class="sign-card" onclick="openSignDetail('RF2')">
+                  <strong style="font-size:0.88rem; display:block;">🥤 Khó nuốt, sặc, khàn tiếng</strong>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Dù tay chân không liệt → Nghi đột quỵ hành não Wallenberg</span>
+                </button>
+                <button class="sign-card" onclick="openSignDetail('RF3')">
+                  <strong style="font-size:0.88rem; display:block;">✍️ Vụng 1 bàn tay / Mất viết</strong>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Rơi đũa, chữ viết biến dạng đột ngột → Nhồi máu vùng Hand-knob</span>
+                </button>
+                <button class="sign-card" onclick="openSignDetail('RF4')">
+                  <strong style="font-size:0.88rem; display:block;">😵 Lú lẫn / Ngủ gà cấp tính</strong>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Đột ngột gọi khó tỉnh, bỏ quên nửa không gian bên trái</span>
+                </button>
+                <button class="sign-card" onclick="openSignDetail('RF5')">
+                  <strong style="font-size:0.88rem; display:block;">🧣 Đau 1 bên cổ/gáy cấp</strong>
+                  <span style="font-size:0.78rem; color:var(--text-muted);">Kèm chóng mặt/sụp mi ở người trẻ → Bóc tách mạch đốt sống (Cấm bẻ cổ!)</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Interactive Sign Detail Drawer -->
+            <div id="sign-drawer" class="card hidden" style="margin-top:0.85rem; border:2px solid var(--brand-teal); background:var(--bg-surface);">
+              <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
+                <div style="max-width:760px;">
+                  <strong id="sign-drawer-title" style="color:var(--brand-teal); font-size:1.02rem; display:block; margin-bottom:0.25rem;"></strong>
+                  <p id="sign-drawer-body" style="margin:0; font-size:0.92rem; color:var(--text-primary);"></p>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                  <button class="btn-primary-sos" style="width:auto; min-height:44px; font-size:0.86rem; padding:0.5rem 1rem;" onclick="showScreen('emergency')">Có dấu hiệu này → Sơ cứu ngay</button>
+                  <button class="btn-outline" style="min-height:44px; padding:0.5rem 0.85rem; font-size:0.85rem;" onclick="document.getElementById('sign-drawer').classList.add('hidden')">Đóng</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             SCREEN 2: CHẾ ĐỘ SƠ CỨU KHẨN CẤP 0 GIÂY (10 SCENARIOS + LKW + CPR)
+             ================================================================== -->
+        <section id="screen-emergency" class="hidden">
+          <!-- Sticky Golden Hour & LKW Recorder -->
+          <div class="card-emergency" style="margin-bottom:1.1rem; padding:1rem 1.2rem;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+              <div>
+                <div class="eyebrow eyebrow-red" style="margin-bottom:0.2rem;">⏱️ Mốc Last Known Well (Lần cuối thấy người bệnh bình thường)</div>
+                <div id="lkw-readout" style="font-weight:800; font-size:0.98rem;">
+                  Chưa lưu giờ khởi phát — Bấm nút bên phải để ghi nhớ báo cho bác sĩ 115!
+                </div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:0.45rem;">
+                <button class="chip" onclick="recordLKW(0)">Vừa mới xảy ra</button>
+                <button class="chip" onclick="recordLKW(15)">15 phút trước</button>
+                <button class="chip" onclick="recordWakeUpLKW()">Ngủ dậy mới thấy (Wake-up)</button>
+                <button class="btn-primary-teal" style="width:auto; min-height:40px; padding:0.45rem 0.9rem; font-size:0.84rem;" onclick="openDoctorModal()">🪪 Mở Thẻ Báo Bác Sĩ 115</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Switch between Sequential 0-15m Flow vs 10 Real-World Clinical Scenarios -->
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:0.82rem; font-weight:700; color:var(--text-muted); margin-bottom:0.45rem;">
+              CHỌN NHANH TÌNH HUỐNG ĐANG GẶP TRƯỚC MẮT (Chuẩn AHA 2024–2026 & Bộ Y tế):
+            </div>
+            <div id="scenario-strip" class="chip-strip"></div>
+          </div>
+
+          <!-- Giant Single-Tasking Emergency Card -->
+          <div class="card" style="border-width:2px;">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:0.75rem; margin-bottom:0.65rem;">
+              <div>
+                <span id="em-badge" style="display:inline-block; background:var(--sos-red); color:#FFF; font-weight:800; font-size:0.76rem; padding:0.25rem 0.7rem; border-radius:99px; margin-bottom:0.45rem;"></span>
+                <h2 id="em-title" style="font-size:1.38rem; margin:0;"></h2>
+              </div>
+              <button class="tts-trigger" onclick="speakEmergencyCard()">🔊 Loa đọc to bước này</button>
+            </div>
+
+            <p id="em-lead" style="font-size:1.04rem; font-weight:600; color:var(--text-primary);"></p>
+
+            <!-- Optional CPR 110 BPM Metronome (Auto-displays on Cardiac/Respiratory Arrest Scenario!) -->
+            <div id="cpr-metronome-panel" class="cpr-box hidden">
+              <div style="display:flex; align-items:center; gap:0.85rem;">
+                <div id="cpr-heart" class="cpr-heart">110</div>
+                <div>
+                  <strong style="color:var(--sos-red); display:block;">Máy Đếm Nhịp Ép Tim Chuẩn AHA (110 nhịp/phút)</strong>
+                  <span style="font-size:0.85rem; color:var(--text-secondary);">Đặt 2 tay chồng lên nhau giữa xương ức, ấn mạnh sâu 5–6 cm theo từng tiếng "Bíp"!</span>
+                </div>
+              </div>
+              <button id="btn-cpr-toggle" class="btn-primary-sos" style="width:auto; min-height:46px; padding:0.6rem 1.1rem;" onclick="toggleCPRMetronome()">
+                ▶️ Bật tiếng nhịp ép tim
+              </button>
+            </div>
+
+            <div class="do-dont-grid">
+              <div class="box-do">
+                <strong style="color:var(--do-green); font-size:0.95rem;">✅ VIỆC CẦN LÀM NGAY</strong>
+                <ul id="em-dos" class="clean-list"></ul>
+              </div>
+              <div class="box-dont">
+                <strong style="color:var(--sos-red); font-size:0.95rem;">⛔ TUYỆT ĐỐI CẤM (TRÁNH TỬ VONG / MẤT GIỜ VÀNG)</strong>
+                <ul id="em-donts" class="clean-list" style="font-weight:600;"></ul>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem; padding-top:0.9rem; border-top:1px solid var(--border-soft);">
+              <button class="btn-outline" onclick="stepScenario(-1)">← Tình huống trước</button>
+              <div style="display:flex; flex-wrap:wrap; gap:0.6rem;">
+                <a href="tel:115" onclick="event.preventDefault(); openDoctorModal();" class="btn-primary-sos" style="width:auto; text-decoration:none; padding:0.75rem 1.3rem;">
+                  📞 GỌI 115 & HIỆN THẺ BÁO BÁC SĨ
+                </a>
+                <button class="btn-primary-teal" style="width:auto;" onclick="stepScenario(1)">Tình huống tiếp theo →</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             SCREEN 3: BÀI TEST TƯƠNG TÁC 4 GIAI ĐOẠN (SMART SHORT-CIRCUIT)
+             ================================================================== -->
+        <section id="screen-test" class="hidden">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+            <div>
+              <h2 style="margin-bottom:0.2rem;">Bài Test Tương Tác Phân Tầng 4 Giai Đoạn</h2>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">
+                Lưu ý khoa học: Không có công cụ nào báo trước đột quỵ "7–30 ngày"; bài test phân tầng chính xác giữa <strong>Nguy cơ nền</strong>, <strong>Cảnh báo sớm TIA / Giờ Vàng</strong> và <strong>Nguy kịch</strong>.
+              </p>
+            </div>
+            <div class="chip-strip">
+              <span style="font-size:0.78rem; color:var(--text-muted);">Xem nhanh 4 mức kết quả:</span>
+              <button class="chip" onclick="showStageVerdict('s1')">🟢 Bình thường</button>
+              <button class="chip" onclick="showStageVerdict('s2')">🟡 Rất sớm</button>
+              <button class="chip" onclick="showStageVerdict('s3')">🟠 Sớm (Giờ vàng)</button>
+              <button class="chip" onclick="showStageVerdict('s4')">🔴 Muộn / Nguy kịch</button>
+            </div>
+          </div>
+
+          <div class="split-12">
+            <!-- Left: Interactive Question & Micro-Tool Box -->
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.84rem; color:var(--text-muted); font-weight:700; margin-bottom:0.5rem;">
+                <span id="q-progress-text">Bước 1 / 5</span>
+                <button class="seg-btn" style="padding:0.2rem 0.55rem;" onclick="resetTriage()">↺ Làm lại từ đầu</button>
+              </div>
+              <div style="height:8px; background:var(--bg-subtle); border-radius:99px; overflow:hidden; margin-bottom:1rem;">
+                <div id="q-bar" style="height:100%; width:20%; background:var(--brand-teal); transition:width 0.25s;"></div>
+              </div>
+
+              <h3 id="q-title" style="font-size:1.18rem;"></h3>
+              <p id="q-desc" style="color:var(--text-secondary); font-size:0.92rem;"></p>
+
+              <!-- Embedded Practice Helper (Speech Sentence or 10s Arm Timer) -->
+              <div id="q-helper" class="card" style="background:var(--bg-subtle); padding:0.95rem; margin-bottom:1rem; box-shadow:none;"></div>
+
+              <div id="q-choices"></div>
+            </div>
+
+            <!-- Right: Semicircular 4-Stage SVG Gauge & Clinical Recommendation -->
+            <div class="card">
+              <div style="text-align:center; font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.04em;">
+                Đồng Hồ Phân Tầng Lâm Sàng & Hành Động
+              </div>
+
+              <div style="max-width:300px; margin:0.4rem auto;">
+                <svg viewBox="0 0 260 152" style="width:100%; height:auto; overflow:visible;">
+                  <path d="M 25 130 A 105 105 0 0 1 62 49" fill="none" stroke="#15803D" stroke-width="22"/>
+                  <path d="M 65 47 A 105 105 0 0 1 128 25" fill="none" stroke="#D97706" stroke-width="22"/>
+                  <path d="M 132 25 A 105 105 0 0 1 195 47" fill="none" stroke="#EA580C" stroke-width="22"/>
+                  <path d="M 198 49 A 105 105 0 0 1 235 130" fill="none" stroke="#DC2626" stroke-width="22"/>
+                  <text x="12" y="148" fill="currentColor" font-size="12" font-weight="700">Bình thường</text>
+                  <text x="64" y="20" fill="currentColor" font-size="12" font-weight="700">Rất sớm</text>
+                  <text x="160" y="20" fill="currentColor" font-size="12" font-weight="700">Sớm</text>
+                  <text x="210" y="148" fill="currentColor" font-size="12" font-weight="700">Muộn</text>
+                  <g id="triage-needle" transform="rotate(-68, 130, 130)" style="transition:transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);">
+                    <line x1="130" y1="130" x2="130" y2="42" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+                    <circle cx="130" cy="130" r="8" fill="currentColor"/>
+                  </g>
+                </svg>
+              </div>
+
+              <div id="verdict-box" style="background:var(--bg-surface); border:1.5px solid var(--border-soft); border-radius:var(--radius-md); padding:1.05rem;">
+                <span id="verdict-pill" style="display:inline-block; padding:0.25rem 0.7rem; border-radius:99px; font-size:0.76rem; font-weight:800; background:var(--do-green); color:#FFF; margin-bottom:0.45rem;"></span>
+                <h4 id="verdict-heading" style="font-size:1.05rem;"></h4>
+                <p id="verdict-text" style="font-size:0.9rem; color:var(--text-secondary);"></p>
+                <div id="verdict-action"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================================
+             SCREEN 4: CẨM NANG 3 LỚP & KIỂM CHỨNG ĐÔNG Y / MẸO DÂN GIAN
+             ================================================================== -->
+        <section id="screen-library" class="hidden">
+          <div style="margin-bottom:1rem;">
+            <h2 style="margin-bottom:0.25rem;">Cẩm Nang Tri Thức Y Khoa 3 Lớp (Trích xuất từ <code style="font-family:var(--font-mono);">gemini_merge.md</code>)</h2>
+            <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:0.75rem;">
+              Thiết kế đọc thông minh: Người vội/mắt yếu chỉ cần đọc <strong>Lớp 1 (15 giây)</strong>; người chăm sóc xem <strong>Lớp 2 (Nên/Cấm)</strong>; người nghiên cứu mở <strong>Lớp 3 (Bằng chứng RCT 2024–2026)</strong>.
+            </p>
+            <div class="chip-strip">
+              <button class="chip active" data-cat="all" onclick="filterArticles('all', this)">Tất cả chủ đề (8)</button>
+              <button class="chip" data-cat="Sơ cứu & Sai lầm" onclick="filterArticles('Sơ cứu & Sai lầm', this)">⛔ Sơ cứu & Kiểm chứng mẹo dân gian</button>
+              <button class="chip" data-cat="Nhận diện sớm" onclick="filterArticles('Nhận diện sớm', this)">👁️ Nhận diện cực sớm & Cửa sổ 24h</button>
+              <button class="chip" data-cat="Phòng ngừa" onclick="filterArticles('Phòng ngừa', this)">🛡️ Phòng ngừa & Yếu tố khởi phát</button>
+            </div>
+          </div>
+
+          <div class="split-library">
+            <div id="article-list" style="display:flex; flex-direction:column; gap:0.6rem;"></div>
+
+            <article class="card" id="article-viewer">
+              <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.5rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border-soft); margin-bottom:0.85rem;">
+                <span id="art-cat" class="eyebrow eyebrow-teal" style="margin:0;"></span>
+                <button class="tts-trigger" onclick="speakArticle()">🔊 Nghe đọc bài này</button>
+              </div>
+
+              <h3 id="art-title" style="font-size:1.3rem; margin-bottom:0.9rem;"></h3>
+
+              <!-- Layer 1 -->
+              <div style="background:var(--bg-subtle); border-left:4px solid var(--brand-teal); border-radius:var(--radius-sm); padding:0.95rem 1rem; margin-bottom:1rem;">
+                <div style="font-size:0.76rem; font-weight:800; text-transform:uppercase; color:var(--brand-teal); margin-bottom:0.25rem;">⚡ Lớp 1: Tóm tắt cốt lõi trong 15 giây</div>
+                <p id="art-tldr" style="margin:0; font-weight:600;"></p>
+              </div>
+
+              <!-- Layer 2 -->
+              <div style="margin-bottom:1rem;">
+                <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; color:var(--text-muted); margin-bottom:0.45rem;">📌 Lớp 2: Ghi nhớ hành động chuẩn</div>
+                <ul id="art-bullets" class="clean-list"></ul>
+              </div>
+
+              <!-- Layer 3 -->
+              <details style="background:var(--bg-surface); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:0.9rem 1rem;">
+                <summary style="font-weight:800; cursor:pointer;">🔬 Lớp 3: Cơ chế bệnh sinh & Bằng chứng lâm sàng kiểm chứng (Bấm mở rộng)</summary>
+                <p id="art-evidence" style="margin:0.75rem 0 0; font-size:0.9rem; color:var(--text-secondary);"></p>
+              </details>
+            </article>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- ANDROID BOTTOM THUMB BAR (Shown in Android App mode) -->
+      <nav class="mobile-bottom-nav" aria-label="Điều hướng đáy trên ứng dụng Android">
+        <button class="mob-tab active" data-mob="home" onclick="showScreen('home')">
+          <span style="font-size:1.2rem;">🏠</span>
+          <span>Trang chủ</span>
+        </button>
+        <button class="mob-tab" data-mob="test" onclick="showScreen('test')">
+          <span style="font-size:1.2rem;">🧪</span>
+          <span>Test 4 mức</span>
+        </button>
+        <button class="mob-tab" data-mob="library" onclick="showScreen('library')">
+          <span style="font-size:1.2rem;">📖</span>
+          <span>Cẩm nang</span>
+        </button>
+        <button class="mob-tab sos-tab" onclick="showScreen('emergency')">
+          <span style="font-size:1.2rem;">🚨</span>
+          <span>Sơ cứu</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       MODAL: THẺ BÁO BÁC SĨ 115 & HỒ SƠ Y TẾ CÁ NHÂN (OFFLINE LOCALSTORAGE)
+       ======================================================================== -->
+  <div id="doctor-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.75rem; border-bottom:1px solid var(--border-soft); padding-bottom:0.75rem; margin-bottom:0.9rem;">
+        <div>
+          <div class="eyebrow eyebrow-red" style="margin-bottom:0.15rem;">Đưa màn hình này cho Kíp Cấp Cứu 115 / Bác sĩ Đột quỵ</div>
+          <h3 id="modal-title" style="margin:0;">🪪 THẺ THÔNG TIN GIỜ VÀNG (LKW) & THUỐC ĐANG DÙNG</h3>
+        </div>
+        <button class="btn-outline" style="min-height:38px; padding:0.35rem 0.75rem;" onclick="closeDoctorModal()">Đóng ✕</button>
+      </div>
+
+      <div style="background:var(--sos-red-soft); border:1.5px solid var(--sos-red); border-radius:var(--radius-md); padding:0.85rem 1rem; margin-bottom:1rem;">
+        <div style="font-size:0.78rem; font-weight:800; color:var(--sos-red); text-transform:uppercase;">Mốc bình thường cuối cùng (Last Known Well — LKW):</div>
+        <div id="modal-lkw-text" style="font-size:1.05rem; font-weight:800; font-family:var(--font-mono); margin-top:0.2rem;">
+          Chưa bấm lưu (Hãy bấm "Vừa mới xảy ra" ở màn hình Sơ cứu)
+        </div>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        <div class="kv-row">
+          <span style="color:var(--text-muted);">Họ tên & Cân nặng ước tính:</span>
+          <input id="med-name" type="text" value="Nguyễn Văn An (68 tuổi • ~62 kg)" style="border:1px solid var(--border-soft); border-radius:8px; padding:0.25rem 0.5rem; font-weight:700; text-align:right; background:var(--bg-surface); color:var(--text-primary); width:58%;" onchange="saveMedProfile()" />
+        </div>
+        <div class="kv-row">
+          <span style="color:var(--text-muted);">Thuốc chống đông / tiểu cầu:</span>
+          <input id="med-anticoag" type="text" value="Rivaroxaban 20mg (uống 08:00 sáng)" style="border:1px solid var(--sos-red); border-radius:8px; padding:0.25rem 0.5rem; font-weight:700; text-align:right; background:var(--bg-surface); color:var(--sos-red); width:58%;" onchange="saveMedProfile()" />
+        </div>
+        <div class="kv-row">
+          <span style="color:var(--text-muted);">Bệnh nền quan trọng:</span>
+          <input id="med-cond" type="text" value="Tăng huyết áp, Rung nhĩ" style="border:1px solid var(--border-soft); border-radius:8px; padding:0.25rem 0.5rem; font-weight:700; text-align:right; background:var(--bg-surface); color:var(--text-primary); width:58%;" onchange="saveMedProfile()" />
+        </div>
+        <div class="kv-row">
+          <span style="color:var(--text-muted);">Số điện thoại người thân:</span>
+          <input id="med-phone" type="text" value="0912.xxx.xxx (Con trai)" style="border:1px solid var(--border-soft); border-radius:8px; padding:0.25rem 0.5rem; font-weight:700; text-align:right; background:var(--bg-surface); color:var(--text-primary); width:58%;" onchange="saveMedProfile()" />
+        </div>
+      </div>
+
+      <p style="font-size:0.82rem; color:var(--text-muted); margin:0;">
+        💡 <strong>Tại sao thẻ này cứu mạng?</strong> Bác sĩ cần biết chính xác <strong>cân nặng</strong> để tính liều tiêm Tenecteplase/Alteplase (0,25 hoặc 0,9 mg/kg) và biết bệnh nhân đang uống <strong>thuốc chống đông gì</strong> để dùng thuốc hóa giải đặc hiệu (4F-PCC, Idarucizumab, Andexanet alfa) nếu là xuất huyết não!
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================================================
+    // MEDICAL KNOWLEDGE STORE (DISTILLED FROM gemini_merge.md — VERIFIED 11/2026)
+    // ==========================================================================
+    const signDetails = {
+      B: { title: "B — Balance (Mất thăng bằng & Thất điều đột ngột)", body: "Đột ngột chóng mặt xoay tròn dữ dội, đi loạng choạng như say rượu hoặc không thể tự ngồi/đứng vững. Chiếm 38,8% triệu chứng vào viện của đột quỵ tuần hoàn sau — tuyệt đối không tự uống thuốc 'rối loạn tiền đình' nằm chờ!" },
+      E: { title: "E — Eyes (Mất hoặc rối loạn thị giác đột ngột)", body: "Đột ngột nhìn một thành hai (song thị), mất một nửa trường nhìn (hay va vào cạnh cửa một bên), hoặc mù không đau một mắt kiểu 'tấm rèm đen kéo sập xuống' (CRAO / TIA võng mạc). Dù mắt tự sáng lại sau 5 phút vẫn phải đi cấp cứu ngay!" },
+      F: { title: "F — Face (Lệch mặt trung ương)", body: "Yêu cầu người bệnh CƯỜI TƯƠI hoặc NHE RĂNG: một bên khóe miệng trễ xệ xuống, nhân trung lệch. Không tự chẩn đoán là 'liệt dây VII ngoại biên do trúng gió' để đi châm cứu tại nhà." },
+      A: { title: "A — Arms (Yếu liệt hoặc tê một bên tay / chân)", body: "Nhờ nhắm mắt, giơ thẳng đều 2 tay ra trước (lòng bàn tay ngửa) trong 10 giây: một tay không nâng nổi, rơi thấp dần hoặc tự xoay sấp. Bao gồm cả triệu chứng kín đáo đột nhiên cầm rơi đũa, rơi cốc ở một tay." },
+      S: { title: "S — Speech (Nói đớ, thất ngôn Broca hoặc Wernicke)", body: "Nhờ đọc câu 'Hôm nay trời rất trong xanh': giọng bỗng đớ ngọng, ú ớ không thốt thành câu, quên tên đồ vật quen thuộc, hoặc nói trôi chảy nhưng câu chữ vô nghĩa không hiểu lời người khác." },
+      T: { title: "T — Time (Thời gian là Não — Gọi 115 & Ghi mốc LKW)", body: "Chỉ cần CÓ 1 dấu hiệu: Gọi 115 ngay lập tức, nói rõ 'Nghi đột quỵ não cấp' và ghi lại chính xác giờ bình thường cuối cùng (Last Known Well)." },
+      RF1: { title: "Dấu hiệu Đỏ 1: Đau đầu 'Sét đánh' (Thunderclap Headache)", body: "Cơn đau đầu dữ dội chưa từng có đạt cực đại tức thì trong vài giây đến dưới 1 giờ, kèm cứng gáy/buồn nôn — dấu hiệu điển hình của Xuất huyết dưới nhện (aSAH) do vỡ túi phình mạch não. Cấm uống thuốc giảm đau đi ngủ!" },
+      RF2: { title: "Dấu hiệu Đỏ 2: Đột ngột Khó nuốt, Uống sặc, Khàn tiếng, Nấc cụt", body: "Tổn thương hành não lưng bên (Hội chứng Wallenberg) có thể CHỈ gây sặc nước lên mũi và khàn tiếng mà tay chân hoàn toàn không liệt! Phải nhịn ăn uống tuyệt đối (NPO) và tới Đơn vị Đột quỵ ngay." },
+      RF3: { title: "Dấu hiệu Đỏ 3: Yếu vụng đơn độc 1 bàn tay / Biến đổi chữ viết (Dysgraphia)", body: "Nhồi máu vỏ não vùng 'hand-knob' hoặc thùy đỉnh chỉ làm bàn tay đột nhiên vụng về, không cài được cúc áo hoặc không viết nổi chữ quen, rất dễ bị nhầm với chèn ép dây thần kinh cổ tay." },
+      RF4: { title: "Dấu hiệu Đỏ 4: Lú lẫn cấp, Ngủ gà bất thường hoặc Bỏ quên nửa không gian", body: "Người cao tuổi đột ngột ngủ li bì gọi khó tỉnh (gợi ý tắc động mạch thân nền hoặc xuất huyết lớn) hoặc chỉ ăn nửa bát cơm bên phải — tuyệt đối không đắp chăn cho 'ngủ thêm lấy sức'!" },
+      RF5: { title: "Dấu hiệu Đỏ 5: Đau chói một bên cổ / gáy mới xuất hiện ở người trẻ", body: "Đặc biệt sau xoay vặn cổ hoặc chấn thương nhẹ kèm chóng mặt, sụp nhẹ mi mắt — báo động Bóc tách động mạch đốt sống / cảnh. CẤM TUYỆT ĐỐI đi massage hay bẻ cổ tiếp!" }
+    };
+
+    const emergencyScenarios = [
+      {
+        id: "std",
+        chip: "⚡ Quy trình 5 phút đầu (Chuẩn)",
+        badge: "QUY TRÌNH CỐT LÕI 0 – 15 PHÚT ĐẦU",
+        title: "Gọi 115 ngay lập tức, lưu mốc LKW & giữ an toàn đường thở",
+        lead: "Giữ bình tĩnh! Nhờ người phụ giúp gọi 115 (nói rõ: 'Nghi đột quỵ não cấp'), bấm lưu giờ bình thường cuối cùng (LKW) ở thanh trên và đặt người bệnh nằm an toàn chờ xe.",
+        isCPR: false,
+        dos: [
+          "Phút 0–1: Gọi 115 ngay; ghi chính xác giờ khởi phát & giờ bình thường cuối cùng (LKW).",
+          "Phút 1–5: Nếu tỉnh táo hoàn toàn, đỡ nằm nghỉ yên thoải mái, nới lỏng cổ áo, cà vạt, thắt lưng.",
+          "Phút 5–15: Gom toàn bộ vỏ thuốc đang dùng (nhất là thuốc chống đông), CCCD/BHYT; mở rộng cửa đón xe 115."
+        ],
+        donts: [
+          "KHÔNG tự cho uống thuốc hạ huyết áp (kể cả HA 200 mmHg — gây hại nhồi máu não theo INTERACT4!).",
+          "KHÔNG cho uống Aspirin, An Cung Ngưu Hoàng Hoàn, nước lọc, nước chanh hay nước gừng.",
+          "KHÔNG chích máu 10 đầu ngón tay/dái tai, không cạo gió, không xoa bóp vùng cổ, không chở bằng xe máy."
+        ]
+      },
+      {
+        id: "vomit",
+        chip: "🤢 Nôn ói / Lơ mơ / Bất tỉnh còn thở",
+        badge: "KỊCH BẢN BẢO VỆ ĐƯỜNG THỞ KHẨN CẤP",
+        title: "Xoay ngay sang Tư thế Nằm nghiêng an toàn — Chống sặc vào phổi!",
+        lead: "Khi người bệnh lơ mơ, ngủ gà, sặc đờm dãi hoặc buồn nôn/nôn vọt (rất hay gặp trong xuất huyết não & đột quỵ tiểu não/thân não), sặc chất nôn vào phổi có thể gây tử vong chỉ trong vài phút.",
+        isCPR: false,
+        dos: [
+          "Nhẹ nhàng xoay đồng trục người bệnh nằm nghiêng sang một bên (tư thế hồi sức), đầu ngang hơi ngửa nhẹ dẫn lưu chất nôn ra ngoài.",
+          "Tháo răng giả bị lỏng (nếu dễ lấy); dùng khăn sạch quấn ngón tay lau đờm dãi ở khóe miệng ngoài.",
+          "Quan sát lồng ngực nhấp nhô từng phút cho tới khi nhân viên 115 tiếp nhận."
+        ],
+        donts: [
+          "CẤM ĐỂ NẰM NGỬA khi đang nôn hoặc bất tỉnh (tụt gốc lưỡi và hít sặc dịch dạ dày vào phổi).",
+          "CẤM đổ nước đường, nước gừng hay cạy miệng đút bất kỳ viên thuốc nào.",
+          "CẤM bấm nhân trung hay chích máu thay vì lo mở thông đường thở."
+        ]
+      },
+      {
+        id: "seizure",
+        chip: "⚡ Đang lên cơn co giật",
+        badge: "KỊCH BẢN XỬ TRÍ CO GIẬT (AHA FIRST AID 2024)",
+        title: "Bảo vệ đầu khỏi va đập — Tuyệt đối KHÔNG nhét bất cứ vật gì vào miệng!",
+        lead: "Khoảng 2%–23% đột quỵ cấp (đặc biệt huyết khối tĩnh mạch não CVT và xuất huyết vỏ não) gây co giật ngay giờ đầu.",
+        isCPR: false,
+        dos: [
+          "Gọi 115 ngay; dọn sạch bàn ghế, vật cứng sắc nhọn xung quanh người bệnh.",
+          "Lót gối mềm hoặc áo gấp dưới đầu; bấm giờ theo dõi thời gian cơn giật.",
+          "Ngay khi cơn giật vừa dứt: xoay nhẹ người bệnh sang tư thế nằm nghiêng an toàn và kiểm tra nhịp thở."
+        ],
+        donts: [
+          "CẤM TUYỆT ĐỐI (AHA Class 3-Harm): KHÔNG nhét đũa, muỗng, khăn, lát chanh hay ngón tay vào miệng (gãy răng rơi vào khí quản gây ngạt!).",
+          "KHÔNG lấy sức đè ghì chặt tay chân người đang giật (gây gãy xương, trật khớp vai).",
+          "KHÔNG cho uống nước hay thuốc ngay sau cơn giật khi người bệnh còn lơ mơ."
+        ]
+      },
+      {
+        id: "cpr",
+        chip: "🫀 Ngừng thở / Thở ngáp cá (CPR)",
+        badge: "TỐI KHẨN CẤP — QUY TẮC 'NO – NO – GO' (AHA CPR 2025)",
+        title: "Không đáp ứng & Ngừng thở (hoặc chỉ thở ngáp cá) → ÉP TIM NGAY!",
+        lead: "Nếu gọi lay không đáp ứng và lồng ngực không thở bình thường (ngừng thở hoặc chỉ ngáp hơi rời rạc kiểu 'cá ngáp'), tim đã ngừng tuần hoàn hiệu quả!",
+        isCPR: true,
+        dos: [
+          "Bấm gọi 115 bật loa ngoài + nhờ người tìm máy khử rung tự động (AED) nếu ở nơi công cộng.",
+          "Đặt người bệnh NẰM NGỬA trên mặt phẳng cứng (sàn nhà).",
+          "Ép tim liên tục bằng 2 tay giữa xương ức: tần số 100–120 lần/phút (bật tiếng nhịp 110 bên dưới), ấn sâu 5–6 cm, để ngực nảy lên hết sau mỗi nhịp ép."
+        ],
+        donts: [
+          "KHÔNG mất thời gian mò bắt mạch cổ nếu không phải nhân viên y tế.",
+          "KHÔNG nhầm lẫn tiếng thở ngáp cá (agonal gasps) là người bệnh vẫn còn thở bình thường!",
+          "KHÔNG dừng ép tim quá 10 giây cho tới khi kíp 115 tiếp quản hoặc người bệnh thở/cử động lại."
+        ]
+      },
+      {
+        id: "wakeup",
+        chip: "🌅 Ngủ dậy mới thấy bị (Wake-up)",
+        badge: "ĐỘT QUỴ KHI THỨC DẬY (14% – 27% CA NHỒI MÁU NÃO)",
+        title: "Tuyệt đối KHÔNG bỏ cuộc vì nghĩ đã quá Giờ Vàng!",
+        lead: "Y học hiện đại (AHA/ASA 2026 & Bộ Y tế VN QĐ 3312/QĐ-BYT) đã mở cửa sổ cứu não tới 9–24 giờ nhờ chụp MRI (DWI–FLAIR mismatch) hoặc CT tưới máu xác định mô não còn cứu được!",
+        isCPR: false,
+        dos: [
+          "Gọi 115 ngay lập tức và yêu cầu đưa thẳng đến bệnh viện có chụp MRI hoặc CT tưới máu (CTP).",
+          "Ghi rõ 2 mốc giờ: (1) Giờ cuối cùng còn bình thường tối qua trước khi ngủ (LKW) và (2) Giờ thức dậy phát hiện.",
+          "Kiểm tra điện thoại người bệnh xem đêm qua có thức dậy nhắn tin/gọi điện lúc mấy giờ không để thu hẹp mốc LKW."
+        ],
+        donts: [
+          "KHÔNG ăn sáng, không uống nước hay uống cữ thuốc sáng trước khi bác sĩ chụp CT và kiểm tra nuốt.",
+          "KHÔNG xoa dầu bóp tay rồi nằm chờ tới giờ hành chính vì tưởng 'ngủ đè cấn tê tay'."
+        ]
+      },
+      {
+        id: "tia",
+        chip: "⏳ Triệu chứng vừa tự hết (Nghi TIA)",
+        badge: "BÁO ĐỘNG ĐỎ CƠN THIẾU MÁU NÃO THOÁNG QUA (TIA)",
+        title: "Méo miệng, tê yếu tay, mờ 1 mắt 5–10 phút rồi tự khỏi 100% → VẪN PHẢI CẤP CỨU NGAY!",
+        lead: "TIA không phải 'trúng gió nhẹ đã khỏi', mà là cục máu đông vừa bít mạch não rồi tạm trôi đi. Nguy cơ đột quỵ liệt thật lên tới 5%–10% ngay trong 48 giờ đầu (và 10%–15% nếu hẹp khít mạch cảnh)!",
+        isCPR: false,
+        dos: [
+          "Đưa ngay tới khoa Cấp cứu / Đơn vị Đột quỵ ngay trong ngày (tối ưu trong vài giờ đầu, không quá 24h).",
+          "Ghi lại chi tiết triệu chứng lúc bị (tay nào yếu, mắt nào mờ, kéo dài mấy phút) để bác sĩ chụp MRI-DWI, siêu âm/CTA mạch cảnh và đo ECG."
+        ],
+        donts: [
+          "KHÔNG thở phào ở nhà hoặc đợi tuần sau mới đi khám phòng khám thường.",
+          "KHÔNG tự ra hiệu thuốc mua Aspirin uống trước khi bác sĩ chụp phim loại trừ ổ xuất huyết nhỏ!"
+        ]
+      }
+    ];
+
+    const triageSteps = [
+      {
+        title: "Bước 1 / 5: Kiểm tra Khuôn mặt & Lời nói ngay lúc này",
+        desc: "Hãy nhờ người cần kiểm tra cười tươi, sau đó đọc to câu chuẩn bên dưới:",
+        helper: `<div style="text-align:center;">
+          <div style="font-size:0.8rem; color:var(--text-muted);">Câu đọc mẫu tiếng Việt:</div>
+          <strong style="font-size:1.12rem; color:var(--brand-teal);">"Hôm nay trời rất trong xanh, gia đình tôi ăn cơm rồi"</strong>
+        </div>`,
+        choices: [
+          { label: "✅ Cười cân đối hai bên, đọc to rõ ràng, hiểu lời hoàn toàn bình thường", code: "ok" },
+          { label: "🟠 Vừa bị méo miệng / nói đớ vài phút trước nhưng hiện tại đã tự hết (Nghi TIA)", code: "tia_cut" },
+          { label: "🚨 ĐANG méo miệng một bên HOẶC nói đớ, ngọng, ú ớ, nói câu vô nghĩa!", code: "acute_early" }
+        ]
+      },
+      {
+        title: "Bước 2 / 5: Nghiệm pháp Giơ 2 Tay 10 Giây & Vận động tinh bàn tay",
+        desc: "Nhờ người đó nhắm mắt, giơ thẳng đều 2 cánh tay ra trước (lòng bàn tay ngửa lên) rồi bấm đồng hồ đếm 10 giây:",
+        helper: `<div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0.75rem;">
+          <div>
+            <div style="font-size:0.78rem; color:var(--text-muted);">Đồng hồ đếm ngược tại chỗ:</div>
+            <strong id="arm-clock" style="font-size:1.35rem; font-family:var(--font-mono); color:var(--brand-teal);">10.0 giây</strong>
+          </div>
+          <button class="btn-primary-teal" style="width:auto; min-height:44px; padding:0.5rem 1rem; font-size:0.86rem;" onclick="runArmClock()">⏱️ Bấm đếm 10 giây</button>
+        </div>`,
+        choices: [
+          { label: "✅ Giữ vững đều cả 2 tay đủ 10 giây, cầm nắm viết chữ bình thường", code: "ok" },
+          { label: "🟠 Từng tê yếu 1 bên tay/chân kéo dài vài phút rồi tự hồi phục gần đây", code: "tia_cut" },
+          { label: "🚨 Một tay rơi thấp dần / xoay sấp, liệt chân HOẶC đột ngột rơi đũa / mất khả năng viết chữ!", code: "acute_early" }
+        ]
+      },
+      {
+        title: "Bước 3 / 5: Rà soát 5 Dấu hiệu Đỏ ngoài FAST (Tuần hoàn sau & Vỡ phình mạch)",
+        desc: "Khoảng 40% đột quỵ tuần hoàn sau không gây méo miệng hay liệt tay chân. Có biểu hiện nào dưới đây mới xuất hiện đột ngột không?",
+        helper: `<div style="font-size:0.85rem; color:var(--text-secondary);">Rà kỹ: <strong>Thị lực 1 mắt/2 mắt • Chóng mặt mất thăng bằng • Nuốt sặc/Khàn tiếng • Đau đầu sét đánh • Ý thức</strong></div>`,
+        choices: [
+          { label: "✅ Không có bất kỳ dấu hiệu nào trong nhóm này", code: "ok" },
+          { label: "🚨 Mù/mờ đột ngột 1 mắt, nhìn đôi, chóng mặt không tự đứng vững, hoặc đau chói 1 bên cổ mới phát", code: "acute_early" },
+          { label: "🔴 Đau đầu 'sét đánh' dữ dội tức thì, nôn vọt, uống sặc đờm dãi HOẶC ngủ gà lơ mơ khó đánh thức!", code: "acute_late" }
+        ]
+      },
+      {
+        title: "Bước 4 / 5: Rà soát các biểu hiện không đặc hiệu kéo dài",
+        desc: "Nếu không có triệu chứng cấp tính, gần đây người kiểm tra có biểu hiện nào sau đây không?",
+        helper: `<div style="font-size:0.84rem; color:var(--text-muted);">Phân biệt triệu chứng mạn tính cần đi khám nội khoa/tim mạch theo lịch với cấp cứu đột quỵ.</div>`,
+        choices: [
+          { label: "✅ Hoàn toàn khỏe mạnh, sinh hoạt minh mẫn bình thường", code: "ok" },
+          { label: "🟡 Hay hồi hộp đánh trống ngực (mạch không đều), ngáy to ngưng thở khi ngủ, hoặc hay choáng nhẹ khi đứng dậy", code: "risk_sign" }
+        ]
+      },
+      {
+        title: "Bước 5 / 5: Đánh giá nền tảng Yếu tố Nguy cơ Mạch máu (INTERSTROKE & AHA 2024)",
+        desc: "Chọn nhóm mô tả đúng nhất tiền sử sức khỏe hiện tại:",
+        helper: `<div style="font-size:0.84rem; color:var(--text-muted);">10 yếu tố nguy cơ điều chỉnh được quyết định tới 90,7% gánh nặng đột quỵ toàn cầu.</div>`,
+        choices: [
+          { label: "🟢 Huyết áp <120/80, không hút thuốc, không tiểu đường/rung nhĩ, vận động đều đặn", code: "end_normal" },
+          { label: "🟡 Có ≥1 yếu tố: Tăng huyết áp, Đái tháo đường, Rung nhĩ, Mỡ máu cao, Hút thuốc lá, Ngồi tĩnh tại ≥8h/ngày", code: "end_veryearly" }
+        ]
+      }
+    ];
+
+    const articles = [
+      {
+        id: "inter4",
+        cat: "Sơ cứu & Sai lầm",
+        title: "Tại sao TUYỆT ĐỐI CẤM tự cho uống thuốc hạ huyết áp & Aspirin tại nhà khi nghi đột quỵ?",
+        keywords: "ha huyet ap aspirin ngam thuoc duoi luoi tang huyet ap 200 interact4",
+        tldr: "Trước khi chụp CT sọ não, không ai biết người bệnh bị Tắc mạch (77%) hay Vỡ mạch xuất huyết (18%). Uống Aspirin làm máu não chảy ồ ạt ở ca xuất huyết; còn tự uống thuốc hạ áp làm sập dòng máu nuôi vùng tranh tối tranh sáng ở ca nhồi máu não!",
+        bullets: [
+          "Khác với đau thắt ngực nghi nhồi máu cơ tim (được nhai Aspirin), nghi đột quỵ não CẤM TUYỆT ĐỐI Aspirin trước khi chụp CT.",
+          "Khi mạch não bị tắc, cơ thể phản xạ tăng huyết áp (180–200 mmHg) để bơm máu vòng qua hệ bàng hệ cứu não.",
+          "Chỉ ghi con số huyết áp báo bác sĩ; mọi thuốc hạ áp tĩnh mạch chỉ được bác sĩ dùng có kiểm soát sau khi đã xem phim CT."
+        ],
+        evidence: "Thử nghiệm ngẫu nhiên INTERACT4 (NEJM 05/2024, n=2.404) và Hướng dẫn Huyết áp ESO 2025/2026 chứng minh: hạ huyết áp sớm trên xe cứu thương trước chụp CT tuy có lợi cho xuất huyết não (OR 0,75) nhưng GÂY HẠI CÓ Ý NGHĨA THỐNG KÊ cho bệnh nhân nhồi máu não (OR 1,30 — làm tăng tàn phế và mở rộng ổ nhồi máu)."
+      },
+      {
+        id: "bloodlet",
+        cat: "Sơ cứu & Sai lầm",
+        title: "Giải mã tin giả 'Chích máu 10 đầu ngón tay, dái tai & Xoa bóp cổ' cứu người tai biến",
+        keywords: "chich mau 10 dau ngon tay dai tai kim chich xoa bop co xoang canh trung gio",
+        tldr: "Mẹo chích 10 đầu ngón tay lan truyền từ email tin giả năm 2003 hoàn toàn phi lý về huyết động: nặn vài giọt máu ngón tay không thông được mạch não mà cơn đau làm vọt huyết áp. Đặc biệt, xoa bóp vùng cổ có thể làm bung mảng xơ vữa hoặc gây ngừng tim!",
+        bullets: [
+          "Tại sao có người kể 'chích máu xong 10 phút tỉnh lại'? Đó chính là cơn TIA tự hồi phục tự nhiên sau 5–15 phút bị gán công nhầm cho cây kim!",
+          "Cơn đau buốt ở 10 đầu ngón tay kích hoạt hệ giao cảm làm huyết áp vọt cao, khiến mạch máu đang vỡ chảy mạnh hơn.",
+          "CẤM xoa miết cổ/xoang cảnh: ép lên mảng xơ vữa động mạch cảnh làm bắn cục tắc lên não hoặc kích thích phản xạ xoang cảnh gây vô tâm thu, tụt áp nhồi máu não."
+        ],
+        evidence: "Tổng quan hệ thống 17 RCT chích máu (Kim & Han, Healthcare 2024) cho thấy 17/17 nghiên cứu đều có nguy cơ sai lệch cao (RoB 2), GRADE thấp/rất thấp, chỉ làm nội viện kèm Tây y chuẩn, hoàn toàn không có bằng chứng giảm tử vong hay dùng ngoại viện. Loạt ca tiến cứu trên 1.000 người cao tuổi (Age Ageing 2000) và báo cáo ca PMID 33618738 xác nhận tai biến đột quỵ cấp ngay sau xoa xoang cảnh."
+      },
+      {
+        id: "ancung",
+        cat: "Sơ cứu & Sai lầm",
+        title: "Kiểm chứng khoa học An Cung Ngưu Hoàng Hoàn: Kết cục RCT âm tính & Nguy cơ xuất huyết, độc thận",
+        keywords: "an cung nguu hoang hoan agnhw phong dot quy thuy ngan asen xuat huyet nao",
+        tldr: "An Cung Ngưu Hoàng Hoàn KHÔNG có tác dụng phòng ngừa đột quỵ, CHỐNG CHỈ ĐỊNH TUYỆT ĐỐI trong xuất huyết não, cực dễ gây sặc phổi khi cấp cứu tại nhà và nhiều công thức truyền thống chứa Thủy ngân (Chu sa) & Asen (Hùng hoàng) gây độc thận.",
+        bullets: [
+          "Viên hoàn lớn hoặc pha nước đút cho người đang liệt hầu họng do đột quỵ gây tắc thở, viêm phổi hít nguy kịch.",
+          "Tại Việt Nam (BV TWQĐ 108, 08/2024), bệnh nhân xuất huyết não tự uống An Cung tại nhà làm bệnh cảnh nặng thêm; tháng 10/2026 Bộ Y tế yêu cầu rà soát gỡ sản phẩm chưa cấp phép/hàng giả trên sàn TMĐT.",
+          "Tuyệt đối không mua uống định kỳ 'mỗi năm 1–2 viên phòng tai biến'."
+        ],
+        evidence: "Thử nghiệm lâm sàng đối chứng giả dược mù đôi đa trung tâm ANGONG TRIAL (Li và cs., Chin Med J 2024/2025, n=120/117 mITT trên nhồi máu não vừa–nặng nội viện) cho KẾT CỤC CHÍNH ÂM TÍNH: không giảm thể tích ổ nhồi máu ngày 14 (p=0,30) và không giảm phù não (p=0,15) so với giả dược."
+      },
+      {
+        id: "natto",
+        cat: "Sơ cứu & Sai lầm",
+        title: "Nattokinase, Hoạt huyết dưỡng não, Ginkgo biloba & Vitamin E có 'làm sạch cục máu đông' được không?",
+        keywords: "nattokinase lumbrokinase hoat huyet duong nao ginkgo biloba citicoline vitamin e tam that dan sam",
+        tldr: "Không một thực phẩm chức năng đường uống nào làm tan được cục máu đông đột quỵ cấp hay thay thế được thuốc chống đông (DOAC), kháng tiểu cầu và Statin do bác sĩ kê đơn.",
+        bullets: [
+          "Sai lầm chết người phổ biến nhất: bệnh nhân rung nhĩ hoặc tăng huyết áp tự bỏ thuốc Tây chuyển sang uống Nattokinase / Hoạt huyết dưỡng não.",
+          "Uống tự do Ginkgo, Nattokinase, Đan sâm, Tam thất chung với thuốc chống đông/Aspirin làm tăng vọt nguy cơ xuất huyết nội sọ.",
+          "Uống Vitamin E liều bổ sung kéo dài không những không ngừa đột quỵ mà còn làm TĂNG 22% nguy cơ xuất huyết não."
+        ],
+        evidence: "Thử nghiệm mù đôi chuẩn vàng NAPS (Hodis 2021, n=265, theo dõi 3 năm) chứng minh Nattokinase hoàn toàn vô hiệu lên tiến triển xơ vữa động mạch cảnh (CIMT) và huyết áp. Tổng quan Cochrane (CD003691) bác bỏ Ginkgo uống thường quy trong AIS; RCT lớn ICTUS (Lancet 2012) khẳng định Citicoline không hiệu quả ở AIS vừa–nặng."
+      },
+      {
+        id: "bath",
+        cat: "Phòng ngừa",
+        title: "Sự thật về 'Tắm đêm' và 14 yếu tố khởi phát ngắn hạn (Nhiễm trùng cấp, Rượu bia, Sốc nhiệt, Bẻ cổ)",
+        keywords: "tam dem tam lanh nhiet do lanh tuc gian ran tao bon nhiem trung ruou bia be co",
+        tldr: "Bản thân 'khung giờ đêm' không phải nguyên nhân độc lập gây đột quỵ; thủ phạm thực sự là sốc nhiệt (phòng tắm lạnh/nước quá lạnh hoặc quá nóng), tắm sau uống rượu bia, nhiễm trùng cấp tuần trước (OR 2,91) và nền tăng huyết áp/xơ vữa.",
+        bullets: [
+          "2 yếu tố châm ngòi mạnh có bằng chứng cao nhưng ít người biết: Nhiễm trùng cấp trong 7 ngày trước (OR 2,91) và Uống rượu nặng trong 24 giờ trước (OR 2,66).",
+          "Tức giận/xúc động mạnh trong 1 giờ trước làm tăng gấp đôi nguy cơ xuất huyết não (INTERSTROKE OR 2,05); rặn mạnh do táo bón tăng nguy cơ vỡ túi phình mạch (RR 7,3).",
+          "Người lớn tuổi/bệnh tim mạch: làm ấm phòng tắm trước, dùng nước ấm 37–39°C, không chốt khóa trong phòng tắm và tuyệt đối không tắm sau khi nhậu."
+        ],
+        evidence: "Sổ bộ Đột quỵ Nhật Bản 2026 (n=14.772 ca nhập viện, 431 ca khởi phát khi tắm) cho thấy mối liên hệ gắn với nhiệt độ môi trường lạnh (adj OR 1,65) và mất ý nghĩa khi hiệu chỉnh theo mùa/tháng — khẳng định vai trò của chênh lệch nhiệt độ thay vì giờ giấc đơn thuần."
+      },
+      {
+        id: "traps",
+        cat: "Nhận diện sớm",
+        title: "8 'Cái Bẫy' Đột Quỵ Không Liệt Tay Chân, Không Méo Miệng Khiến Người Việt Nam Dễ Bỏ Sót Nhất",
+        keywords: "roi loan tien dinh chong mat kho nuot khan tieng mu 1 mat dau dau set danh hand knob",
+        tldr: "Thang FAST cổ điển bỏ sót tới ~40% đột quỵ tuần hoàn sau! Chóng mặt không đứng vững, đột ngột sặc nước/khàn tiếng, mù 1 mắt không đau hoặc rơi đũa/mất khả năng viết chữ đều là cấp cứu đột quỵ.",
+        bullets: [
+          "Chóng mặt xoay tròn liên tục + nôn + không tự đứng/ngồi vững → Coi chừng đột quỵ tiểu não (CT giờ đầu âm tính tới 75%!).",
+          "Đột ngột nghẹn sặc nước lên mũi, khàn tiếng, nấc cụt dù đi lại bình thường → Coi chừng hội chứng hành não bên Wallenberg.",
+          "Mờ tối 1 mắt như rèm che vài phút rồi sáng lại (Amaurosis fugax) hoặc mù không đau 1 mắt (CRAO) → Cấp cứu tại Đơn vị Đột quỵ ngay, không chờ khám kính mắt!"
+        ],
+        evidence: "Nghiên cứu Aroor (Stroke 2017) và dữ liệu tiền viện cho thấy FAST chỉ nhạy 58,7% ở đột quỵ tuần hoàn sau; ngay cả chụp MRI-DWI sớm trong 24–48 giờ đầu vẫn có tỷ lệ âm tính giả ~15% ở nhồi máu hố sau nhỏ (PMID 37038843)."
+      },
+      {
+        id: "window24",
+        cat: "Nhận diện sớm",
+        title: "Từ 'Giờ Vàng 4,5 Giờ' sang 'Cửa Sổ Mô Học 24 Giờ': Cơ hội sống cho Đột quỵ khi thức dậy & Tắc mạch lớn",
+        keywords: "gio vang 4.5 gio 24 gio wake up stroke thuc day tenecteplase lay huyet khoi quyet dinh 3312",
+        tldr: "Càng sớm từng phút não càng ít chết (1,9 triệu neuron/phút), nhưng nếu lỡ phát hiện muộn 6–24 giờ hoặc thức dậy mới thấy liệt, TUYỆT ĐỐI KHÔNG BỎ CUỘC vì người có tuần hoàn bàng hệ tốt (Slow Progressors) vẫn còn nguyên cơ hội tái thông!",
+        bullets: [
+          "Tại Việt Nam, Quyết định 3312/QĐ-BYT (11/2024) của Bộ Y tế đã chính thức áp dụng tiêu sợi huyết 4,5–9 giờ theo hình ảnh học tưới máu.",
+          "Hướng dẫn AHA/ASA 2026 đặt Tenecteplase tiêm 1 liều nhanh ngang hàng Alteplase trong ≤4,5h, đồng thời mở rộng lấy huyết khối cơ học (EVT) tới 24h cho cả Lõi nhồi máu lớn và Tắc động mạch thân nền.",
+          "Lần đầu tiên AHA/ASA 2026 cũng ban hành khuyến cáo tiêu sợi huyết và lấy huyết khối cho trẻ em bị đột quỵ cấp."
+        ],
+        evidence: "Các thử nghiệm nền tảng WAKE-UP, DEFUSE-3, ATTENTION (theo dõi 3 năm 02/2026 giảm tử vong từ 73,1% xuống 55,7%), phân tích gộp 6 RCT Lõi lớn (Liu 2025) và RCT OPTION (JAMA 04/2026 cho non-LVO 4,5–24h) đã mở rộng chưa từng có biên độ cứu não nội viện."
+      },
+      {
+        id: "prevent8",
+        cat: "Phòng ngừa",
+        title: "8 Trụ Cột Phòng Ngừa 90% Đột Quỵ & Cảnh Báo Chống Lạm Dụng 'Gói Tầm Soát MRI / Siêu Âm Cảnh Đại Trà'",
+        keywords: "phong ngua tam soat mri sieu am canh huyet ap rung nhi tieu duong glp1 asundexian",
+        tldr: "Kiểm soát Huyết áp (mỗi giảm 5 mmHg tâm thu giảm 22% đột quỵ), Mỡ máu (Statin), Đường huyết, Rung nhĩ (DOAC) và lối sống ngăn chặn tới 90,7% đột quỵ — hiệu quả hơn gấp bội việc tự đi chụp MRI hay siêu âm cảnh tràn lan khi khỏe mạnh.",
+        bullets: [
+          "KHÔNG tự mua Aspirin uống phòng ngừa lần đầu khi từ 60 tuổi trở lên (USPSTF Grade D — nguy cơ xuất huyết vượt lợi ích).",
+          "KHÔNG siêu âm động mạch cảnh hay chụp MRI sọ não đại trà cho người khỏe mạnh không triệu chứng (chỉ chụp MRA/CTA tầm soát túi phình khi có ≥2 người thân bậc 1 bị SAH hoặc mắc thận đa nang ADPKD).",
+          "Từ tuổi ≥65: nên bắt mạch / đo ECG tầm soát rung nhĩ cơ hội mỗi khi đi khám sức khỏe (ESC 2024)."
+        ],
+        evidence: "Hướng dẫn Phòng ngừa Tiên phát AHA/ASA 2024 nhấn mạnh Life's Essential 8, chế độ ăn Địa Trung Hải (PREDIMED 2018), thuốc GLP-1RA cho người đái tháo đường nguy cơ cao; trong dự phòng thứ phát, năm 2026 ghi nhận thêm bước tiến của thuốc ức chế yếu tố XIa Asundexian giảm 26% tái phát AIS không tăng chảy máu lớn (OCEANIC-STROKE, NEJM 04/2026)."
+      }
+    ];
+
+    // ==========================================================================
+    // APPLICATION CONTROLLERS & INTERACTIVE TOOLS
+    // ==========================================================================
+    let activeScreen = 'home';
+    let activeScenarioIdx = 0;
+    let lkwTime = null;
+    let lkwTimer = null;
+    let triageIdx = 0;
+    let triageHistory = [];
+    let armInterval = null;
+    let cprInterval = null;
+    let audioCtx = null;
+
+    function removeVietnameseTones(str) {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase();
+    }
+
+    function switchPlatform(mode) {
+      ['web', 'app', 'widget', 'tokens'].forEach(m => {
+        document.getElementById('plat-' + m).classList.toggle('active', m === mode);
+      });
+      const shell = document.getElementById('app-shell');
+      const pWidget = document.getElementById('panel-widget');
+      const pTokens = document.getElementById('panel-tokens');
+
+      pWidget.classList.toggle('hidden', mode !== 'widget');
+      pTokens.classList.toggle('hidden', mode !== 'tokens');
+      shell.classList.toggle('hidden', mode === 'widget' || mode === 'tokens');
+      shell.classList.toggle('mobile-mode', mode === 'app');
+    }
+
+    function setFont(level) {
+      document.documentElement.className = 'font-' + level;
+      ['a', 'ap', 'app'].forEach(l => {
+        document.getElementById('f-' + l).classList.toggle('active', l === level);
+      });
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      ['warm', 'contrast', 'dark'].forEach(t => {
+        document.getElementById('th-' + t).classList.toggle('active', t === theme);
+      });
+    }
+
+    function showScreen(screen) {
+      activeScreen = screen;
+      stopCPRMetronome();
+      ['home', 'emergency', 'test', 'library'].forEach(s => {
+        document.getElementById('screen-' + s).classList.toggle('hidden', s !== screen);
+      });
+      document.querySelectorAll('.nav-tab[data-tab]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === screen);
+      });
+      document.querySelectorAll('.mob-tab[data-mob]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mob === screen);
+      });
+
+      if (screen === 'emergency') renderEmergency();
+      if (screen === 'test') renderTriageQuestion();
+      if (screen === 'library') renderArticleList('all');
+    }
+
+    function openSignDetail(code) {
+      const item = signDetails[code];
+      document.getElementById('sign-drawer-title').textContent = item.title;
+      document.getElementById('sign-drawer-body').textContent = item.body;
+      document.getElementById('sign-drawer').classList.remove('hidden');
+    }
+
+    // Emergency Scenario & LKW Controllers
+    function renderEmergency() {
+      const strip = document.getElementById('scenario-strip');
+      strip.innerHTML = emergencyScenarios.map((sc, i) => `
+        <button class="chip ${i === activeScenarioIdx ? 'active' : ''}" onclick="selectScenario(${i})">${sc.chip}</button>
+      `).join('');
+
+      const sc = emergencyScenarios[activeScenarioIdx];
+      document.getElementById('em-badge').textContent = sc.badge;
+      document.getElementById('em-title').textContent = sc.title;
+      document.getElementById('em-lead').textContent = sc.lead;
+      document.getElementById('em-dos').innerHTML = sc.dos.map(d => `<li>${d}</li>`).join('');
+      document.getElementById('em-donts').innerHTML = sc.donts.map(d => `<li>${d}</li>`).join('');
+      document.getElementById('cpr-metronome-panel').classList.toggle('hidden', !sc.isCPR);
+      if (!sc.isCPR) stopCPRMetronome();
+    }
+
+    function selectScenario(idx) {
+      activeScenarioIdx = idx;
+      renderEmergency();
+    }
+
+    function stepScenario(delta) {
+      activeScenarioIdx = (activeScenarioIdx + delta + emergencyScenarios.length) % emergencyScenarios.length;
+      renderEmergency();
+    }
+
+    function recordLKW(minsAgo) {
+      lkwTime = new Date(Date.now() - minsAgo * 60000);
+      updateLKWText();
+      if (lkwTimer) clearInterval(lkwTimer);
+      lkwTimer = setInterval(updateLKWText, 1000);
+    }
+
+    function recordWakeUpLKW() {
+      const msg = "Phát hiện lúc thức dậy (Cần báo giờ đi ngủ tối qua cho bác sĩ chụp MRI/CTP!)";
+      if (lkwTimer) clearInterval(lkwTimer);
+      lkwTime = null;
+      document.getElementById('lkw-readout').innerHTML = `<span style="color:var(--sos-red);">${msg}</span>`;
+      document.getElementById('modal-lkw-text').textContent = msg;
+      selectScenario(4);
+    }
+
+    function updateLKWText() {
+      if (!lkwTime) return;
+      const sec = Math.floor((Date.now() - lkwTime.getTime()) / 1000);
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      const clock = lkwTime.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      const txt = `Lúc ${clock} (Đã trôi qua ${m} phút ${s < 10 ? '0' : ''}${s} giây — Đang trong cửa sổ cấp cứu!)`;
+      document.getElementById('lkw-readout').innerHTML = `<span style="color:var(--sos-red); font-family:var(--font-mono);">${txt}</span>`;
+      document.getElementById('modal-lkw-text').textContent = txt;
+    }
+
+    // Web Audio API 110 BPM CPR Metronome
+    function playBeep() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.09);
+      } catch (e) {}
+    }
+
+    function toggleCPRMetronome() {
+      if (cprInterval) {
+        stopCPRMetronome();
+      } else {
+        const heart = document.getElementById('cpr-heart');
+        const btn = document.getElementById('btn-cpr-toggle');
+        btn.textContent = '⏹️ Dừng tiếng nhịp ép tim';
+        const beatOnce = () => {
+          playBeep();
+          heart.classList.add('beat');
+          setTimeout(() => heart.classList.remove('beat'), 130);
+        };
+        beatOnce();
+        cprInterval = setInterval(beatOnce, Math.round(60000 / 110)); // 110 BPM
+      }
+    }
+
+    function stopCPRMetronome() {
+      if (cprInterval) {
+        clearInterval(cprInterval);
+        cprInterval = null;
+      }
+      const btn = document.getElementById('btn-cpr-toggle');
+      if (btn) btn.textContent = '▶️ Bật tiếng nhịp ép tim';
+    }
+
+    // 4-Stage Triage Controllers
+    function renderTriageQuestion() {
+      const q = triageSteps[triageIdx];
+      document.getElementById('q-progress-text').textContent = `Bước thực hành ${triageIdx + 1} / ${triageSteps.length}`;
+      document.getElementById('q-bar').style.width = `${((triageIdx + 1) / triageSteps.length) * 100}%`;
+      document.getElementById('q-title').textContent = q.title;
+      document.getElementById('q-desc').textContent = q.desc;
+      document.getElementById('q-helper').innerHTML = q.helper;
+      document.getElementById('q-choices').innerHTML = q.choices.map(c => `
+        <button class="option-btn" onclick="pickTriageChoice('${c.code}')">
+          <span>${c.label}</span>
+          <span>→</span>
+        </button>
+      `).join('');
+    }
+
+    function runArmClock() {
+      if (armInterval) clearInterval(armInterval);
+      let tenths = 100;
+      const el = document.getElementById('arm-clock');
+      if (!el) return;
+      armInterval = setInterval(() => {
+        tenths--;
+        if (tenths <= 0) {
+          clearInterval(armInterval);
+          el.textContent = '0.0s — Hoàn thành kiểm tra!';
+          playBeep();
+        } else {
+          el.textContent = (tenths / 10).toFixed(1) + ' giây';
+        }
+      }, 100);
+    }
+
+    function pickTriageChoice(code) {
+      triageHistory.push(code);
+      // Smart Short-Circuit on acute stroke or TIA
+      if (code === 'acute_late') {
+        showStageVerdict('s4');
+        return;
+      }
+      if (code === 'acute_early' || code === 'tia_cut') {
+        showStageVerdict('s3');
+        return;
+      }
+      if (triageIdx < triageSteps.length - 1) {
+        triageIdx++;
+        renderTriageQuestion();
+      } else {
+        if (code === 'end_veryearly' || triageHistory.includes('risk_sign')) showStageVerdict('s2');
+        else showStageVerdict('s1');
+      }
+    }
+
+    function resetTriage() {
+      triageIdx = 0;
+      triageHistory = [];
+      renderTriageQuestion();
+      showStageVerdict('s1');
+    }
+
+    function showStageVerdict(stageKey) {
+      const map = {
+        s1: {
+          deg: -68,
+          pill: '🟢 MỨC 1: BÌNH THƯỜNG / NGUY CƠ NỀN THẤP',
+          pillBg: 'var(--do-green)',
+          head: 'Chưa ghi nhận triệu chứng thần kinh khu trú bất thường',
+          body: 'Hiện tại khuôn mặt, vận động hai tay, lời nói và thăng bằng ổn định. Hãy duy trì 8 trụ cột sức khỏe não bộ (Life\'s Essential 8) và đo huyết áp định kỳ hằng năm.',
+          cta: `<button class="btn-outline" style="width:100%;" onclick="jumpToArticle('prevent8')">Xem lộ trình Phòng ngừa 90% đột quỵ →</button>`
+        },
+        s2: {
+          deg: -23,
+          pill: '🟡 MỨC 2: GIAI ĐOẠN RẤT SỚM (TÍCH TỤ YẾU TỐ NGUY CƠ)',
+          pillBg: 'var(--warn-amber)',
+          head: 'Có yếu tố nguy cơ mạch máu / tim mạch cần tầm soát có đích',
+          body: 'Chưa có dấu hiệu đột quỵ cấp, nhưng nền bệnh lý (tăng HA, tiểu đường, mạch loạn nhịp nghi rung nhĩ, ngáy ngưng thở khi ngủ...) là gốc rễ dẫn tới đột quỵ. Nên khám chuyên khoa Tim mạch / Nội thần kinh theo lịch sớm.',
+          cta: `<button class="btn-primary-teal" onclick="jumpToArticle('prevent8')">Xem xét nghiệm NÊN làm & KHÔNG nên lạm dụng →</button>`
+        },
+        s3: {
+          deg: 24,
+          pill: '🟠 MỨC 3: GIAI ĐOẠN SỚM — BÁO ĐỘNG ĐỎ GIỜ VÀNG / TIA!',
+          pillBg: 'var(--early-orange)',
+          head: 'Cắt mạch khẩn cấp: Dấu hiệu Đột quỵ cấp hoặc Cơn TIA cảnh báo!',
+          body: 'Dù triệu chứng đang diễn ra hay VỪA TỰ HẾT sau vài phút (TIA), đây là cửa sổ VÀNG cứu tế bào não không để lại liệt! Gọi 115 ngay, ghi giờ LKW và tuyệt đối không uống bất kỳ thuốc gì tại nhà.',
+          cta: `<button class="btn-primary-sos" onclick="recordLKW(0); showScreen('emergency')">🚨 Chuyển ngay sang Sơ cứu & Lưu Giờ Vàng</button>`
+        },
+        s4: {
+          deg: 68,
+          pill: '🔴 MỨC 4: GIAI ĐOẠN MUỘN / NGUY KỊCH ĐE DỌA ĐƯỜNG THỞ',
+          pillBg: 'var(--sos-red)',
+          head: 'Tình trạng tối khẩn cấp — Ưu tiên số 1 bảo vệ đường thở & gọi 115!',
+          body: 'Có dấu hiệu tăng áp lực nội sọ, tổn thương thân não hoặc rối loạn nuốt/ý thức. Đặt nằm nghiêng an toàn chống sặc ngay, gọi 115 đưa tới trung tâm có Hồi sức & Can thiệp mạch 24h (nhóm bàng hệ tốt vẫn còn cơ hội cứu não tới 24 giờ!).',
+          cta: `<button class="btn-primary-sos" onclick="selectScenario(1); showScreen('emergency')">🚨 Mở ngay Phác đồ Bảo vệ Đường thở</button>`
+        }
+      };
+      const cfg = map[stageKey];
+      document.getElementById('triage-needle').setAttribute('transform', `rotate(${cfg.deg}, 130, 130)`);
+      const pill = document.getElementById('verdict-pill');
+      pill.style.background = cfg.pillBg;
+      pill.textContent = cfg.pill;
+      document.getElementById('verdict-heading').textContent = cfg.head;
+      document.getElementById('verdict-text').textContent = cfg.body;
+      document.getElementById('verdict-action').innerHTML = cfg.cta;
+    }
+
+    // 3-Layer Knowledge Library & Accent-Insensitive Search
+    function renderArticleList(category, query = '') {
+      const normQ = removeVietnameseTones(query.trim());
+      const matched = articles.filter(a => {
+        const catOk = category === 'all' || a.cat === category;
+        if (!normQ) return catOk;
+        const hay = removeVietnameseTones(a.title + ' ' + a.tldr + ' ' + a.keywords);
+        return catOk && hay.includes(normQ);
+      });
+
+      const listEl = document.getElementById('article-list');
+      if (matched.length === 0) {
+        listEl.innerHTML = `<div class="card" style="color:var(--text-muted);">Không tìm thấy chủ đề khớp từ khóa "${query}".</div>`;
+        return;
+      }
+      listEl.innerHTML = matched.map(a => `
+        <button class="sign-card" style="width:100%;" onclick="openArticle('${a.id}')">
+          <div style="font-size:0.75rem; font-weight:800; color:var(--brand-teal); text-transform:uppercase; margin-bottom:0.2rem;">${a.cat}</div>
+          <strong style="font-size:0.95rem; line-height:1.35; display:block;">${a.title}</strong>
+        </button>
+      `).join('');
+      openArticle(matched[0].id);
+    }
+
+    function filterArticles(cat, btnEl) {
+      document.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active'));
+      if (btnEl) btnEl.classList.add('active');
+      renderArticleList(cat);
+    }
+
+    function openArticle(id) {
+      const a = articles.find(x => x.id === id);
+      if (!a) return;
+      document.getElementById('art-cat').textContent = a.cat;
+      document.getElementById('art-title').textContent = a.title;
+      document.getElementById('art-tldr').textContent = a.tldr;
+      document.getElementById('art-bullets').innerHTML = a.bullets.map(b => `<li>${b}</li>`).join('');
+      document.getElementById('art-evidence').textContent = a.evidence;
+    }
+
+    function jumpToArticle(id) {
+      showScreen('library');
+      openArticle(id);
+    }
+
+    function handleQuickSearch(val) {
+      if (val.trim().length >= 2) {
+        showScreen('library');
+        renderArticleList('all', val);
+      }
+    }
+
+    // Medical ID Modal + LocalStorage Persistence
+    function openDoctorModal() {
+      document.getElementById('doctor-modal').classList.remove('hidden');
+    }
+    function closeDoctorModal() {
+      document.getElementById('doctor-modal').classList.add('hidden');
+    }
+    function saveMedProfile() {
+      try {
+        const profile = {
+          name: document.getElementById('med-name').value,
+          anticoag: document.getElementById('med-anticoag').value,
+          cond: document.getElementById('med-cond').value,
+          phone: document.getElementById('med-phone').value
+        };
+        localStorage.setItem('dotquy_med_id', JSON.stringify(profile));
+      } catch (e) {}
+    }
+    function loadMedProfile() {
+      try {
+        const raw = localStorage.getItem('dotquy_med_id');
+        if (!raw) return;
+        const p = JSON.parse(raw);
+        if (p.name) document.getElementById('med-name').value = p.name;
+        if (p.anticoag) document.getElementById('med-anticoag').value = p.anticoag;
+        if (p.cond) document.getElementById('med-cond').value = p.cond;
+        if (p.phone) document.getElementById('med-phone').value = p.phone;
+      } catch (e) {}
+    }
+
+    // Vietnamese Text-to-Speech (TTS) Engine
+    function speakText(txt) {
+      const banner = document.getElementById('tts-banner');
+      document.getElementById('tts-status-text').textContent = '🔊 Đang đọc: "' + txt.slice(0, 110) + '..."';
+      banner.classList.add('show');
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(txt);
+        u.lang = 'vi-VN';
+        u.rate = 0.95;
+        u.onend = () => banner.classList.remove('show');
+        window.speechSynthesis.speak(u);
+      }
+    }
+    function stopTTS() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      document.getElementById('tts-banner').classList.remove('show');
+    }
+    function speakEmergencyCard() {
+      const sc = emergencyScenarios[activeScenarioIdx];
+      speakText(`${sc.title}. ${sc.lead} Việc cần làm ngay: ${sc.dos.join(' ')} Tuyệt đối cấm: ${sc.donts.join(' ')}`);
+    }
+    function speakArticle() {
+      const title = document.getElementById('art-title').textContent;
+      const tldr = document.getElementById('art-tldr').textContent;
+      speakText(`${title}. Tóm tắt quan trọng: ${tldr}`);
+    }
+    function speakActiveView() {
+      if (activeScreen === 'emergency') speakEmergencyCard();
+      else if (activeScreen === 'library') speakArticle();
+      else speakText('Cẩm nang Phòng chống và Sơ cứu Đột quỵ. Nếu đang nghi ngờ có người bị đột quỵ ngay lúc này, hãy bấm nút màu đỏ Sơ cứu khẩn cấp và gọi ngay 1 1 5.');
+    }
+
+    // Init
+    loadMedProfile();
+    renderEmergency();
+    renderTriageQuestion();
+    showStageVerdict('s1');
+    renderArticleList('all');
+  </script>
+</body>
+</html>
